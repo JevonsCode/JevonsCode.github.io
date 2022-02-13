@@ -1,0 +1,23 @@
+<h3>postMessage Test</h3>
+
+event.origin: <div id="pmt-or"></div>
+
+<br />
+
+event.data: <div id="pmt"></div>
+
+
+<script>
+
+window.onload = function() {
+  function receiveMessage(event){
+    console.log(`event.origin ==>  `, event.origin)
+    console.log(`event.data ==>  `, event.data)
+    console.log(`event ==>  `, event)
+
+    document.getElementById("pmt-or").innerText = event.origin
+    document.getElementById("pmt").innerText = event.data
+  }
+  window.addEventListener("message", receiveMessage, false);
+}
+</script>
