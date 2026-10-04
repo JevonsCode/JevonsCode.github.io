@@ -126,7 +126,7 @@ function attachImageGestures(element, options) {
 function syncDragLayers() {
   $('#dragLayers').hidden = state.mode !== 'overflow';
   if (!activeOverflowFigure()) state.dragLayer = 'cover';
-  $('.canvas-caption span:last-child').textContent=state.mode==='overflow'&&state.dragLayer==='overlay'?'拖动当前图层 · 双指缩放':'单指拖动 · 双指缩放 · 轻点选格';
+  $('.canvas-caption span:last-child').textContent=state.mode==='overflow'&&state.dragLayer==='overlay'?t('拖动当前图层 · 双指缩放'):t('单指拖动 · 双指缩放 · 轻点选格');
   for (const button of $$('[data-drag-layer]')) {
     const active = button.dataset.dragLayer === state.dragLayer;
     button.classList.toggle('active',active);

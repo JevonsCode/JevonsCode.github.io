@@ -1,7 +1,9 @@
 'use strict';
 
 const overflowEdges=['top','right','bottom','left'];
-let overflowLayerSerial=0,defaultOverflowPromise=null,layerSelectionRevision=0;
+let overflowLayerSerial=0,defaultOverflowPromise=null,layerSelectionRevision=0,coverUploadDetails=null,defaultLayersStatusKey=null;
+function overflowLayerName(layer){return layer.nameKey?t(layer.nameKey):layer.name;}
+function overflowCellList(indexes){return indexes.join(t('、'));}
 const allOverflowCells=()=>Array.from({length:9},(_,i)=>i);
 function overflowInsets(cell){return Object.fromEntries(overflowEdges.map(edge=>[edge,clampCrop(cell?.insets?.[edge]??.1,0,.4)]));}
 function selectedOverflowCells(){return state.overflowSelection.map(index=>state.overflowCells[index]);}
@@ -27,7 +29,7 @@ function imageThumbnail(image,size=144,transparent=false){
   return c.toDataURL(transparent?'image/png':'image/jpeg',.85);
 }
 function makeOverflowLayer(name,image,indexes,transform,kind='upload'){
-  return {id:'layer-'+(++overflowLayerSerial),name,image,thumb:image?imageThumbnail(image,144,true):null,visible:true,loading:!image,kind,cells:Array.from({length:9},(_,i)=>indexes.includes(i)?{...transform}:null)};
+  return {id:'layer-'+(++overflowLayerSerial),name,nameKey:kind==='default'?name:null,image,thumb:image?imageThumbnail(image,144,true):null,visible:true,loading:!image,kind,cells:Array.from({length:9},(_,i)=>indexes.includes(i)?{...transform}:null)};
 }
 function selectOverflowLayer(id){
   const layer=state.overlayLayers.find(item=>item.id===id);if(!layer)return;
@@ -39,15 +41,21 @@ function selectFallbackOverlay(){
   if(layer)selectOverflowLayer(layer.id);else{state.activeOverlayId=null;layerSelectionRevision++;}
 }
 function syncCoverUpload(photo,isDefault=false){
-  $('#coverUploadPreview').src=photo.thumb;$('#coverUploadPreview').alt='当前封面：'+photo.name;
-  $('#coverUploadName').textContent=photo.name;$('#coverUploadName').title=photo.name;
-  $('#coverUploadStatus').textContent=isDefault?'默认封面 · 点击更换':'已上传 · 点击更换';
-  $('#sourceName').textContent=isDefault?photo.name+' · 默认封面':photo.name;$('#sourceName').title=photo.name;
+  coverUploadDetails={name:photo.name,thumb:photo.thumb,isDefault};
+  $('#coverUploadPreview').src=photo.thumb;refreshCoverUploadLabels();
+}
+function refreshCoverUploadLabels(){
+  if(!coverUploadDetails)return;
+  const {name,isDefault}=coverUploadDetails;
+  $('#coverUploadPreview').alt=t('当前封面：{name}',{name});
+  $('#coverUploadName').textContent=name;$('#coverUploadName').title=name;
+  $('#coverUploadStatus').textContent=t(isDefault?'默认封面 · 点击更换':'已上传 · 点击更换');
+  $('#sourceName').textContent=isDefault?t('{name} · 默认封面',{name}):name;$('#sourceName').title=name;
 }
 async function ensureDefaultOverflow(){
   if(state.defaultsInitialized)return;
   if(defaultOverflowPromise)return defaultOverflowPromise;
-  $('#retryDefaultLayers').hidden=true;$('#defaultLayersStatus').hidden=false;$('#defaultLayersStatus').textContent='正在加载默认人物与文字…';importStatus(1);
+  $('#retryDefaultLayers').hidden=true;$('#defaultLayersStatus').hidden=false;defaultLayersStatusKey='正在加载默认人物与文字…';$('#defaultLayersStatus').textContent=t(defaultLayersStatusKey);importStatus(1);
   defaultOverflowPromise=(async()=>{
     try{
       const [background,person,title]=await Promise.all(['assets/overflow-background.png','assets/overflow-person.png','assets/overflow-title.png'].map(loadImage));
@@ -60,7 +68,7 @@ async function ensureDefaultOverflow(){
       state.overlayLayers.unshift(personLayer,titleLayer);state.defaultsInitialized=true;
       if(!state.activeOverlayId){state.activeOverlayId=personLayer.id;state.dragLayer='overlay';}
       $('#defaultLayersStatus').hidden=true;syncOverflowControls();requestRender();
-    }catch(error){$('#retryDefaultLayers').hidden=false;$('#defaultLayersStatus').textContent='默认图层未能加载，可点击下方重新载入。';toast('默认图层未能加载，请重试。');}
+    }catch(error){$('#retryDefaultLayers').hidden=false;defaultLayersStatusKey='默认图层未能加载，可点击下方重新载入。';$('#defaultLayersStatus').textContent=t(defaultLayersStatusKey);toast(t('默认图层未能加载，请重试。'));}
     finally{importStatus(-1);defaultOverflowPromise=null;}
   })();
   return defaultOverflowPromise;
@@ -68,13 +76,14 @@ async function ensureDefaultOverflow(){
 function renderOverflowLayers(){
   const list=$('#overlayList'),stage=$('#stageLayerSelect');list.replaceChildren();stage.replaceChildren();
   const layers=state.overlayLayers;
-  $('#overlayCount').textContent=layers.length+' 张';$('#overlayEmpty').hidden=layers.length>0;
+  $('#overlayCount').textContent=t('{count} 层',{count:layers.length});$('#overlayEmpty').hidden=layers.length>0;
   for(const layer of [...layers].reverse()){
+    const displayName=overflowLayerName(layer);
     const row=document.createElement('div');row.className='overlay-row'+(layer.id===state.activeOverlayId?' active':'')+(!layer.visible?' hidden-layer':'');row.dataset.layerId=layer.id;
-    const select=document.createElement('button');select.className='overlay-select';select.setAttribute('aria-pressed',String(layer.id===state.activeOverlayId));select.setAttribute('aria-label','选择图层 '+layer.name);
+    const select=document.createElement('button');select.className='overlay-select';select.setAttribute('aria-pressed',String(layer.id===state.activeOverlayId));select.setAttribute('aria-label',t('选择图层 {name}',{name:displayName}));
     const preview=document.createElement('span');preview.className='overlay-thumb';
-    if(layer.thumb){const img=document.createElement('img');img.src=layer.thumb;img.alt=layer.name;preview.append(img);}else preview.textContent='…';
-    const copy=document.createElement('span');copy.className='overlay-copy';const name=document.createElement('strong');name.textContent=layer.name;name.title=layer.name;const detail=document.createElement('small');const indexes=layer.cells.flatMap((c,i)=>c?[i+1]:[]);detail.textContent=layer.loading?'正在读取…':!layer.visible?'已隐藏':`第 ${indexes.join('、')} 格`;
+    if(layer.thumb){const img=document.createElement('img');img.src=layer.thumb;img.alt=displayName;preview.append(img);}else preview.textContent='…';
+    const copy=document.createElement('span');copy.className='overlay-copy';const name=document.createElement('strong');name.textContent=displayName;name.title=displayName;const detail=document.createElement('small');const indexes=layer.cells.flatMap((c,i)=>c?[i+1]:[]);detail.textContent=layer.loading?t('正在读取…'):!layer.visible?t('已隐藏'):t('第 {cells} 格',{cells:overflowCellList(indexes)});
     copy.append(name,detail);select.append(preview,copy);select.onclick=()=>selectOverflowLayer(layer.id);row.append(select);
     const actions=document.createElement('div');actions.className='overlay-row-actions';
     const index=layers.indexOf(layer);
@@ -83,27 +92,29 @@ function renderOverflowLayers(){
       ['up','上移',index===layers.length-1,()=>{[layers[index],layers[index+1]]=[layers[index+1],layers[index]];syncOverflowControls();requestRender();}],
       ['down','下移',index===0,()=>{[layers[index],layers[index-1]]=[layers[index-1],layers[index]];syncOverflowControls();requestRender();}],
       ['delete','删除',false,()=>{state.overlayLayers=state.overlayLayers.filter(item=>item!==layer);if(state.activeOverlayId===layer.id)selectFallbackOverlay();syncOverflowControls();requestRender();}]
-    ]){const button=document.createElement('button');button.textContent=label;button.dataset.layerAction=action;button.disabled=disabled;button.setAttribute('aria-label',label+' '+layer.name);button.onclick=fn;actions.append(button);}
+    ]){const button=document.createElement('button');button.textContent=t(label);button.dataset.layerAction=action;button.disabled=disabled;button.setAttribute('aria-label',t('操作图层：{action} {name}',{action:t(label),name:displayName}));button.onclick=fn;actions.append(button);}
     row.append(actions);list.append(row);
-    const option=document.createElement('option');option.value=layer.id;option.textContent=layer.name+(layer.visible?'':'（已隐藏）');stage.append(option);
+    const option=document.createElement('option');option.value=layer.id;option.textContent=displayName+(layer.visible?'':t('（已隐藏）'));stage.append(option);
   }
   stage.hidden=!layers.length;stage.value=state.activeOverlayId||'';
 }
 function syncOverflowControls(){
+  refreshCoverUploadLabels();
+  if(defaultLayersStatusKey)$('#defaultLayersStatus').textContent=t(defaultLayersStatusKey);
   const selected=selectedOverflowCells();
-  for(const button of $$('#overflowGrid button')){const i=Number(button.dataset.index);button.classList.toggle('selected',state.overflowSelection.includes(i));button.classList.toggle('enabled',state.overflowCells[i].enabled);button.setAttribute('aria-pressed',String(state.overflowSelection.includes(i)));button.title=`第 ${i+1} 格，${state.overflowCells[i].enabled?'已开启':'未开启'}溢出`;}
-  $('#overflowSelectionLabel').textContent=selected.length?`正在调整第 ${state.overflowSelection.map(i=>i+1).join('、')} 格`:'请点选需要调整的格子';
+  for(const button of $$('#overflowGrid button')){const i=Number(button.dataset.index);button.classList.toggle('selected',state.overflowSelection.includes(i));button.classList.toggle('enabled',state.overflowCells[i].enabled);button.setAttribute('aria-pressed',String(state.overflowSelection.includes(i)));button.title=t(state.overflowCells[i].enabled?'第 {cell} 格，已开启溢出':'第 {cell} 格，未开启溢出',{cell:i+1});button.setAttribute('aria-label',t('选择调整第 {cell} 格溢出',{cell:i+1}));}
+  $('#overflowSelectionLabel').textContent=selected.length?t('正在调整第 {cells} 格',{cells:overflowCellList(state.overflowSelection.map(i=>i+1))}):t('请点选需要调整的格子');
   const checkbox=$('#overflowEnabled');checkbox.disabled=!selected.length;checkbox.checked=selected.length>0&&selected.every(c=>c.enabled);checkbox.indeterminate=selected.some(c=>c.enabled)&&!checkbox.checked;
   const firstInsets=overflowInsets(selected[0]);
-  for(const edge of overflowEdges){const input=$(`[data-inset-edge="${edge}"]`),output=$(`[data-inset-value="${edge}"]`);input.disabled=!selected.length;input.value=Math.round(firstInsets[edge]*100);const mixed=selected.some(c=>overflowInsets(c)[edge]!==firstInsets[edge]);output.textContent=!selected.length?'—':mixed?'各格不同':input.value+'%';input.setAttribute('aria-valuetext',mixed?'各格不同，调整后统一此方向的留白':input.value+'%');}
+  for(const edge of overflowEdges){const input=$(`[data-inset-edge="${edge}"]`),output=$(`[data-inset-value="${edge}"]`);input.disabled=!selected.length;input.value=Math.round(firstInsets[edge]*100);const mixed=selected.some(c=>overflowInsets(c)[edge]!==firstInsets[edge]);output.textContent=!selected.length?'—':mixed?t('各格不同'):input.value+'%';input.setAttribute('aria-valuetext',mixed?t('各格不同，调整后统一此方向的留白'):input.value+'%');}
   for(const button of $$('[data-inset-preset]')){const preset=button.dataset.insetPreset,active=selected.length>0&&selected.every(c=>overflowEdges.every(edge=>(overflowInsets(c)[edge]>0)===(preset==='all'||edge===preset)));button.disabled=!selected.length;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));}
   renderOverflowLayers();
   const layer=activeOverflowLayer(),figure=activeOverflowFigure();$('#overlaySettings').hidden=!layer;
   if(layer){
-    $('#activeOverlayName').textContent=layer.name;$('#activeOverlayName').title=layer.name;
-    const scope=layer.cells.flatMap((c,i)=>c?[i+1]:[]);$('#overlayScope').textContent='当前覆盖：第 '+scope.join('、')+' 格';
+    $('#activeOverlayName').textContent=overflowLayerName(layer);$('#activeOverlayName').title=overflowLayerName(layer);
+    const scope=layer.cells.flatMap((c,i)=>c?[i+1]:[]);$('#overlayScope').textContent=t('当前覆盖：第 {cells} 格',{cells:overflowCellList(scope)});
     $('#applyLayerScope').disabled=!selected.length||layer.loading;
-    $('#overlayEditHint').textContent=layer.loading?'图片正在读取。':!layer.visible?'当前图层已隐藏，点击「显示」后可调整。':figure?'大小和位置只影响选中格子中的当前图层。':'当前选中格子没有此图层，或尚未开启溢出。可点击下方应用覆盖范围。';
+    $('#overlayEditHint').textContent=t(layer.loading?'图片正在读取。':!layer.visible?'当前图层已隐藏，点击「显示」后可调整。':figure?'大小和位置只影响选中格子中的当前图层。':'当前选中格子没有此图层，或尚未开启溢出。可点击下方应用覆盖范围。');
     for(const [id,key] of [['overlayScale','scale'],['overlayX','x'],['overlayY','y']]){$('#'+id).disabled=!figure;$('#'+id).value=Math.round((figure?.[key]??(key==='scale'?1:.5))*100);}
     $('#overlayScaleValue').textContent=figure?Math.round(figure.scale*100)+'%':'—';
   }
@@ -117,7 +128,7 @@ function drawOverflowLayers(ctx,geometry){
   }
 }
 function bindOverflowEditor(){
-  for(let i=0;i<9;i++){const b=document.createElement('button');b.textContent=i+1;b.dataset.index=i;b.type='button';b.setAttribute('aria-label',`选择调整第 ${i+1} 格溢出`);b.onclick=()=>{state.overflowSelection=state.overflowSelection.includes(i)?state.overflowSelection.filter(v=>v!==i):[...state.overflowSelection,i].sort((a,b)=>a-b);syncOverflowControls();};$('#overflowGrid').append(b);}
+  for(let i=0;i<9;i++){const b=document.createElement('button');b.textContent=i+1;b.dataset.index=i;b.type='button';b.setAttribute('aria-label',t('选择调整第 {cell} 格溢出',{cell:i+1}));b.onclick=()=>{state.overflowSelection=state.overflowSelection.includes(i)?state.overflowSelection.filter(v=>v!==i):[...state.overflowSelection,i].sort((a,b)=>a-b);syncOverflowControls();};$('#overflowGrid').append(b);}
   $$('[data-overflow-preset]').forEach(b=>b.onclick=()=>{const preset=b.dataset.overflowPreset,indexes=preset==='top'?[0,1,2]:preset==='two-three'?[1,2]:preset==='all'?allOverflowCells():[];state.overflowCells.forEach((c,i)=>{c.enabled=indexes.includes(i);});state.overflowSelection=indexes;syncOverflowControls();requestRender();});
   $('#overflowEnabled').onchange=e=>applyOverflowPatch({enabled:e.target.checked});
   $$('[data-inset-edge]').forEach(input=>input.oninput=()=>{for(const c of selectedOverflowCells())c.insets={...overflowInsets(c),[input.dataset.insetEdge]:clampCrop(Number(input.value)/100,0,.4)};syncOverflowControls();requestRender();});
@@ -128,7 +139,7 @@ function bindOverflowEditor(){
   $('#retryDefaultLayers').onclick=()=>ensureDefaultOverflow();
   $('#overlayInput').onchange=async e=>{
     const input=e.target,files=[...input.files],indexes=[...state.overflowSelection];input.value='';if(!files.length)return;
-    if(!indexes.length){toast('先选择需要放入图层的格子。');return;}
+    if(!indexes.length){toast(t('先选择需要放入图层的格子。'));return;}
     const selectionRevision=layerSelectionRevision,geometry=gridGeometry(),pitch=geometry.tile+geometry.gap;
     const left=Math.min(...indexes.map(i=>i%3*pitch)),top=Math.min(...indexes.map(i=>Math.floor(i/3)*pitch)),right=Math.max(...indexes.map(i=>i%3*pitch))+geometry.tile,bottom=Math.max(...indexes.map(i=>Math.floor(i/3)*pitch))+geometry.tile;
     const pending=files.map(file=>makeOverflowLayer(file.name,null,indexes,{scale:.65,x:(left+right)/2/geometry.size,y:(top+bottom)/2/geometry.size}));
@@ -141,7 +152,7 @@ function bindOverflowEditor(){
         for(const c of layer.cells)if(c)c.scale=scale;
         if(layerSelectionRevision===selectionRevision){state.activeOverlayId=layer.id;state.dragLayer='overlay';}
         requestRender();
-      }catch(error){state.overlayLayers=state.overlayLayers.filter(l=>l!==layer);if(state.activeOverlayId===layer.id)selectFallbackOverlay();toast(files[i].name+'：'+error.message);}
+      }catch(error){state.overlayLayers=state.overlayLayers.filter(l=>l!==layer);if(state.activeOverlayId===layer.id)selectFallbackOverlay();toast(t('{name}：{error}',{name:files[i].name,error:error.message}));}
       finally{importStatus(-1);syncOverflowControls();}
     }
   };

@@ -2,83 +2,88 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>间象 — 图像与留白</title>
-  <meta name="description" content="间象，一个关于图像与留白的创作空间。制作九宫格、长图与溢出拼贴，自由组合人物、文字和照片。">
+  <title data-i18n="间象 — 图像与留白">间象 — 图像与留白</title>
+  <meta name="description" content="间象，一个关于图像与留白的创作空间。制作九宫格、长图与溢出拼贴，自由组合人物、文字和照片。" data-i18n-content="间象，一个关于图像与留白的创作空间。制作九宫格、长图与溢出拼贴，自由组合人物、文字和照片。">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e85f35'/%3E%3Cpath d='M11 6v20M21 6v20M6 11h20M6 21h20' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css"><script src="gestures.js" defer></script><script src="photo-editor.js" defer></script><script src="overflow-editor.js" defer></script><script src="long-editor.js" defer></script><script src="app.js" defer></script>
+  <link rel="stylesheet" href="style.css"><script src="i18n.js" defer></script><script src="i18n-ui.js" defer></script><script src="i18n-app.js" defer></script><script src="i18n-editors.js" defer></script><script src="i18n-overflow.js" defer></script><script src="i18n-help.js" defer></script><script src="help.js" defer></script><script src="share.js" defer></script><script src="gestures.js" defer></script><script src="photo-editor.js" defer></script><script src="overflow-editor.js" defer></script><script src="long-editor.js" defer></script><script src="app.js" defer></script>
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="./" aria-label="间象首页"><span class="brand-mark"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><strong>间象</strong><span class="brand-caption">图像与留白</span></a>
-  <div class="header-actions"><button id="helpBtn" class="btn quiet">使用指南</button><button id="exportBtn" class="btn primary"><span>↓</span> 导出 9 张长图</button></div>
+  <a class="brand" href="./" aria-label="间象首页" data-i18n-aria-label="间象首页"><span class="brand-mark"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><strong data-i18n="间象">间象</strong><span class="brand-caption" data-i18n="图像与留白">图像与留白</span></a>
+  <div class="header-actions">
+    <button id="helpBtn" class="btn quiet" data-i18n="使用指南">使用指南</button>
+    <label class="language-control"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18Z"/></svg><select id="languageSelect" aria-label="语言" data-i18n-aria-label="语言"><option value="zh" lang="zh-CN">中文</option><option value="en" lang="en">English</option><option value="es" lang="es">Español</option></select></label>
+    <button id="shareBtn" class="btn share-btn" aria-label="分享间象" data-i18n-aria-label="分享间象"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V3m-4 4 4-4 4 4M6 11H4v10h16V11h-2"/></svg><span data-i18n="分享">分享</span></button>
+    <button id="exportBtn" class="btn primary"><span aria-hidden="true">↓</span> <span data-i18n="导出 9 张长图">导出 9 张长图</span></button>
+  </div>
 </header>
 <main>
-  <div class="workspace-heading"><div><h1>图像工作室</h1></div><div class="workflow"><span class="active"><b>1</b> 设计封面</span><i></i><span><b>2</b> 添加照片</span><i></i><span><b>3</b> 导出分享</span></div></div>
+  <div class="workspace-heading"><div><h1 data-i18n="图像工作室">图像工作室</h1></div><div class="workflow"><span class="active"><b>1</b> <span data-i18n="设计封面">设计封面</span></span><i></i><span><b>2</b> <span data-i18n="添加照片">添加照片</span></span><i></i><span><b>3</b> <span data-i18n="导出分享">导出分享</span></span></div></div>
   <div class="editor">
     <aside class="settings panel">
-      <div class="panel-label"><span>封面</span></div>
-      <div class="segmented" role="group" aria-label="封面模式"><button class="active" data-mode="classic" aria-pressed="true">经典九宫格</button><button data-mode="overflow" aria-pressed="false">溢出拼贴 <span>PRO</span></button></div>
-      <label class="upload-cover" for="coverInput" aria-busy="false"><img id="coverUploadPreview" src="assets/cover-57979.jpg" alt="当前封面：57979.jpg"><span class="cover-upload-copy"><small>当前封面</small><strong id="coverUploadName">57979.jpg</strong><span id="coverUploadStatus">默认封面 · 点击更换</span><small>JPG、PNG、WebP</small></span></label>
+      <div class="panel-label"><span data-i18n="封面">封面</span></div>
+      <div class="segmented" role="group" aria-label="封面模式" data-i18n-aria-label="封面模式"><button class="active" data-mode="classic" aria-pressed="true" data-i18n="经典九宫格">经典九宫格</button><button data-mode="overflow" aria-pressed="false"><span data-i18n="溢出拼贴">溢出拼贴</span> <span>PRO</span></button></div>
+      <label class="upload-cover" for="coverInput" aria-busy="false"><img id="coverUploadPreview" src="assets/cover-57979.jpg" alt="当前封面：57979.jpg" data-i18n-alt="当前封面：57979.jpg"><span class="cover-upload-copy"><small data-i18n="当前封面">当前封面</small><strong id="coverUploadName">57979.jpg</strong><span id="coverUploadStatus" data-i18n="默认封面 · 点击更换">默认封面 · 点击更换</span><small>JPG、PNG、WebP</small></span></label>
       <input id="coverInput" class="file-input" type="file" accept="image/jpeg,image/png,image/webp">
-      <div class="source-row"><span id="sourceName">57979.jpg · 默认封面</span><button id="resetCrop" class="text-btn">重置位置</button></div>
-      <div class="control"><label for="zoom">画面缩放 <output id="zoomValue">100%</output></label><input id="zoom" type="range" min="100" max="400" value="100"></div>
-      <div class="position-controls"><div class="control"><label for="posX">左右位置</label><input id="posX" type="range" min="-100" max="100" value="0"></div><div class="control"><label for="posY">上下位置</label><input id="posY" type="range" min="-100" max="100" value="0"></div></div>
-      <details class="gap-settings"><summary>格子间距 <span id="gapSummary">4 px</span></summary><div class="gap-fields"><label for="gridGap">间距（px）<input id="gridGap" type="number" min="0" max="30" step="0.5" value="4" inputmode="decimal"></label><label for="thumbWidth">小图宽度（px）<input id="thumbWidth" type="number" min="40" max="500" step="1" value="90" inputmode="numeric"></label></div><p class="hint">会扣除缝隙遮住的画面。可按微信截图填写，两个数使用同一单位；默认值仅作预览参考。</p></details>
+      <div class="source-row"><span id="sourceName" data-i18n="57979.jpg · 默认封面">57979.jpg · 默认封面</span><button id="resetCrop" class="text-btn" data-i18n="重置位置">重置位置</button></div>
+      <div class="control"><label for="zoom"><span data-i18n="画面缩放">画面缩放</span> <output id="zoomValue">100%</output></label><input id="zoom" type="range" min="100" max="400" value="100"></div>
+      <div class="position-controls"><div class="control"><label for="posX" data-i18n="左右位置">左右位置</label><input id="posX" type="range" min="-100" max="100" value="0"></div><div class="control"><label for="posY" data-i18n="上下位置">上下位置</label><input id="posY" type="range" min="-100" max="100" value="0"></div></div>
+      <details class="gap-settings"><summary><span data-i18n="格子间距">格子间距</span> <span id="gapSummary">4 px</span></summary><div class="gap-fields"><label for="gridGap"><span data-i18n="间距（px）">间距（px）</span><input id="gridGap" type="number" min="0" max="30" step="0.5" value="4" inputmode="decimal"></label><label for="thumbWidth"><span data-i18n="小图宽度（px）">小图宽度（px）</span><input id="thumbWidth" type="number" min="40" max="500" step="1" value="90" inputmode="numeric"></label></div><p class="hint" data-i18n="会扣除缝隙遮住的画面。可按微信截图填写，两个数使用同一单位；默认值仅作预览参考。">会扣除缝隙遮住的画面。可按微信截图填写，两个数使用同一单位；默认值仅作预览参考。</p></details>
       <div id="overflowControls" class="overflow-controls" hidden>
-        <div class="divider"></div><div class="subhead">局部溢出</div>
-        <div class="overflow-presets"><button data-overflow-preset="top">仅第一排</button><button data-overflow-preset="two-three">仅 2、3 格</button><button data-overflow-preset="all">全部</button><button data-overflow-preset="none">关闭全部</button></div>
-        <div id="overflowGrid" class="overflow-grid" aria-label="选择本次要调整的格子"></div>
-        <p class="hint" id="overflowSelectionLabel">正在调整全部格子</p>
-        <label class="overflow-enable"><input id="overflowEnabled" type="checkbox" checked> 选中格子开启溢出</label>
-        <p class="hint">点选格子后，仅调整选中部分。小圆点表示已开启；其他格子保留原设置。</p>
-        <div class="overlay-heading"><span>溢出图层</span><span class="count" id="overlayCount">0 张</span></div>
-        <p class="hint" id="defaultLayersStatus" role="status" hidden></p><button id="retryDefaultLayers" class="text-btn" hidden>重新加载默认图层</button>
-        <div id="overlayList" class="overlay-list" aria-label="溢出图层列表"></div>
-        <p id="overlayEmpty" class="hint">添加人物、文字或图片，每张图片都是一个独立图层。</p>
-        <label class="btn secondary full add-overlay" for="overlayInput">＋ 添加图片图层 · 可多选</label><input id="overlayInput" class="file-input" type="file" accept="image/jpeg,image/png,image/webp" multiple>
-        <p class="hint overlay-upload-hint">透明 PNG / WebP 可保留抠图效果，也可叠加普通照片。列表上方的图层显示在最前面。</p>
+        <div class="divider"></div><div class="subhead" data-i18n="局部溢出">局部溢出</div>
+        <div class="overflow-presets"><button data-overflow-preset="top" data-i18n="仅第一排">仅第一排</button><button data-overflow-preset="two-three" data-i18n="仅 2、3 格">仅 2、3 格</button><button data-overflow-preset="all" data-i18n="全部">全部</button><button data-overflow-preset="none" data-i18n="关闭全部">关闭全部</button></div>
+        <div id="overflowGrid" class="overflow-grid" aria-label="选择本次要调整的格子" data-i18n-aria-label="选择本次要调整的格子"></div>
+        <p class="hint" id="overflowSelectionLabel" data-i18n="正在调整全部格子">正在调整全部格子</p>
+        <label class="overflow-enable"><input id="overflowEnabled" type="checkbox" checked> <span data-i18n="选中格子开启溢出">选中格子开启溢出</span></label>
+        <p class="hint" data-i18n="点选格子后，仅调整选中部分。小圆点表示已开启；其他格子保留原设置。">点选格子后，仅调整选中部分。小圆点表示已开启；其他格子保留原设置。</p>
+        <div class="overlay-heading"><span data-i18n="溢出图层">溢出图层</span><span class="count" id="overlayCount" data-i18n="0 张">0 张</span></div>
+        <p class="hint" id="defaultLayersStatus" role="status" hidden></p><button id="retryDefaultLayers" class="text-btn" hidden data-i18n="重新加载默认图层">重新加载默认图层</button>
+        <div id="overlayList" class="overlay-list" aria-label="溢出图层列表" data-i18n-aria-label="溢出图层列表"></div>
+        <p id="overlayEmpty" class="hint" data-i18n="添加人物、文字或图片，每张图片都是一个独立图层。">添加人物、文字或图片，每张图片都是一个独立图层。</p>
+        <label class="btn secondary full add-overlay" for="overlayInput" data-i18n="＋ 添加图片图层 · 可多选">＋ 添加图片图层 · 可多选</label><input id="overlayInput" class="file-input" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+        <p class="hint overlay-upload-hint" data-i18n="透明 PNG / WebP 可保留抠图效果，也可叠加普通照片。列表上方的图层显示在最前面。">透明 PNG / WebP 可保留抠图效果，也可叠加普通照片。列表上方的图层显示在最前面。</p>
         <div id="overlaySettings" class="overlay-settings" hidden>
-          <div class="subhead">正在调整 <span id="activeOverlayName"></span></div><p id="overlayEditHint" class="hint"></p>
-          <div class="control"><label for="overlayScale">图层大小 <output id="overlayScaleValue">100%</output></label><input id="overlayScale" type="range" min="5" max="200" value="100"></div>
-          <div class="position-controls"><div class="control"><label for="overlayX">左右位置</label><input id="overlayX" type="range" min="0" max="100" value="50"></div><div class="control"><label for="overlayY">上下位置</label><input id="overlayY" type="range" min="0" max="100" value="50"></div></div>
-          <p id="overlayScope" class="hint"></p><button id="applyLayerScope" class="btn secondary full">将此图层应用到选中的格子</button>
+          <div class="subhead"><span data-i18n="正在调整">正在调整</span> <span id="activeOverlayName"></span></div><p id="overlayEditHint" class="hint"></p>
+          <div class="control"><label for="overlayScale"><span data-i18n="图层大小">图层大小</span> <output id="overlayScaleValue">100%</output></label><input id="overlayScale" type="range" min="5" max="200" value="100"></div>
+          <div class="position-controls"><div class="control"><label for="overlayX" data-i18n="左右位置">左右位置</label><input id="overlayX" type="range" min="0" max="100" value="50"></div><div class="control"><label for="overlayY" data-i18n="上下位置">上下位置</label><input id="overlayY" type="range" min="0" max="100" value="50"></div></div>
+          <p id="overlayScope" class="hint"></p><button id="applyLayerScope" class="btn secondary full" data-i18n="将此图层应用到选中的格子">将此图层应用到选中的格子</button>
         </div>
         <fieldset class="overflow-edge-settings">
-          <legend>选中格子的溢出留白</legend>
-          <div class="overflow-edge-presets" role="group" aria-label="选择留白方向"><button data-inset-preset="top" aria-pressed="false">仅上方</button><button data-inset-preset="bottom" aria-pressed="false">仅下方</button><button data-inset-preset="left" aria-pressed="false">仅左侧</button><button data-inset-preset="right" aria-pressed="false">仅右侧</button><button data-inset-preset="all" aria-pressed="true">四边</button><button data-inset-preset="none" aria-pressed="false">无留白</button></div>
+          <legend data-i18n="选中格子的溢出留白">选中格子的溢出留白</legend>
+          <div class="overflow-edge-presets" role="group" aria-label="选择留白方向" data-i18n-aria-label="选择留白方向"><button data-inset-preset="top" aria-pressed="false" data-i18n="仅上方">仅上方</button><button data-inset-preset="bottom" aria-pressed="false" data-i18n="仅下方">仅下方</button><button data-inset-preset="left" aria-pressed="false" data-i18n="仅左侧">仅左侧</button><button data-inset-preset="right" aria-pressed="false" data-i18n="仅右侧">仅右侧</button><button data-inset-preset="all" aria-pressed="true" data-i18n="四边">四边</button><button data-inset-preset="none" aria-pressed="false" data-i18n="无留白">无留白</button></div>
           <div class="overflow-edges">
-            <div class="control"><label for="insetTop">上方 <output data-inset-value="top">10%</output></label><input id="insetTop" data-inset-edge="top" type="range" min="0" max="40" value="10" aria-label="上方留白百分比"></div>
-            <div class="control"><label for="insetBottom">下方 <output data-inset-value="bottom">10%</output></label><input id="insetBottom" data-inset-edge="bottom" type="range" min="0" max="40" value="10" aria-label="下方留白百分比"></div>
-            <div class="control"><label for="insetLeft">左侧 <output data-inset-value="left">10%</output></label><input id="insetLeft" data-inset-edge="left" type="range" min="0" max="40" value="10" aria-label="左侧留白百分比"></div>
-            <div class="control"><label for="insetRight">右侧 <output data-inset-value="right">10%</output></label><input id="insetRight" data-inset-edge="right" type="range" min="0" max="40" value="10" aria-label="右侧留白百分比"></div>
+            <div class="control"><label for="insetTop"><span data-i18n="上方">上方</span> <output data-inset-value="top">10%</output></label><input id="insetTop" data-inset-edge="top" type="range" min="0" max="40" value="10" aria-label="上方留白百分比" data-i18n-aria-label="上方留白百分比"></div>
+            <div class="control"><label for="insetBottom"><span data-i18n="下方">下方</span> <output data-inset-value="bottom">10%</output></label><input id="insetBottom" data-inset-edge="bottom" type="range" min="0" max="40" value="10" aria-label="下方留白百分比" data-i18n-aria-label="下方留白百分比"></div>
+            <div class="control"><label for="insetLeft"><span data-i18n="左侧">左侧</span> <output data-inset-value="left">10%</output></label><input id="insetLeft" data-inset-edge="left" type="range" min="0" max="40" value="10" aria-label="左侧留白百分比" data-i18n-aria-label="左侧留白百分比"></div>
+            <div class="control"><label for="insetRight"><span data-i18n="右侧">右侧</span> <output data-inset-value="right">10%</output></label><input id="insetRight" data-inset-edge="right" type="range" min="0" max="40" value="10" aria-label="右侧留白百分比" data-i18n-aria-label="右侧留白百分比"></div>
           </div>
-          <p class="hint">四边分别调整，0% 即不留白。可以只向上溢出，也可组合多个方向。</p>
+          <p class="hint" data-i18n="四边分别调整，0% 即不留白。可以只向上溢出，也可组合多个方向。">四边分别调整，0% 即不留白。可以只向上溢出，也可组合多个方向。</p>
         </fieldset>
-        <p class="hint">真实格子间隙依然保留，图层只显示在覆盖范围内且已开启溢出的格子里。</p>
+        <p class="hint" data-i18n="真实格子间隙依然保留，图层只显示在覆盖范围内且已开启溢出的格子里。">真实格子间隙依然保留，图层只显示在覆盖范围内且已开启溢出的格子里。</p>
       </div>
-      <div class="divider"></div><div class="subhead">选择一格，添加照片 <span id="filledCount" class="count">0 / 9</span></div>
-      <div id="miniGrid" class="mini-grid" aria-label="选择要编辑的格子"></div>
-      <div class="aside-foot"><span class="lock-icon">◇</span><span>照片仅在当前浏览器处理<br><small>离开页面前，请先导出</small></span></div>
+      <div class="divider"></div><div class="subhead"><span data-i18n="选择一格，添加照片">选择一格，添加照片</span> <span id="filledCount" class="count">0 / 9</span></div>
+      <div id="miniGrid" class="mini-grid" aria-label="选择要编辑的格子" data-i18n-aria-label="选择要编辑的格子"></div>
+      <div class="aside-foot"><span class="lock-icon">◇</span><span><span data-i18n="照片仅在当前浏览器处理">照片仅在当前浏览器处理</span><br><small data-i18n="离开页面前，请先导出">离开页面前，请先导出</small></span></div>
     </aside>
-    <section class="stage panel" aria-label="九宫格封面预览">
-      <div class="stage-toolbar"><span><span class="live-dot"></span>封面效果</span><div class="stage-actions"><label class="btn small mobile-only" for="coverInput">上传封面</label><button id="momentsBtn" class="btn small">◉ 朋友圈预览</button></div></div>
-      <div class="stage-area"><div class="canvas-topline"><span>朋友圈里，一眼看见的画面</span><span>3 × 3</span></div><div class="drag-layers" id="dragLayers" hidden><span>拖动</span><button data-drag-layer="cover" aria-pressed="true" class="active">背景</button><button data-drag-layer="overlay" aria-pressed="false" disabled>图层</button><select id="stageLayerSelect" aria-label="当前溢出图层" hidden></select></div><div id="coverGrid" class="cover-grid"></div><div class="canvas-caption"><span class="select-mark"></span><span>单指拖动 · 双指缩放 · 轻点选格</span></div></div>
-      <div class="stage-bottom"><div><strong id="modeLabel">经典九宫格</strong><span>9 个方块 · 1 幅完整画面</span></div><span class="stage-number">09</span></div>
+    <section class="stage panel" aria-label="九宫格封面预览" data-i18n-aria-label="九宫格封面预览">
+      <div class="stage-toolbar"><span><span class="live-dot"></span><span data-i18n="封面效果">封面效果</span></span><div class="stage-actions"><label class="btn small mobile-only" for="coverInput" data-i18n="上传封面">上传封面</label><button id="momentsBtn" class="btn small" data-i18n="◉ 朋友圈预览">◉ 朋友圈预览</button></div></div>
+      <div class="stage-area"><div class="canvas-topline"><span data-i18n="朋友圈里，一眼看见的画面">朋友圈里，一眼看见的画面</span><span>3 × 3</span></div><div class="drag-layers" id="dragLayers" hidden><span data-i18n="拖动">拖动</span><button data-drag-layer="cover" aria-pressed="true" class="active" data-i18n="背景">背景</button><button data-drag-layer="overlay" aria-pressed="false" disabled data-i18n="图层">图层</button><select id="stageLayerSelect" aria-label="当前溢出图层" hidden data-i18n-aria-label="当前溢出图层"></select></div><div id="coverGrid" class="cover-grid"></div><div class="canvas-caption"><span class="select-mark"></span><span data-i18n="单指拖动 · 双指缩放 · 轻点选格">单指拖动 · 双指缩放 · 轻点选格</span></div></div>
+      <div class="stage-bottom"><div><strong id="modeLabel" data-i18n="经典九宫格">经典九宫格</strong><span data-i18n="9 个方块 · 1 幅完整画面">9 个方块 · 1 幅完整画面</span></div><span class="stage-number">09</span></div>
     </section>
-    <section class="story panel" aria-label="长图编辑">
-      <div class="panel-label"><span>格子 <b id="selectedLabel">05</b> <span class="muted">/ 09</span></span><button id="backToGrid" class="text-btn mobile-only">选择其他格</button><span class="orange-tag desktop-only">点开后</span></div>
-      <h2>添加长图内容</h2><p class="hint">添加照片后，点「调整」缩放或拖动取景。</p>
-      <div class="story-scroll"><div class="story-section"><div class="subhead"><span>封面上方</span><span id="topCount" class="meta">0 张</span></div><div id="topList" class="photo-list"></div><label class="add-photos" for="topInput">＋ 添加照片</label><input id="topInput" class="file-input" type="file" accept="image/jpeg,image/png,image/webp" multiple></div>
-      <div class="cover-anchor"><canvas id="selectedCanvas" width="300" height="300"></canvas><div><span class="anchor-icon">▦</span><strong>九宫格封面</strong><small>自动锁定在长图中央</small></div><span class="anchor-lock">锁定</span></div>
-      <div class="story-section"><div class="subhead"><span>封面下方</span><span id="bottomCount" class="meta">0 张</span></div><div id="bottomList" class="photo-list"></div><label class="add-photos" for="bottomInput">＋ 添加照片</label><input id="bottomInput" class="file-input" type="file" accept="image/jpeg,image/png,image/webp" multiple></div>
-      <div class="padding-editor" id="paddingEditor" hidden><div class="subhead">留白填图 <span class="meta">仅影响这一格</span></div><p class="hint">白色尽量留在底部；上方不足时用相邻照片补齐，可自行换图。</p><div id="topFillArea" class="fill-area" hidden><div class="fill-heading"><span>上方补齐区域</span><span id="topFillSize" class="meta"></span></div><div id="topFillContent"></div><label class="add-photos compact" for="topFillInput">＋ 选择另一张照片</label><input id="topFillInput" class="file-input" type="file" accept="image/jpeg,image/png,image/webp"></div><div id="bottomFillArea" class="fill-area" hidden><div class="fill-heading"><span>底部留白区域</span><span id="bottomFillSize" class="meta"></span></div><div id="bottomFillContent"></div><label class="add-photos compact" for="bottomFillInput">＋ 选照片填满这里</label><input id="bottomFillInput" class="file-input" type="file" accept="image/jpeg,image/png,image/webp"></div></div>
-      <div id="balanceHint" class="balance-note">每格最多放 6 张照片，可单独调整取景。</div></div>
-      <div class="story-footer"><div class="story-options"><label for="paperColor">长图底色 <input id="paperColor" type="color" value="#ffffff"></label><button id="demoStory" class="text-btn">填入示例照片</button></div><button id="previewStory" class="btn secondary full">预览这一格的长图 <span>↗</span></button></div>
+    <section class="story panel" aria-label="长图编辑" data-i18n-aria-label="长图编辑">
+      <div class="panel-label"><span><span data-i18n="格子">格子</span> <b id="selectedLabel">05</b> <span class="muted">/ 09</span></span><button id="backToGrid" class="text-btn mobile-only" data-i18n="选择其他格">选择其他格</button><span class="orange-tag desktop-only" data-i18n="点开后">点开后</span></div>
+      <h2 data-i18n="添加长图内容">添加长图内容</h2><p class="hint" data-i18n="添加照片后，点「调整」缩放或拖动取景。">添加照片后，点「调整」缩放或拖动取景。</p>
+      <div class="story-scroll"><div class="story-section"><div class="subhead"><span data-i18n="封面上方">封面上方</span><span id="topCount" class="meta" data-i18n="0 张">0 张</span></div><div id="topList" class="photo-list"></div><label class="add-photos" for="topInput" data-i18n="＋ 添加照片">＋ 添加照片</label><input id="topInput" class="file-input" type="file" accept="image/jpeg,image/png,image/webp" multiple></div>
+      <div class="cover-anchor"><canvas id="selectedCanvas" width="300" height="300"></canvas><div><span class="anchor-icon">▦</span><strong data-i18n="九宫格封面">九宫格封面</strong><small data-i18n="自动锁定在长图中央">自动锁定在长图中央</small></div><span class="anchor-lock" data-i18n="锁定">锁定</span></div>
+      <div class="story-section"><div class="subhead"><span data-i18n="封面下方">封面下方</span><span id="bottomCount" class="meta" data-i18n="0 张">0 张</span></div><div id="bottomList" class="photo-list"></div><label class="add-photos" for="bottomInput" data-i18n="＋ 添加照片">＋ 添加照片</label><input id="bottomInput" class="file-input" type="file" accept="image/jpeg,image/png,image/webp" multiple></div>
+      <div class="padding-editor" id="paddingEditor" hidden><div class="subhead"><span data-i18n="留白填图">留白填图</span> <span class="meta" data-i18n="仅影响这一格">仅影响这一格</span></div><p class="hint" data-i18n="白色尽量留在底部；上方不足时用相邻照片补齐，可自行换图。">白色尽量留在底部；上方不足时用相邻照片补齐，可自行换图。</p><div id="topFillArea" class="fill-area" hidden><div class="fill-heading"><span data-i18n="上方补齐区域">上方补齐区域</span><span id="topFillSize" class="meta"></span></div><div id="topFillContent"></div><label class="add-photos compact" for="topFillInput" data-i18n="＋ 选择另一张照片">＋ 选择另一张照片</label><input id="topFillInput" class="file-input" type="file" accept="image/jpeg,image/png,image/webp"></div><div id="bottomFillArea" class="fill-area" hidden><div class="fill-heading"><span data-i18n="底部留白区域">底部留白区域</span><span id="bottomFillSize" class="meta"></span></div><div id="bottomFillContent"></div><label class="add-photos compact" for="bottomFillInput" data-i18n="＋ 选照片填满这里">＋ 选照片填满这里</label><input id="bottomFillInput" class="file-input" type="file" accept="image/jpeg,image/png,image/webp"></div></div>
+      <div id="balanceHint" class="balance-note" data-i18n="每格最多放 6 张照片，可单独调整取景。">每格最多放 6 张照片，可单独调整取景。</div></div>
+      <div class="story-footer"><div class="story-options"><label for="paperColor"><span data-i18n="长图底色">长图底色</span> <input id="paperColor" type="color" value="#ffffff"></label><button id="demoStory" class="text-btn" data-i18n="填入示例照片">填入示例照片</button></div><button id="previewStory" class="btn secondary full"><span data-i18n="预览这一格的长图">预览这一格的长图</span> <span>↗</span></button></div>
     </section>
   </div>
-  <div class="bottom-note"><span><b>小贴士</b> 封面 A 是长图的一部分，点开会看到 A 与其他照片；微信不能由此切换为完全独立的 B 图。</span><button id="compatBtn" class="text-btn">了解微信显示方式</button></div>
+  <div class="bottom-note"><span><b data-i18n="小贴士">小贴士</b> <span data-i18n="封面 A 是长图的一部分，点开会看到 A 与其他照片；微信不能由此切换为完全独立的 B 图。">封面 A 是长图的一部分，点开会看到 A 与其他照片；微信不能由此切换为完全独立的 B 图。</span></span><button id="compatBtn" class="text-btn" data-i18n="了解微信显示方式">了解微信显示方式</button></div>
 </main>
-<dialog id="modal"><div class="modal-header"><h2 id="modalTitle"></h2><button id="closeModal" class="icon-btn" aria-label="关闭">×</button></div><div id="modalBody"></div></dialog>
+<dialog id="modal"><div class="modal-header"><h2 id="modalTitle"></h2><button id="closeModal" class="icon-btn" aria-label="关闭" data-i18n-aria-label="关闭">×</button></div><div id="modalBody"></div></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

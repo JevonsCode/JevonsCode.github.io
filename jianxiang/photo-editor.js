@@ -14,7 +14,7 @@ function renderPaddingControls(cell, geometry) {
     area.hidden = !show;
     visible ||= show;
     content.replaceChildren();
-    $('#'+side+'FillSize').textContent = region.h ? `高 ${region.h} px` : '当前无需填补';
+    $('#'+side+'FillSize').textContent = region.h ? t('高 {height} px', {height: region.h}) : t('当前无需填补');
     if (fill) {
       const row = document.createElement('div');
       row.className = 'fill-photo';
@@ -24,22 +24,22 @@ function renderPaddingControls(cell, geometry) {
       const label = document.createElement('span');
       label.className = 'fill-photo-label';
       const title = document.createElement('strong');
-      title.textContent = fill.automatic ? '自动使用相邻照片' : fill.photo.name;
+      title.textContent = fill.automatic ? t('自动使用相邻照片') : displayPhotoName(fill.photo);
       const caption = document.createElement('small');
-      caption.textContent = fill.automatic ? '可换成另一张，单独调整取景' : '只填补空缺，不改变长图高度';
+      caption.textContent = fill.automatic ? t('可换成另一张，单独调整取景') : t('只填补空缺，不改变长图高度');
       label.append(title, caption);
       const edit = document.createElement('button');
       edit.className = 'photo-adjust';
-      edit.textContent = '调整';
+      edit.textContent = t('调整');
       edit.disabled = region.h <= 0;
-      edit.setAttribute('aria-label', `调整${side === 'top' ? '上方' : '底部'}填充图片`);
+      edit.setAttribute('aria-label', side === 'top' ? t('调整上方填充图片') : t('调整底部填充图片'));
       edit.onclick = () => openPhotoEditor(state.selected, side, null, true);
       row.append(img, label, edit);
       content.append(row);
       if (!fill.automatic) {
         const clear = document.createElement('button');
         clear.className = 'text-btn fill-clear';
-        clear.textContent = side === 'top' ? '恢复使用相邻照片' : '恢复底部留白';
+        clear.textContent = side === 'top' ? t('恢复使用相邻照片') : t('恢复底部留白');
         clear.onclick = () => {
           if (cell.fill[side].src) URL.revokeObjectURL(cell.fill[side].src);
           cell.fill[side] = null;
@@ -52,7 +52,7 @@ function renderPaddingControls(cell, geometry) {
     } else {
       const note = document.createElement('p');
       note.className = 'fill-empty';
-      note.textContent = '保留底色，或选一张照片填满。';
+      note.textContent = t('保留底色，或选一张照片填满。');
       content.append(note);
     }
   }
@@ -74,7 +74,7 @@ function bindPaddingInputs() {
         cell.fillEdits[side] = null;
         state.dirty = true;
         renderStory();
-        toast('已添加填充图片，可点「调整」修改取景。');
+        toast(t('已添加填充图片，可点「调整」修改取景。'));
       } catch (error) {
         toast(error.message);
       } finally {
@@ -86,7 +86,7 @@ function bindPaddingInputs() {
 }
 
 async function openPhotoEditor(cellIndex, side, photoIndex, isFill = false) {
-  if (state.importing) { toast('照片读取中，请稍等。'); return; }
+  if (state.importing) { toast(t('照片读取中，请稍等。')); return; }
   const request = ++cropEditorRequest;
   const cell = state.cells[cellIndex];
   const fill = isFill ? paddingPhoto(cell, side) : null;
@@ -100,18 +100,18 @@ async function openPhotoEditor(cellIndex, side, photoIndex, isFill = false) {
   const wrap = document.createElement('div');
   wrap.className = 'modal-content crop-editor';
   wrap.innerHTML = `
-    <p class="preview-caption">单指拖动，双指缩放。画框外会裁掉，只修改当前这张图片。</p>
-    <div class="crop-stage"><canvas id="cropCanvas" tabindex="0" aria-label="照片取景框，可拖动图片或使用方向键调整位置"></canvas></div>
-    <div class="crop-meta"><span>画框内即最终效果</span><span id="cropFrameSize"></span></div>
-    <div class="control"><label for="photoZoom">图片缩放 <output id="photoZoomValue"></output></label><input id="photoZoom" type="range" min="100" max="400" value="100"></div>
-    <div class="position-controls"><div class="control"><label for="photoX">左右位置</label><input id="photoX" type="range" min="-100" max="100" value="0"></div><div class="control"><label for="photoY">上下位置</label><input id="photoY" type="range" min="-100" max="100" value="0"></div></div>
+    <p class="preview-caption">${t('单指拖动，双指缩放。画框外会裁掉，只修改当前这张图片。')}</p>
+    <div class="crop-stage"><canvas id="cropCanvas" tabindex="0" aria-label="${t('照片取景框，可拖动图片或使用方向键调整位置')}"></canvas></div>
+    <div class="crop-meta"><span>${t('画框内即最终效果')}</span><span id="cropFrameSize"></span></div>
+    <div class="control"><label for="photoZoom">${t('图片缩放')} <output id="photoZoomValue"></output></label><input id="photoZoom" type="range" min="100" max="400" value="100"></div>
+    <div class="position-controls"><div class="control"><label for="photoX">${t('左右位置')}</label><input id="photoX" type="range" min="-100" max="100" value="0"></div><div class="control"><label for="photoY">${t('上下位置')}</label><input id="photoY" type="range" min="-100" max="100" value="0"></div></div>
     <div class="crop-frame-control" ${isFill ? 'hidden' : ''}>
-      <label for="photoFrame">画框比例</label><select id="photoFrame"><option value="original">原图比例</option><option value="1">方形 1:1</option><option value="0.75">横向 4:3</option><option value="1.3333333333333333">竖向 3:4</option><option value="0.5625">横向 16:9</option><option value="custom">自定义高度</option></select>
+      <label for="photoFrame">${t('画框比例')}</label><select id="photoFrame"><option value="original">${t('原图比例')}</option><option value="1">${t('方形 1:1')}</option><option value="0.75">${t('横向 4:3')}</option><option value="1.3333333333333333">${t('竖向 3:4')}</option><option value="0.5625">${t('横向 16:9')}</option><option value="custom">${t('自定义高度')}</option></select>
     </div>
-    <div id="photoHeightControl" class="control" hidden><label for="photoHeight">画框高度 <output id="photoHeightValue"></output></label><input id="photoHeight" type="range" min="25" max="300" value="100"></div>
+    <div id="photoHeightControl" class="control" hidden><label for="photoHeight">${t('画框高度')} <output id="photoHeightValue"></output></label><input id="photoHeight" type="range" min="25" max="300" value="100"></div>
     <p class="crop-detail" id="cropDetail"></p>
-    <div class="modal-actions crop-actions"><button id="resetPhotoCrop" class="text-btn">重置这张图片</button><div><button id="cancelPhotoCrop" class="btn secondary">取消</button><button id="applyPhotoCrop" class="btn primary">应用调整</button></div></div>`;
-  showModal(isFill ? '调整填充图片' : '调整这张照片', wrap);
+    <div class="modal-actions crop-actions"><button id="resetPhotoCrop" class="text-btn">${t('重置这张图片')}</button><div><button id="cancelPhotoCrop" class="btn secondary">${t('取消')}</button><button id="applyPhotoCrop" class="btn primary">${t('应用调整')}</button></div></div>`;
+  showModal(isFill ? t('调整填充图片') : t('调整这张照片'), wrap);
   const preview = $('#cropCanvas');
   const zoom = $('#photoZoom'), px = $('#photoX'), py = $('#photoY');
   const frameSelect = $('#photoFrame'), height = $('#photoHeight');
@@ -135,9 +135,9 @@ async function openPhotoEditor(cellIndex, side, photoIndex, isFill = false) {
     context.fillRect(0, 0, preview.width, preview.height);
     drawCrop(context, img, 0, 0, preview.width, preview.height, draft.zoom, draft.x, draft.y);
     $('#photoZoomValue').textContent = Math.round(draft.zoom * 100) + '%';
-    $('#photoHeightValue').textContent = height.value + '% 图宽';
+    $('#photoHeightValue').textContent = t('{percent}% 图宽', {percent: height.value});
     $('#cropFrameSize').textContent = `720 × ${frameHeight} px`;
-    $('#cropDetail').textContent = isFill ? '填充区域的大小固定，调整取景不会挤动封面。' : geometry[side].scale < 1 ? '这一侧照片较长，画框已按比例压缩；上方预览显示实际裁切范围。' : '改变画框比例会改变这张照片的高度，封面仍保持居中。';
+    $('#cropDetail').textContent = isFill ? t('填充区域的大小固定，调整取景不会挤动封面。') : geometry[side].scale < 1 ? t('这一侧照片较长，画框已按比例压缩；上方预览显示实际裁切范围。') : t('改变画框比例会改变这张照片的高度，封面仍保持居中。');
   }
   zoom.oninput = () => { draft.zoom = Number(zoom.value) / 100; paint(); };
   px.oninput = () => { draft.x = Number(px.value) / 100; paint(); };
@@ -170,7 +170,7 @@ async function openPhotoEditor(cellIndex, side, photoIndex, isFill = false) {
     state.dirty = true;
     renderStory();
     $('#modal').close();
-    toast('已应用这张图片的调整。');
+    toast(t('已应用这张图片的调整。'));
   };
   syncControls(); paint();
 }
