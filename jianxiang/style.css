@@ -52,6 +52,7 @@ dialog.long-editor-modal{width:min(960px,100vw);height:96dvh;max-height:96dvh;ov
 .long-end{gap:12px;flex-wrap:wrap}
 @media(max-width:620px){
   .topbar{height:auto;display:grid;grid-template-columns:minmax(0,1fr) auto auto;padding:10px 14px;gap:8px}
+  .story,.stage{scroll-margin-top:130px}
   .topbar .brand{min-width:0;gap:7px}
   .topbar .brand strong{font-size:17px;letter-spacing:0}
   .topbar .brand-mark{width:23px;height:23px;flex-shrink:0}
