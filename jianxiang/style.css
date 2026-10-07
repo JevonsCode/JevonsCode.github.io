@@ -84,3 +84,26 @@ dialog.long-editor-modal{width:min(960px,100vw);height:96dvh;max-height:96dvh;ov
   .language-control svg{display:none}
   .header-actions #shareBtn{padding-inline:6px}
 }
+/* A compact install/offline strip avoids crowding the editing toolbar. */
+.app-statusbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:-4px 0 18px;min-height:38px;font-size:12px;color:#747785}
+#pwaStatus{display:flex;align-items:center;gap:7px;min-width:0;line-height:1.5}
+#pwaStatus i{width:6px;height:6px;border-radius:50%;background:#a8aab4;flex-shrink:0}
+#pwaStatus[data-state=ready] i,#pwaStatus[data-state=offline] i{background:#43896c}
+#pwaStatus[data-state=error] i{background:#af803e}
+.app-status-actions{display:flex;align-items:center;justify-content:flex-end;gap:14px;flex-shrink:0}
+.install-app-btn{min-height:38px;background:#fff;font-size:12px;border:1px solid var(--line)}
+#pwaUpdateBtn{color:#595bc3;font-size:12px}
+.pwa-install-dialog>button{margin-bottom:12px}
+.pwa-install-dialog .hint{margin-top:18px}
+.count,.meta{white-space:nowrap;flex-shrink:0}
+@media(max-width:620px){
+  .app-statusbar{gap:8px;margin:0 0 14px;align-items:center}
+  .app-status-actions{gap:8px;flex-shrink:1}
+  .install-app-btn{min-height:42px;white-space:nowrap;padding:8px 10px}
+  #pwaUpdateBtn{max-width:105px;min-height:42px;line-height:1.4}
+  .topbar{padding-top:max(10px,env(safe-area-inset-top));padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
+  main{padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+  .long-editor-modal .modal-header{height:auto;min-height:56px;padding-top:calc(10px + env(safe-area-inset-top))}
+  .long-editor-toolbar{top:calc(56px + env(safe-area-inset-top))}
+  .story,.stage{scroll-margin-top:calc(130px + env(safe-area-inset-top))}
+}

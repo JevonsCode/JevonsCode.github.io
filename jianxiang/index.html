@@ -1,11 +1,18 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title data-i18n="间象 — 图像与留白">间象 — 图像与留白</title>
   <meta name="description" content="间象，一个关于图像与留白的创作空间。制作九宫格、长图与溢出拼贴，自由组合人物、文字和照片。" data-i18n-content="间象，一个关于图像与留白的创作空间。制作九宫格、长图与溢出拼贴，自由组合人物、文字和照片。">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="间象" data-i18n-content="间象">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e85f35'/%3E%3Cpath d='M11 6v20M21 6v20M6 11h20M6 21h20' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css"><script src="i18n.js" defer></script><script src="i18n-ui.js" defer></script><script src="i18n-app.js" defer></script><script src="i18n-editors.js" defer></script><script src="i18n-overflow.js" defer></script><script src="i18n-help.js" defer></script><script src="help.js" defer></script><script src="share.js" defer></script><script src="gestures.js" defer></script><script src="photo-editor.js" defer></script><script src="overflow-editor.js" defer></script><script src="long-editor.js" defer></script><script src="app.js" defer></script>
+  <link rel="stylesheet" href="style.css"><script src="i18n.js" defer></script><script src="i18n-ui.js" defer></script><script src="i18n-app.js" defer></script><script src="i18n-editors.js" defer></script><script src="i18n-overflow.js" defer></script><script src="i18n-help.js" defer></script><script src="i18n-pwa.js" defer></script><script src="help.js" defer></script><script src="share.js" defer></script><script src="gestures.js" defer></script><script src="photo-editor.js" defer></script><script src="overflow-editor.js" defer></script><script src="long-editor.js" defer></script><script src="app.js" defer></script><script src="pwa.js" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -19,6 +26,10 @@
 </header>
 <main>
   <div class="workspace-heading"><div><h1 data-i18n="图像工作室">图像工作室</h1></div><div class="workflow"><span class="active"><b>1</b> <span data-i18n="设计封面">设计封面</span></span><i></i><span><b>2</b> <span data-i18n="添加照片">添加照片</span></span><i></i><span><b>3</b> <span data-i18n="导出分享">导出分享</span></span></div></div>
+  <div class="app-statusbar" aria-label="安装与离线状态" data-i18n-aria-label="安装与离线状态">
+    <div id="pwaStatus" role="status" aria-live="polite" data-state="pending"><i aria-hidden="true"></i><span id="pwaStatusText">正在准备离线使用…</span></div>
+    <div class="app-status-actions"><button id="pwaUpdateBtn" class="text-btn" hidden>有新版本</button><button id="installAppBtn" class="btn small install-app-btn">安装应用</button></div>
+  </div>
   <div class="editor">
     <aside class="settings panel">
       <div class="panel-label"><span data-i18n="封面">封面</span></div>
