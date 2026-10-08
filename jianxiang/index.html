@@ -4,7 +4,7 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title data-i18n="间象 — 图像与留白">间象 — 图像与留白</title>
   <meta name="description" content="间象，一个关于图像与留白的创作空间。制作九宫格、长图与溢出拼贴，自由组合人物、文字和照片。" data-i18n-content="间象，一个关于图像与留白的创作空间。制作九宫格、长图与溢出拼贴，自由组合人物、文字和照片。">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#ffffff"><meta name="app-release" content="2026-10-08.2">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -12,7 +12,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e85f35'/%3E%3Cpath d='M11 6v20M21 6v20M6 11h20M6 21h20' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css"><script src="i18n.js" defer></script><script src="i18n-ui.js" defer></script><script src="i18n-app.js" defer></script><script src="i18n-editors.js" defer></script><script src="i18n-overflow.js" defer></script><script src="i18n-help.js" defer></script><script src="i18n-pwa.js" defer></script><script src="i18n-story-updates.js" defer></script><script src="i18n-workspace.js" defer></script><script src="help.js" defer></script><script src="share.js" defer></script><script src="gestures.js" defer></script><script src="photo-editor.js" defer></script><script src="overflow-editor.js" defer></script><script src="project-history.js" defer></script><script src="project-storage.js" defer></script><script src="story-drag.js" defer></script><script src="workspace-ui.js" defer></script><script src="long-editor.js" defer></script><script src="app.js" defer></script><script src="pwa.js" defer></script>
+  <link rel="stylesheet" href="style.css"><script src="i18n.js" defer></script><script src="i18n-ui.js" defer></script><script src="i18n-app.js" defer></script><script src="i18n-editors.js" defer></script><script src="i18n-overflow.js" defer></script><script src="i18n-help.js" defer></script><script src="i18n-pwa.js" defer></script><script src="i18n-story-updates.js" defer></script><script src="i18n-workspace.js" defer></script><script src="i18n-projects.js" defer></script><script src="i18n-feedback.js" defer></script><script src="help.js" defer></script><script src="share.js" defer></script><script src="gestures.js" defer></script><script src="photo-editor.js" defer></script><script src="overflow-editor.js" defer></script><script src="project-history.js" defer></script><script src="project-storage.js" defer></script><script src="story-drag.js" defer></script><script src="workspace-ui.js" defer></script><script src="saved-projects.js" defer></script><script src="bug-report.js" defer></script><script src="long-editor.js" defer></script><script src="app.js" defer></script><script src="pwa.js" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -31,6 +31,7 @@
     <div id="pwaStatus" role="status" aria-live="polite" data-state="pending"><i aria-hidden="true"></i><span id="pwaStatusText">正在准备离线使用…</span></div>
     <div class="app-status-actions"><button id="pwaUpdateBtn" class="text-btn" hidden>有新版本</button><button id="installAppBtn" class="btn small install-app-btn">安装应用</button></div>
   </div>
+  <div class="project-filebar"><div class="project-heading"><span class="project-symbol" aria-hidden="true">◩</span><strong id="projectName" data-i18n="未命名作品">未命名作品</strong></div><div class="project-file-actions"><button id="saveProjectBtn" class="btn small save-project-btn" data-i18n="保存">保存</button><button id="saveProjectAsBtn" class="btn small" data-i18n="另存为">另存为</button><button id="openProjectsBtn" class="btn small" data-i18n="本机作品">本机作品</button><button id="bugReportBtn" class="text-btn" data-i18n="问题反馈">问题反馈</button></div></div>
   <div class="project-toolbar"><div class="history-actions"><button id="undoBtn" class="btn small" aria-label="撤销" data-i18n-aria-label="撤销" title="撤销" data-i18n-title="撤销"><span aria-hidden="true">↶</span><span data-i18n="撤销">撤销</span></button><button id="redoBtn" class="btn small" aria-label="重做" data-i18n-aria-label="重做" title="重做" data-i18n-title="重做"><span aria-hidden="true">↷</span><span class="desktop-only" data-i18n="重做">重做</span></button><button id="historyBtn" class="text-btn"><span data-i18n="步骤记录">步骤记录</span> <span id="historyCount"></span></button></div><span id="draftStatus" role="status" aria-live="polite">正在恢复作品…</span></div>
   <div class="editor">
     <aside class="settings panel">
@@ -59,7 +60,7 @@
           <div class="subhead"><span data-i18n="正在调整">正在调整</span> <span id="activeOverlayName"></span></div><p id="overlayEditHint" class="hint"></p>
           <div class="control"><label for="overlayScale"><span data-i18n="图层大小">图层大小</span> <output id="overlayScaleValue">100%</output></label><input id="overlayScale" type="range" min="5" max="200" value="100"></div>
           <div class="position-controls"><div class="control"><label for="overlayX" data-i18n="左右位置">左右位置</label><input id="overlayX" type="range" min="0" max="100" value="50"></div><div class="control"><label for="overlayY" data-i18n="上下位置">上下位置</label><input id="overlayY" type="range" min="0" max="100" value="50"></div></div>
-          <p id="overlayScope" class="hint"></p><button id="applyLayerScope" class="btn secondary full" data-i18n="将此图层应用到选中的格子">将此图层应用到选中的格子</button>
+          <p id="overlayHealthStatus" class="hint" role="status" hidden></p><div class="overlay-recovery-actions"><button id="resetOverlayPosition" class="btn secondary small" data-i18n="恢复图层位置">恢复图层位置</button><button id="reloadOverlayImage" class="btn secondary small" data-i18n="重新读取图片">重新读取图片</button></div><p id="overlayScope" class="hint"></p><button id="applyLayerScope" class="btn secondary full" data-i18n="将此图层应用到选中的格子">将此图层应用到选中的格子</button>
         </div>
         <fieldset class="overflow-edge-settings">
           <legend data-i18n="选中格子的溢出留白">选中格子的溢出留白</legend>

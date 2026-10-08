@@ -13,8 +13,126 @@ function selectedLayerTransforms(layer=activeOverflowLayer()){
 }
 function activeOverflowFigure(){
   const layer=activeOverflowLayer(),transform=selectedLayerTransforms(layer)[0];
-  return layer?.visible&&layer.image&&transform?{image:layer.image,...transform}:null;
+  return layer?.visible&&overflowImageReady(layer.image)&&transform?{image:layer.image,...transform}:null;
 }
+// Bounds and read errors are runtime metadata, never part of a user's artwork.
+const overflowBoundsCache=new WeakMap(),overflowReadErrors=new WeakMap(),overflowReloads=new WeakMap();
+function overflowImageReady(image){return !!(image&&image.width>0&&image.height>0&&(!(image instanceof HTMLImageElement)||(image.complete&&image.naturalWidth>0&&image.naturalHeight>0)));}
+function overflowContentBounds(image){
+  if(!overflowImageReady(image))return null;
+  if(overflowBoundsCache.has(image))return overflowBoundsCache.get(image);
+  const scale=Math.min(1,256/Math.max(image.width,image.height)),probe=canvas(Math.max(1,Math.round(image.width*scale)),Math.max(1,Math.round(image.height*scale))),ctx=probe.getContext('2d',{willReadFrequently:true});
+  try{
+    ctx.drawImage(image,0,0,probe.width,probe.height);
+    const pixels=ctx.getImageData(0,0,probe.width,probe.height).data;let left=probe.width,top=probe.height,right=-1,bottom=-1;
+    for(let y=0;y<probe.height;y++)for(let x=0;x<probe.width;x++)if(pixels[(y*probe.width+x)*4+3]>=8){left=Math.min(left,x);top=Math.min(top,y);right=Math.max(right,x);bottom=Math.max(bottom,y);}
+    const bounds=right<left?{x:0,y:0,w:0,h:0}:{x:left/probe.width,y:top/probe.height,w:(right-left+1)/probe.width,h:(bottom-top+1)/probe.height};
+    overflowBoundsCache.set(image,bounds);return bounds;
+  }catch{return null;}finally{probe.width=probe.height=1;}
+}
+function overflowEffectiveBounds(image,transform,geometry,bounds=overflowContentBounds(image)){
+  if(!bounds||!transform||![transform.x,transform.y,transform.scale].every(Number.isFinite)||transform.scale<=0)return null;
+  const width=geometry.size*transform.scale,height=width*image.height/image.width;
+  return {x:transform.x*geometry.size+(bounds.x-.5)*width,y:transform.y*geometry.size+(bounds.y-.5)*height,w:bounds.w*width,h:bounds.h*height};
+}
+function overflowBoundsIntersectTile(bounds,index,geometry){
+  if(!bounds||bounds.w<=0||bounds.h<=0)return false;
+  const x=index%3*(geometry.tile+geometry.gap),y=Math.floor(index/3)*(geometry.tile+geometry.gap);
+  return bounds.x<x+geometry.tile&&bounds.y<y+geometry.tile&&bounds.x+bounds.w>x&&bounds.y+bounds.h>y;
+}
+function overflowLayerCondition(layer,geometry=gridGeometry()){
+  if(!layer.visible)return 'hidden';
+  if(layer.loading||overflowReloads.has(layer))return 'loading';
+  if(!overflowImageReady(layer.image)||overflowReadErrors.has(layer))return 'unavailable';
+  const bounds=overflowContentBounds(layer.image);
+  if(bounds&&(!bounds.w||!bounds.h))return 'empty';
+  const enabled=layer.cells.flatMap((transform,index)=>transform&&state.overflowCells[index].enabled?[index]:[]);
+  if(!enabled.length)return 'disabled';
+  if(bounds&&!enabled.some(index=>overflowBoundsIntersectTile(overflowEffectiveBounds(layer.image,layer.cells[index],geometry,bounds),index,geometry)))return 'outside';
+  return 'ready';
+}
+// Diagnostic data deliberately excludes image pixels, names, sources and URLs.
+function overflowLayerDiagnostics(){
+  const geometry=gridGeometry(),round=value=>Number.isFinite(value)?Math.round(value*10000)/10000:null;
+  return state.overlayLayers.map((layer,index)=>{
+    const image=layer.image,bounds=overflowContentBounds(image);
+    return {index,kind:layer.kind,active:layer.id===state.activeOverlayId,visible:!!layer.visible,loading:!!layer.loading,condition:overflowLayerCondition(layer,geometry),image:{present:!!image,ready:overflowImageReady(image),width:image?.width||0,height:image?.height||0,complete:image instanceof HTMLImageElement?image.complete:null,hasRecoverableBlob:!!(image&&typeof assetBlobs!=='undefined'&&assetBlobs.has(image))},contentBounds:bounds,cells:layer.cells.map((transform,tile)=>{
+      if(!transform)return null;
+      const effective=overflowEffectiveBounds(image,transform,geometry,bounds);
+      return {tile:tile+1,enabled:!!state.overflowCells[tile].enabled,x:round(transform.x),y:round(transform.y),scale:round(transform.scale),effectiveBounds:effective?Object.fromEntries(Object.entries(effective).map(([key,value])=>[key,round(value/geometry.size)])):null,intersectsTile:overflowBoundsIntersectTile(effective,tile,geometry)};
+    })};
+  });
+}
+function defaultOverflowSource(layer){
+  if(layer.kind!=='default')return null;
+  if(layer.nameKey==='呐喊人物 · 默认'||layer.name==='呐喊人物 · 默认')return 'assets/overflow-person.png';
+  if(layer.nameKey==='DEATH SCREAMING · 默认文字'||layer.name==='DEATH SCREAMING · 默认文字')return 'assets/overflow-title.png';
+  return null;
+}
+function overflowReadWithTimeout(promise,milliseconds=8000){
+  let timer;
+  return Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('image-read-timeout')),milliseconds);})]).finally(()=>clearTimeout(timer));
+}
+async function reloadOverflowLayerImage(layer,{force=false}={}){
+  if(!state.overlayLayers.includes(layer)||layer.loading)return false;
+  if(overflowReloads.has(layer))return overflowReloads.get(layer);
+  const currentImage=layer.image;
+  if(!force&&overflowImageReady(currentImage)&&!overflowReadErrors.has(layer))return true;
+  const task=(async()=>{
+    try{
+      // decode() restores discarded decoded resources without changing positions
+      // or replacing immutable asset identities used by undo and local drafts.
+      if(overflowImageReady(currentImage)&&currentImage instanceof HTMLImageElement&&!overflowReadErrors.has(layer)){
+        try{await overflowReadWithTimeout(currentImage.decode(),3000);if(state.overlayLayers.includes(layer)&&layer.image===currentImage){overflowReadErrors.delete(layer);return true;}}catch{}
+      }
+      const blob=currentImage&&typeof assetBlobs!=='undefined'?assetBlobs.get(currentImage):null;
+      const source=blob?URL.createObjectURL(blob):currentImage?.currentSrc||currentImage?.src||defaultOverflowSource(layer);
+      if(!source)throw new Error('missing-source');
+      let image,usedBlob=blob;
+      try{image=await overflowReadWithTimeout(loadImage(source));}
+      catch(error){const fallback=defaultOverflowSource(layer);if(!fallback||source===fallback)throw error;image=await overflowReadWithTimeout(loadImage(fallback));usedBlob=null;}
+      if(!state.overlayLayers.includes(layer)||layer.image!==currentImage)return false;
+      if(usedBlob&&typeof assetBlobs!=='undefined')assetBlobs.set(image,usedBlob);
+      layer.image=image;overflowReadErrors.delete(layer);return true;
+    }catch{if(state.overlayLayers.includes(layer))overflowReadErrors.set(layer,true);return false;}
+  })();
+  overflowReloads.set(layer,task);
+  try{return await task;}finally{overflowReloads.delete(layer);}
+}
+async function recoverOverflowImages(options={}){
+  const layers=[...state.overlayLayers].filter(layer=>!layer.loading);
+  const results=await Promise.all(layers.map(layer=>reloadOverflowLayerImage(layer,options)));
+  syncOverflowControls();
+  return {checked:layers.length,recovered:results.filter(Boolean).length,failed:results.filter(value=>!value).length};
+}
+async function retryCurrentOverflowImage(){
+  if(isEditorLocked())return;
+  const layer=activeOverflowLayer();if(!layer)return;
+  importStatus(1);
+  try{const success=await reloadOverflowLayerImage(layer,{force:true});if(state.overlayLayers.includes(layer))toast(t(success?'图层图片已重新读取，位置保持不变。':'图层图片无法读取，请重新添加该图片。'));}
+  finally{importStatus(-1);syncOverflowControls();requestRender();historyCheckpoint('重新读取溢出图层');}
+}
+function resetCurrentOverflowPosition(){
+  if(isEditorLocked())return;
+  const layer=activeOverflowLayer();if(!layer||!overflowImageReady(layer.image))return;
+  const indexes=layer.cells.flatMap((transform,index)=>transform?[index]:[]);if(!indexes.length)return;
+  const geometry=gridGeometry(),bounds=overflowContentBounds(layer.image),pitch=geometry.tile+geometry.gap;
+  if(!bounds||bounds.w<=0||bounds.h<=0){toast(t('这个图层没有可见内容，请重新添加图片。'));return;}
+  let transform={x:.5,y:.5,scale:1};
+  const enabled=indexes.filter(index=>state.overflowCells[index].enabled),scope=enabled.length?enabled:indexes;
+  if(layer.kind!=='default'||!scope.some(index=>overflowBoundsIntersectTile(overflowEffectiveBounds(layer.image,transform,geometry,bounds),index,geometry))){
+    const left=Math.min(...scope.map(index=>index%3*pitch)),top=Math.min(...scope.map(index=>Math.floor(index/3)*pitch)),right=Math.max(...scope.map(index=>index%3*pitch))+geometry.tile,bottom=Math.max(...scope.map(index=>Math.floor(index/3)*pitch))+geometry.tile;
+    const fit=(x,y,w,h)=>{
+      const scale=clampCrop(Math.min(w/(bounds.w*geometry.size),h/(bounds.h*geometry.size*layer.image.height/layer.image.width))*.85,.05,2),width=geometry.size*scale,height=width*layer.image.height/layer.image.width;
+      return {scale,x:clampCrop((x+w/2-(bounds.x+bounds.w/2-.5)*width)/geometry.size,0,1),y:clampCrop((y+h/2-(bounds.y+bounds.h/2-.5)*height)/geometry.size,0,1)};
+    };
+    transform=fit(left,top,right-left,bottom-top);
+    if(!scope.some(index=>overflowBoundsIntersectTile(overflowEffectiveBounds(layer.image,transform,geometry,bounds),index,geometry)))transform=fit(scope[0]%3*pitch,Math.floor(scope[0]/3)*pitch,geometry.tile,geometry.tile);
+  }
+  for(const index of indexes)layer.cells[index]={...transform};
+  syncOverflowControls();requestRender();historyCheckpoint('恢复图层位置');toast(t('已恢复当前图层的位置，显示状态和覆盖格子保持不变。'));
+}
+
 function imageThumbnail(image,size=144,transparent=false){
   let sx=0,sy=0,sw=image.width,sh=image.height;
   if(transparent){
@@ -84,7 +202,7 @@ function renderOverflowLayers(){
     const select=document.createElement('button');select.className='overlay-select';select.setAttribute('aria-pressed',String(layer.id===state.activeOverlayId));select.setAttribute('aria-label',t('选择图层 {name}',{name:displayName}));
     const preview=document.createElement('span');preview.className='overlay-thumb';
     if(layer.thumb){const img=document.createElement('img');img.src=layer.thumb;img.alt=displayName;preview.append(img);}else preview.textContent='…';
-    const copy=document.createElement('span');copy.className='overlay-copy';const name=document.createElement('strong');name.textContent=displayName;name.title=displayName;const detail=document.createElement('small');const indexes=layer.cells.flatMap((c,i)=>c?[i+1]:[]);detail.textContent=layer.loading?t('正在读取…'):!layer.visible?t('已隐藏'):t('第 {cells} 格',{cells:overflowCellList(indexes)});
+    const copy=document.createElement('span');copy.className='overlay-copy';const name=document.createElement('strong');name.textContent=displayName;name.title=displayName;const detail=document.createElement('small');const indexes=layer.cells.flatMap((c,i)=>c?[i+1]:[]),condition=overflowLayerCondition(layer);detail.textContent=condition==='loading'?t('正在读取…'):condition==='hidden'?t('已隐藏'):condition==='unavailable'?t('图片读取失败'):condition==='empty'?t('没有可见内容'):condition==='outside'?t('位于画布外'):t('第 {cells} 格',{cells:overflowCellList(indexes)});
     copy.append(name,detail);select.append(preview,copy);select.onclick=()=>selectOverflowLayer(layer.id);row.append(select);
     const actions=document.createElement('div');actions.className='overlay-row-actions';
     const index=layers.indexOf(layer);
@@ -115,20 +233,36 @@ function syncOverflowControls(){
     $('#activeOverlayName').textContent=overflowLayerName(layer);$('#activeOverlayName').title=overflowLayerName(layer);
     const scope=layer.cells.flatMap((c,i)=>c?[i+1]:[]);$('#overlayScope').textContent=t('当前覆盖：第 {cells} 格',{cells:overflowCellList(scope)});
     $('#applyLayerScope').disabled=!selected.length||layer.loading;
-    $('#overlayEditHint').textContent=t(layer.loading?'图片正在读取。':!layer.visible?'当前图层已隐藏，点击「显示」后可调整。':figure?'大小和位置只影响选中格子中的当前图层。':'当前选中格子没有此图层，或尚未开启溢出。可点击下方应用覆盖范围。');
+    const condition=overflowLayerCondition(layer);
+    $('#overlayEditHint').textContent=t(condition==='loading'?'图片正在读取。':condition==='hidden'?'当前图层已隐藏，点击「显示」后可调整。':figure?'大小和位置只影响选中格子中的当前图层。':'当前选中格子没有此图层，或尚未开启溢出。可点击下方应用覆盖范围。');
+    const health=$('#overlayHealthStatus'),healthKey=condition==='unavailable'?'图层图片未能显示，请重新读取图片。':condition==='empty'?'这个图层没有可见内容，请重新添加图片。':condition==='outside'?'图层已移出可见范围，可点击「恢复图层位置」找回。':null;
+    if(health){health.textContent=healthKey?t(healthKey):'';health.hidden=!healthKey;}
+    const reset=$('#resetOverlayPosition'),reload=$('#reloadOverlayImage');
+    if(reset){reset.textContent=t('恢复图层位置');reset.disabled=layer.loading||!overflowImageReady(layer.image);}
+    if(reload){reload.textContent=t('重新读取图片');reload.disabled=layer.loading||overflowReloads.has(layer);}
     for(const [id,key] of [['overlayScale','scale'],['overlayX','x'],['overlayY','y']]){$('#'+id).disabled=!figure;$('#'+id).value=Math.round((figure?.[key]??(key==='scale'?1:.5))*100);}
     $('#overlayScaleValue').textContent=figure?Math.round(figure.scale*100)+'%':'—';
   }
-  syncDragLayers();
+  syncDragLayers();syncEditorControlAvailability();
 }
 function applyOverflowPatch(patch){if(isEditorLocked())return;for(const c of selectedOverflowCells())Object.assign(c,patch);syncOverflowControls();requestRender();historyCheckpoint(patch.enabled===false?'关闭选中格溢出':'开启选中格溢出');}
 function writeOverflowGesture(next){if(isEditorLocked())return;const anchor=activeOverflowFigure();if(!anchor)return;const dx=next.x-anchor.x,dy=next.y-anchor.y,factor=next.zoom/anchor.scale;for(const c of selectedLayerTransforms()){c.x=clampCrop(c.x+dx,0,1);c.y=clampCrop(c.y+dy,0,1);c.scale=clampCrop(c.scale*factor,.05,2);}syncOverflowControls();requestRender();}
 function drawOverflowLayers(ctx,geometry){
-  for(const layer of state.overlayLayers){if(!layer.visible||!layer.image)continue;
-    for(let i=0;i<9;i++){const transform=layer.cells[i];if(!state.overflowCells[i].enabled||!transform)continue;const x=i%3*(geometry.tile+geometry.gap),y=Math.floor(i/3)*(geometry.tile+geometry.gap),w=geometry.size*transform.scale,h=w*layer.image.height/layer.image.width;ctx.save();ctx.beginPath();ctx.rect(x,y,geometry.tile,geometry.tile);ctx.clip();ctx.drawImage(layer.image,transform.x*geometry.size-w/2,transform.y*geometry.size-h/2,w,h);ctx.restore();}
+  for(const layer of state.overlayLayers){
+    if(!layer.visible||!overflowImageReady(layer.image))continue;
+    for(let i=0;i<9;i++){
+      const transform=layer.cells[i];if(!state.overflowCells[i].enabled||!transform||![transform.x,transform.y,transform.scale].every(Number.isFinite)||transform.scale<=0)continue;
+      const x=i%3*(geometry.tile+geometry.gap),y=Math.floor(i/3)*(geometry.tile+geometry.gap),w=geometry.size*transform.scale,h=w*layer.image.height/layer.image.width;
+      ctx.save();
+      try{ctx.beginPath();ctx.rect(x,y,geometry.tile,geometry.tile);ctx.clip();ctx.drawImage(layer.image,transform.x*geometry.size-w/2,transform.y*geometry.size-h/2,w,h);}
+      catch{if(!overflowReadErrors.has(layer)){overflowReadErrors.set(layer,true);queueMicrotask(syncOverflowControls);}break;}
+      finally{ctx.restore();}
+    }
   }
 }
 function bindOverflowEditor(){
+  if($('#resetOverlayPosition'))$('#resetOverlayPosition').onclick=resetCurrentOverflowPosition;
+  if($('#reloadOverlayImage'))$('#reloadOverlayImage').onclick=retryCurrentOverflowImage;
   for(let i=0;i<9;i++){const b=document.createElement('button');b.textContent=i+1;b.dataset.index=i;b.type='button';b.setAttribute('aria-label',t('选择调整第 {cell} 格溢出',{cell:i+1}));b.onclick=()=>{state.overflowSelection=state.overflowSelection.includes(i)?state.overflowSelection.filter(v=>v!==i):[...state.overflowSelection,i].sort((a,b)=>a-b);syncOverflowControls();};$('#overflowGrid').append(b);}
   $$('[data-overflow-preset]').forEach(b=>b.onclick=()=>{if(isEditorLocked())return;const preset=b.dataset.overflowPreset,indexes=preset==='top'?[0,1,2]:preset==='two-three'?[1,2]:preset==='all'?allOverflowCells():[];state.overflowCells.forEach((c,i)=>{c.enabled=indexes.includes(i);});state.overflowSelection=indexes;syncOverflowControls();requestRender();historyCheckpoint('调整溢出格子');});
   $('#overflowEnabled').onchange=e=>applyOverflowPatch({enabled:e.target.checked});

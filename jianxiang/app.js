@@ -84,9 +84,9 @@ function renderStory(){
   let filled=0;state.cells.forEach((c,i)=>{const has=c.top.length+c.bottom.length>0;if(has)filled++;const b=$$('.mini-cell')[i];b.querySelector('.has-content')?.remove();if(has){const dot=document.createElement('i');dot.className='has-content';b.append(dot);}});$('#filledCount').textContent=filled+' / 9';
   const w=safeLongWidth(state.selected,720),l=layout(cell,w);
   $('#balanceHint').textContent=cell.top.length+cell.bottom.length?t('长图约 {width} × {height} 像素 · 封面保持居中。',{width:w,height:l.h}):t('照片数量不限，可拖到封面上方或下方。');
-  renderPaddingControls(cell,l);
+  renderPaddingControls(cell,l);syncEditorControlAvailability();
 }
-function importStatus(delta){state.importing=Math.max(0,state.importing+delta);if(state.importing===0)historyFlushPending();$('#exportBtn').disabled=state.importing>0||state.restoring;$('#exportBtn').innerHTML=`<span aria-hidden="true">${state.importing?'…':'↓'}</span> ${t(state.importing?'正在读取照片':'导出 9 张长图')}`;refreshHistoryUI();}
+function importStatus(delta){state.importing=Math.max(0,state.importing+delta);if(state.importing===0)historyFlushPending();$('#exportBtn').disabled=state.importing>0||state.restoring;$('#exportBtn').innerHTML=`<span aria-hidden="true">${state.importing?'…':'↓'}</span> ${t(state.importing?'正在读取照片':'导出 9 张长图')}`;refreshHistoryUI();syncEditorControlAvailability();refreshProjectFileUI();}
 function moveStoryPhoto(cellIndex,fromSide,fromIndex,toSide,toIndex){
   if(isEditorLocked()||!['top','bottom'].includes(fromSide)||!['top','bottom'].includes(toSide))return false;
   const cell=state.cells[cellIndex],source=cell?.[fromSide],target=cell?.[toSide];
@@ -187,7 +187,7 @@ async function exportAll(){if(state.busy)return;if(state.importing){toast(t("照
   }catch(e){status.textContent=e.message||t("导出失败，请尝试 720 像素。");}finally{state.busy=false;button.disabled=false;$('#closeModal').disabled=false;}
 }
 function bind(){
-  bindWorkspaceUI();bindPaddingInputs();bindOverflowEditor();bindCoverGestures();
+  bindWorkspaceUI();bindSavedProjects();bindBugReport();bindPaddingInputs();bindOverflowEditor();bindCoverGestures();
   for(const [id,key,min,max] of [['gridGap','gridGap',0,30],['thumbWidth','thumbWidth',40,500]])$('#'+id).addEventListener('input',e=>{if(isEditorLocked())return;const value=Number(e.target.value);if(e.target.value===''||!Number.isFinite(value)||value<min||value>max){e.target.setCustomValidity(t('请输入 {min}–{max} 之间的数值',{min,max}));return;}e.target.setCustomValidity('');state[key]=value;$('#gapSummary').textContent=state.gridGap+' px';requestRender();});
   $$('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
   for(const [id,key,divisor] of [['zoom','zoom',100],['posX','x',100],['posY','y',100]])$('#'+id).oninput=e=>{if(isEditorLocked())return;state[key]=+e.target.value/divisor;if(id==='zoom')$('#zoomValue').textContent=e.target.value+'%';requestRender();};
@@ -224,6 +224,6 @@ async function init(){
     historyInit(restored.restored?'恢复的作品':'初始状态');
     state.dirty=false;refreshProjectUI();registerAgentTools();
   }catch(error){toast(error.message);$('#sourceName').textContent=t('请上传封面图片');historyInit();}
-  finally{state.restoring=false;$('.editor').inert=false;$('#previewStory').disabled=false;importStatus(0);refreshSaveUI();}
+  finally{state.restoring=false;$('.editor').inert=false;$('#previewStory').disabled=false;importStatus(0);refreshSaveUI();syncEditorControlAvailability();refreshProjectFileUI();}
 }
 init();

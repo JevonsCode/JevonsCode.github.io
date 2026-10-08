@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const CACHE_VERSION = '2026-10-08.1';
+const CACHE_VERSION = '2026-10-08.2';
 const APP_SCOPE = new URL(self.registration.scope);
 const CACHE_PREFIX = `jianxiang-shell:${encodeURIComponent(APP_SCOPE.pathname)}:`;
 const CACHE_NAME = `${CACHE_PREFIX}${CACHE_VERSION}`;
@@ -33,6 +33,10 @@ const SHELL_FILES = [
   'project-history.js',
   'project-storage.js',
   'workspace-ui.js',
+  'saved-projects.js',
+  'i18n-projects.js',
+  'bug-report.js',
+  'i18n-feedback.js',
   'story-drag.js',
   'i18n-story-updates.js',
   'i18n-workspace.js',

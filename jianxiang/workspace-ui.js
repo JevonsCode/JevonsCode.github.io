@@ -1,6 +1,78 @@
 'use strict';
 
 function isEditorLocked(){return !!(state.locked||state.restoring||state.busy);}
+
+// Native disabling stops the browser from moving a range thumb before any input
+// handler runs. Keep each control's own availability separate from this gate.
+const editorMutationControls = [
+  '.settings input','.settings select','.settings [data-mode]',
+  '.settings [data-overflow-preset]','.settings [data-inset-preset]',
+  '.settings [data-layer-action]','#resetCrop','#applyLayerScope','#retryDefaultLayers','#resetOverlayPosition','#reloadOverlayImage',
+  '.story input','.story select','.photo-adjust','.photo-actions button',
+  '[data-story-drag]','.fill-clear','#demoStory',
+  '.crop-editor input','.crop-editor select','#resetPhotoCrop','#applyPhotoCrop',
+  '#longZoom','#longReset','#longFillInput','#longMoveAcross','#longMoveUp','#longMoveDown',
+  '#undoBtn','#redoBtn','#longUndo','#longRedo','.history-step'
+].join(',');
+const editorControlLocks = new WeakMap();
+let editorAvailabilityObserver = null, syncingEditorAvailability = false;
+const editorAvailabilityObservation = {subtree:true,childList:true,attributes:true,attributeFilter:['disabled']};
+function rememberEditorAvailabilityChanges(records){
+  for(const mutation of records){
+    if(mutation.type!=='attributes')continue;
+    const saved=editorControlLocks.get(mutation.target);
+    // These records come only from other UI code. Our own writes occur with
+    // observation paused, so rebuilt selection rules survive an unlock.
+    if(saved)saved.disabled=mutation.target.disabled;
+  }
+}
+function syncEditorControlAvailability(){
+  if(syncingEditorAvailability)return;
+  syncingEditorAvailability=true;
+  rememberEditorAvailabilityChanges(editorAvailabilityObserver?.takeRecords()||[]);
+  editorAvailabilityObserver?.disconnect();
+  try{
+    const blocked=isEditorLocked()||state.importing>0;
+    for(const control of $$(editorMutationControls)){
+      if(!('disabled' in control))continue;
+      const saved=editorControlLocks.get(control);
+      if(blocked){
+        const entry=saved||{disabled:control.disabled};
+        if('value' in control)entry.value=control.value;
+        if('checked' in control)entry.checked=control.checked;
+        editorControlLocks.set(control,entry);
+        if(!control.disabled)control.disabled=true;
+      }else if(saved){
+        if(control.disabled!==saved.disabled)control.disabled=saved.disabled;
+        editorControlLocks.delete(control);
+      }
+    }
+    // A label has no native disabled state; its target input does. Reflect that
+    // state for assistive technology without disabling browsing controls.
+    for(const label of $$('label[for]')){
+      const control=document.getElementById(label.htmlFor);
+      if(!control?.matches(editorMutationControls))continue;
+      if(control.disabled)label.setAttribute('aria-disabled','true');
+      else label.removeAttribute('aria-disabled');
+    }
+  }finally{
+    if(editorAvailabilityObserver&&document.body)editorAvailabilityObserver.observe(document.body,editorAvailabilityObservation);
+    syncingEditorAvailability=false;
+  }
+}
+function restoreLockedEditorControl(control){
+  const saved=editorControlLocks.get(control);
+  if(!saved)return;
+  if('value' in saved&&control.type!=='file')control.value=saved.value;
+  if('checked' in saved)control.checked=saved.checked;
+}
+function watchEditorControlAvailability(){
+  if(editorAvailabilityObserver)return;
+  editorAvailabilityObserver=new MutationObserver(records=>{
+    rememberEditorAvailabilityChanges(records);syncEditorControlAvailability();
+  });
+  syncEditorControlAvailability();
+}
 function toggleEditorLock(){
   if(state.restoring)return;
   state.locked=!state.locked;refreshLockUI();
@@ -11,7 +83,7 @@ function refreshLockUI(){
   const button=$('#lockBtn');if(!button)return;
   button.setAttribute('aria-pressed',String(state.locked));button.setAttribute('aria-label',t(state.locked?'解锁编辑':'锁定，防止误触'));
   button.innerHTML=`<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="${state.locked?'M8 10V7a4 4 0 0 1 8 0v3':'M8 10V7a4 4 0 0 1 8 0'}"/><path d="M12 14v3"/></svg><span>${t(state.locked?'解锁':'锁定')}</span>`;
-  document.body.classList.toggle('editor-locked',state.locked);refreshHistoryUI();
+  document.body.classList.toggle('editor-locked',state.locked);refreshHistoryUI();syncEditorControlAvailability();
 }
 function refreshHistoryUI(){
   if(!$('#undoBtn'))return;
@@ -51,18 +123,31 @@ function refreshProjectUI(){
   syncOverflowControls();repaintProject();selectCell(state.selected);refreshLockUI();refreshSaveUI();
   document.dispatchEvent(new CustomEvent('projectrestored'));
 }
-let recoveryFrame=null;
+let recoveryFrame=null,recoveryRevision=0;
 function recoverProjectCanvases(){
   if(state.restoring||!state.cover||document.visibilityState==='hidden')return;
-  cancelAnimationFrame(recoveryFrame);
-  recoveryFrame=requestAnimationFrame(()=>{
-    // Resizing re-creates backing stores after a browser discards GPU resources.
+  const revision=++recoveryRevision;cancelAnimationFrame(recoveryFrame);
+  recoveryFrame=requestAnimationFrame(async()=>{
+    const previous=state.cover;
+    try{
+      if(previous instanceof HTMLImageElement){
+        try{await overflowReadWithTimeout(previous.decode(),3000);}
+        catch{
+          const blob=assetBlobs.get(previous),src=blob?URL.createObjectURL(blob):state.coverAsset?.src;
+          if(src){const image=await overflowReadWithTimeout(loadImage(src));if(blob)assetBlobs.set(image,blob);if(state.cover===previous){state.cover=image;state.coverAsset={...state.coverAsset,img:image,src};}}
+        }
+      }
+      await recoverOverflowImages({force:true});
+    }catch{ /* Keep the existing artwork editable if one asset cannot recover. */ }
+    if(revision!==recoveryRevision||state.restoring||document.hidden)return;
+    // Recreate discarded backing stores only after encoded sources are ready.
     cover.width=cover.width;cover.height=cover.height;
     for(const target of $$('.cover-cell canvas,#selectedCanvas'))target.width=target.width;
     repaintProject();document.dispatchEvent(new CustomEvent('projectresume'));
   });
 }
 function bindWorkspaceUI(){
+  watchEditorControlAvailability();
   $('#lockBtn').onclick=toggleEditorLock;$('#undoBtn').onclick=()=>historyUndo();$('#redoBtn').onclick=()=>historyRedo();$('#historyBtn').onclick=showHistory;
   document.addEventListener('historychange',refreshHistoryUI);document.addEventListener('projectsavechange',refreshSaveUI);
   document.addEventListener('languagechange',()=>{refreshLockUI();refreshHistoryUI();refreshSaveUI();});
@@ -73,9 +158,10 @@ function bindWorkspaceUI(){
     else if(event.key.toLowerCase()==='y'){event.preventDefault();historyRedo();}
   });
   // Gate editing controls at capture time, before native file pickers or handlers.
-  const editable='.settings input,.settings label[for],.settings [data-mode],.settings [data-overflow-preset],.settings [data-inset-preset],.settings [data-layer-action],#resetCrop,#applyLayerScope,#retryDefaultLayers,.story input,.story label[for],.photo-adjust,.photo-actions button,[data-story-drag],#demoStory,.stage label[for="coverInput"]';
+  const editable=editorMutationControls+',.settings label[for],.story label[for],.crop-editor label[for],.stage label[for="coverInput"]';
   for(const type of ['click','input','change','pointerdown','keydown'])document.addEventListener(type,event=>{
     if(!(isEditorLocked()||state.importing>0)||!event.target.closest?.(editable))return;
+    if(type==='input'||type==='change')restoreLockedEditorControl(event.target);
     event.preventDefault();event.stopImmediatePropagation();
     if(type==='click')toast(t(state.locked?'已锁定，可浏览和下载；解锁后继续调整。':'照片读取中，请稍等。'));
   },true);
@@ -87,6 +173,7 @@ function bindWorkspaceUI(){
   document.addEventListener('pointerup',endControl);document.addEventListener('pointercancel',endControl);
   document.addEventListener('change',event=>{if(event.target.matches?.(controls)&&!isEditorLocked()){if(activeControl)endControl();else historyCheckpoint('调整作品');}});
   window.addEventListener('blur',endControl);
+  document.addEventListener('editorlockchange',()=>{endControl();syncEditorControlAvailability();});
   document.addEventListener('visibilitychange',()=>{if(document.hidden)endControl();else recoverProjectCanvases();});
   window.addEventListener('pageshow',recoverProjectCanvases);document.addEventListener('resume',recoverProjectCanvases);
   for(const target of [cover,...$$('.cover-cell canvas,#selectedCanvas')])target.addEventListener('contextrestored',recoverProjectCanvases);
