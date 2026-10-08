@@ -2,6 +2,9 @@
 
 let cropEditorRequest = 0;
 const clampCrop = (value, min = -1, max = 1) => Math.min(max, Math.max(min, value));
+const photoEditorLocked = () => typeof isEditorLocked === 'function' && isEditorLocked();
+let cropEditorCleanup = null;
+function closePhotoEditorSession() { cropEditorCleanup?.();cropEditorCleanup = null; }
 
 function renderPaddingControls(cell, geometry) {
   let visible = false;
@@ -41,11 +44,12 @@ function renderPaddingControls(cell, geometry) {
         clear.className = 'text-btn fill-clear';
         clear.textContent = side === 'top' ? t('恢复使用相邻照片') : t('恢复底部留白');
         clear.onclick = () => {
-          if (cell.fill[side].src) URL.revokeObjectURL(cell.fill[side].src);
+          if (photoEditorLocked() || state.importing || !state.cells.includes(cell)) return;
           cell.fill[side] = null;
           cell.fillEdits[side] = null;
           state.dirty = true;
           renderStory();
+          if (typeof historyCheckpoint === 'function') historyCheckpoint('移除填充图片');
         };
         content.append(clear);
       }
@@ -64,16 +68,17 @@ function bindPaddingInputs() {
     $('#'+side+'FillInput').onchange = async (event) => {
       const input = event.target;
       const file = input.files[0];
-      if (!file) return;
+      if (!file || photoEditorLocked()) { input.value = '';return; }
       const cell = state.cells[state.selected];
       importStatus(1);
       try {
         const photo = await readPhoto(file);
-        if (cell.fill[side]?.src) URL.revokeObjectURL(cell.fill[side].src);
+        if (photoEditorLocked() || !state.cells.includes(cell)) { if (photo.src) URL.revokeObjectURL(photo.src);return; }
         cell.fill[side] = photo;
         cell.fillEdits[side] = null;
         state.dirty = true;
         renderStory();
+        if (typeof historyCheckpoint === 'function') historyCheckpoint('添加填充图片');
         toast(t('已添加填充图片，可点「调整」修改取景。'));
       } catch (error) {
         toast(error.message);
@@ -86,16 +91,19 @@ function bindPaddingInputs() {
 }
 
 async function openPhotoEditor(cellIndex, side, photoIndex, isFill = false) {
+  if (photoEditorLocked()) return;
   if (state.importing) { toast(t('照片读取中，请稍等。')); return; }
   const request = ++cropEditorRequest;
   const cell = state.cells[cellIndex];
+  if (!cell) return;
   const fill = isFill ? paddingPhoto(cell, side) : null;
   const photo = isFill ? fill?.photo : cell[side][photoIndex];
   if (!photo) return;
   let img;
   try { img = photo.img || await loadImage(photo.src); }
   catch (error) { toast(error.message); return; }
-  if (request !== cropEditorRequest || state.selected !== cellIndex) return;
+  if (request !== cropEditorRequest || state.selected !== cellIndex || state.cells[cellIndex] !== cell || photoEditorLocked()) return;
+  closePhotoEditorSession();
   let draft = isFill ? { ...fill.edit } : photoEdit(photo);
   const wrap = document.createElement('div');
   wrap.className = 'modal-content crop-editor';
@@ -113,6 +121,27 @@ async function openPhotoEditor(cellIndex, side, photoIndex, isFill = false) {
     <div class="modal-actions crop-actions"><button id="resetPhotoCrop" class="text-btn">${t('重置这张图片')}</button><div><button id="cancelPhotoCrop" class="btn secondary">${t('取消')}</button><button id="applyPhotoCrop" class="btn primary">${t('应用调整')}</button></div></div>`;
   showModal(isFill ? t('调整填充图片') : t('调整这张照片'), wrap);
   const preview = $('#cropCanvas');
+  const lifecycle = new AbortController();
+  const modal = $('#modal');
+  let detachGestures = null;
+  const current = () => request === cropEditorRequest && wrap.isConnected && modal.open;
+  const observer = new MutationObserver(() => { if (!wrap.isConnected) cleanup(); });
+  function cleanup() {
+    lifecycle.abort();observer.disconnect();detachGestures?.();detachGestures = null;
+    if (cropEditorCleanup === cleanup) cropEditorCleanup = null;
+  }
+  cropEditorCleanup = cleanup;
+  observer.observe($('#modalBody'), {childList:true});
+  modal.addEventListener('close', () => { if (!modal.open) cleanup(); }, {signal:lifecycle.signal});
+  document.addEventListener('projectresume', async () => {
+    if (!current()) return;
+    try { const source = photo.img || await loadImage(photo.src);if (current()) { img = source;paint(); } } catch {}
+  }, {signal:lifecycle.signal});
+  document.addEventListener('projectrestored', () => {
+    // History may replace photo records. Never apply a draft to detached records.
+    if (state.cells[cellIndex] !== cell) { cleanup();if (wrap.isConnected && modal.open) modal.close();return; }
+    if (current()) paint();
+  }, {signal:lifecycle.signal});
   const zoom = $('#photoZoom'), px = $('#photoX'), py = $('#photoY');
   const frameSelect = $('#photoFrame'), height = $('#photoHeight');
   function syncControls() {
@@ -124,6 +153,7 @@ async function openPhotoEditor(cellIndex, side, photoIndex, isFill = false) {
     $('#photoHeightControl').hidden = isFill || frameSelect.value !== 'custom';
   }
   function paint() {
+    if (!current()) return;
     const geometry = layout(cell, 720, isFill ? null : {photo, edit:draft});
     const frameHeight = isFill ? geometry.padding[side].h : geometry[side].sizes[cell[side].indexOf(photo)];
     const ratio = Math.max(1, frameHeight) / 720;
@@ -139,21 +169,23 @@ async function openPhotoEditor(cellIndex, side, photoIndex, isFill = false) {
     $('#cropFrameSize').textContent = `720 × ${frameHeight} px`;
     $('#cropDetail').textContent = isFill ? t('填充区域的大小固定，调整取景不会挤动封面。') : geometry[side].scale < 1 ? t('这一侧照片较长，画框已按比例压缩；上方预览显示实际裁切范围。') : t('改变画框比例会改变这张照片的高度，封面仍保持居中。');
   }
-  zoom.oninput = () => { draft.zoom = Number(zoom.value) / 100; paint(); };
-  px.oninput = () => { draft.x = Number(px.value) / 100; paint(); };
-  py.oninput = () => { draft.y = Number(py.value) / 100; paint(); };
+  zoom.oninput = () => { if (photoEditorLocked()) return;draft.zoom = Number(zoom.value) / 100; paint(); };
+  px.oninput = () => { if (photoEditorLocked()) return;draft.x = Number(px.value) / 100; paint(); };
+  py.oninput = () => { if (photoEditorLocked()) return;draft.y = Number(py.value) / 100; paint(); };
   frameSelect.onchange = () => {
+    if (photoEditorLocked()) return;
     draft.frame = frameSelect.value === 'original' ? null : frameSelect.value === 'custom' ? Number(height.value) / 100 : Number(frameSelect.value);
     $('#photoHeightControl').hidden = frameSelect.value !== 'custom';
     paint();
   };
-  height.oninput = () => { draft.frame = Number(height.value) / 100; paint(); };
-  attachImageGestures(preview, {
+  height.oninput = () => { if (photoEditorLocked()) return;draft.frame = Number(height.value) / 100; paint(); };
+  detachGestures = attachImageGestures(preview, {
+    history:false,
     image:()=>img, read:()=>draft, zoomRange:()=>[1,4],
     write:transform=>{draft={...draft,...transform};zoom.value=Math.round(draft.zoom*100);px.value=Math.round(draft.x*100);py.value=Math.round(draft.y*100);paint();}
   });
   preview.onkeydown = (event) => {
-    if (!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)) return;
+    if (photoEditorLocked() || !['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)) return;
     event.preventDefault();
     const step = event.shiftKey ? .1 : .025;
     if (event.key === 'ArrowLeft') draft.x = clampCrop(draft.x - step);
@@ -162,13 +194,15 @@ async function openPhotoEditor(cellIndex, side, photoIndex, isFill = false) {
     if (event.key === 'ArrowDown') draft.y = clampCrop(draft.y + step);
     px.value = Math.round(draft.x * 100); py.value = Math.round(draft.y * 100); paint();
   };
-  $('#resetPhotoCrop').onclick = () => { draft = {zoom:1,x:0,y:0,frame:null}; syncControls(); paint(); };
+  $('#resetPhotoCrop').onclick = () => { if (photoEditorLocked()) return;draft = {zoom:1,x:0,y:0,frame:null}; syncControls(); paint(); };
   $('#cancelPhotoCrop').onclick = () => $('#modal').close();
   $('#applyPhotoCrop').onclick = () => {
+    if (!current() || photoEditorLocked() || state.importing || state.cells[cellIndex] !== cell || (!isFill && !cell[side].includes(photo))) return;
     if (isFill) cell.fillEdits[side] = {...draft};
     else photo.edit = {...draft};
     state.dirty = true;
     renderStory();
+    if (typeof historyCheckpoint === 'function') historyCheckpoint('调整照片');
     $('#modal').close();
     toast(t('已应用这张图片的调整。'));
   };

@@ -94,7 +94,7 @@ function showInstallApp(){
   body.append(pwaText('h3','iPhone / iPad'),pwaText('p','在 Safari 中打开此页，轻点浏览器的分享按钮，再选择「添加到主屏幕」；若出现「作为网页 App 打开」，请开启。'));
   body.append(pwaText('h3','Android / 电脑'),pwaText('p','在 Chrome 或 Edge 的浏览器菜单中选择「安装应用」或「添加到主屏幕」。若没有这个选项，请在系统浏览器中打开当前网址。'));
   const retry=pwaText('button','重新准备离线内容','btn secondary');retry.id='retryOfflineSetup';retry.onclick=async()=>{retry.disabled=true;try{await prepareOffline(true);}finally{if(retry.isConnected)retry.disabled=false;}};body.append(retry);
-  body.append(pwaText('p','照片不会上传。编辑中的作品仍仅保留在当前页面，关闭前请导出。','hint'));
+  body.append(pwaText('p','照片不会上传。作品会自动保存在本机浏览器中；重新打开可恢复最近成功保存的草稿，重要作品请导出备份。','hint'));
   showModal(t('安装间象'),body);renderPWAStatus();
 }
 async function promptInstallApp(){

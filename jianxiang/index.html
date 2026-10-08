@@ -12,7 +12,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e85f35'/%3E%3Cpath d='M11 6v20M21 6v20M6 11h20M6 21h20' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css"><script src="i18n.js" defer></script><script src="i18n-ui.js" defer></script><script src="i18n-app.js" defer></script><script src="i18n-editors.js" defer></script><script src="i18n-overflow.js" defer></script><script src="i18n-help.js" defer></script><script src="i18n-pwa.js" defer></script><script src="help.js" defer></script><script src="share.js" defer></script><script src="gestures.js" defer></script><script src="photo-editor.js" defer></script><script src="overflow-editor.js" defer></script><script src="long-editor.js" defer></script><script src="app.js" defer></script><script src="pwa.js" defer></script>
+  <link rel="stylesheet" href="style.css"><script src="i18n.js" defer></script><script src="i18n-ui.js" defer></script><script src="i18n-app.js" defer></script><script src="i18n-editors.js" defer></script><script src="i18n-overflow.js" defer></script><script src="i18n-help.js" defer></script><script src="i18n-pwa.js" defer></script><script src="i18n-story-updates.js" defer></script><script src="i18n-workspace.js" defer></script><script src="help.js" defer></script><script src="share.js" defer></script><script src="gestures.js" defer></script><script src="photo-editor.js" defer></script><script src="overflow-editor.js" defer></script><script src="project-history.js" defer></script><script src="project-storage.js" defer></script><script src="story-drag.js" defer></script><script src="workspace-ui.js" defer></script><script src="long-editor.js" defer></script><script src="app.js" defer></script><script src="pwa.js" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -21,6 +21,7 @@
     <button id="helpBtn" class="btn quiet" data-i18n="使用指南">使用指南</button>
     <label class="language-control"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18Z"/></svg><select id="languageSelect" aria-label="语言" data-i18n-aria-label="语言"><option value="zh" lang="zh-CN">中文</option><option value="en" lang="en">English</option><option value="es" lang="es">Español</option></select></label>
     <button id="shareBtn" class="btn share-btn" aria-label="分享间象" data-i18n-aria-label="分享间象"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V3m-4 4 4-4 4 4M6 11H4v10h16V11h-2"/></svg><span data-i18n="分享">分享</span></button>
+    <button id="lockBtn" class="btn lock-btn" aria-pressed="false" aria-label="锁定，防止误触" data-i18n-aria-label="锁定，防止误触">锁定</button>
     <button id="exportBtn" class="btn primary"><span aria-hidden="true">↓</span> <span data-i18n="导出 9 张长图">导出 9 张长图</span></button>
   </div>
 </header>
@@ -30,6 +31,7 @@
     <div id="pwaStatus" role="status" aria-live="polite" data-state="pending"><i aria-hidden="true"></i><span id="pwaStatusText">正在准备离线使用…</span></div>
     <div class="app-status-actions"><button id="pwaUpdateBtn" class="text-btn" hidden>有新版本</button><button id="installAppBtn" class="btn small install-app-btn">安装应用</button></div>
   </div>
+  <div class="project-toolbar"><div class="history-actions"><button id="undoBtn" class="btn small" aria-label="撤销" data-i18n-aria-label="撤销" title="撤销" data-i18n-title="撤销"><span aria-hidden="true">↶</span><span data-i18n="撤销">撤销</span></button><button id="redoBtn" class="btn small" aria-label="重做" data-i18n-aria-label="重做" title="重做" data-i18n-title="重做"><span aria-hidden="true">↷</span><span class="desktop-only" data-i18n="重做">重做</span></button><button id="historyBtn" class="text-btn"><span data-i18n="步骤记录">步骤记录</span> <span id="historyCount"></span></button></div><span id="draftStatus" role="status" aria-live="polite">正在恢复作品…</span></div>
   <div class="editor">
     <aside class="settings panel">
       <div class="panel-label"><span data-i18n="封面">封面</span></div>
@@ -74,7 +76,7 @@
       </div>
       <div class="divider"></div><div class="subhead"><span data-i18n="选择一格，添加照片">选择一格，添加照片</span> <span id="filledCount" class="count">0 / 9</span></div>
       <div id="miniGrid" class="mini-grid" aria-label="选择要编辑的格子" data-i18n-aria-label="选择要编辑的格子"></div>
-      <div class="aside-foot"><span class="lock-icon">◇</span><span><span data-i18n="照片仅在当前浏览器处理">照片仅在当前浏览器处理</span><br><small data-i18n="离开页面前，请先导出">离开页面前，请先导出</small></span></div>
+      <div class="aside-foot"><span class="lock-icon">◇</span><span><span data-i18n="照片仅在当前浏览器处理">照片仅在当前浏览器处理</span><br><small data-i18n="自动保存在本机，重要作品请导出">自动保存在本机，重要作品请导出</small></span></div>
     </aside>
     <section class="stage panel" aria-label="九宫格封面预览" data-i18n-aria-label="九宫格封面预览">
       <div class="stage-toolbar"><span><span class="live-dot"></span><span data-i18n="封面效果">封面效果</span></span><div class="stage-actions"><label class="btn small mobile-only" for="coverInput" data-i18n="上传封面">上传封面</label><button id="momentsBtn" class="btn small" data-i18n="◉ 朋友圈预览">◉ 朋友圈预览</button></div></div>
@@ -83,12 +85,12 @@
     </section>
     <section class="story panel" aria-label="长图编辑" data-i18n-aria-label="长图编辑">
       <div class="panel-label"><span><span data-i18n="格子">格子</span> <b id="selectedLabel">05</b> <span class="muted">/ 09</span></span><button id="backToGrid" class="text-btn mobile-only" data-i18n="选择其他格">选择其他格</button><span class="orange-tag desktop-only" data-i18n="点开后">点开后</span></div>
-      <h2 data-i18n="添加长图内容">添加长图内容</h2><p class="hint" data-i18n="添加照片后，点「调整」缩放或拖动取景。">添加照片后，点「调整」缩放或拖动取景。</p>
+      <h2 data-i18n="添加长图内容">添加长图内容</h2><p class="hint" data-i18n="拖动把手排序，可移到封面上方或下方。">拖动把手排序，可移到封面上方或下方。</p>
       <div class="story-scroll"><div class="story-section"><div class="subhead"><span data-i18n="封面上方">封面上方</span><span id="topCount" class="meta" data-i18n="0 张">0 张</span></div><div id="topList" class="photo-list"></div><label class="add-photos" for="topInput" data-i18n="＋ 添加照片">＋ 添加照片</label><input id="topInput" class="file-input" type="file" accept="image/jpeg,image/png,image/webp" multiple></div>
       <div class="cover-anchor"><canvas id="selectedCanvas" width="300" height="300"></canvas><div><span class="anchor-icon">▦</span><strong data-i18n="九宫格封面">九宫格封面</strong><small data-i18n="自动锁定在长图中央">自动锁定在长图中央</small></div><span class="anchor-lock" data-i18n="锁定">锁定</span></div>
       <div class="story-section"><div class="subhead"><span data-i18n="封面下方">封面下方</span><span id="bottomCount" class="meta" data-i18n="0 张">0 张</span></div><div id="bottomList" class="photo-list"></div><label class="add-photos" for="bottomInput" data-i18n="＋ 添加照片">＋ 添加照片</label><input id="bottomInput" class="file-input" type="file" accept="image/jpeg,image/png,image/webp" multiple></div>
       <div class="padding-editor" id="paddingEditor" hidden><div class="subhead"><span data-i18n="留白填图">留白填图</span> <span class="meta" data-i18n="仅影响这一格">仅影响这一格</span></div><p class="hint" data-i18n="白色尽量留在底部；上方不足时用相邻照片补齐，可自行换图。">白色尽量留在底部；上方不足时用相邻照片补齐，可自行换图。</p><div id="topFillArea" class="fill-area" hidden><div class="fill-heading"><span data-i18n="上方补齐区域">上方补齐区域</span><span id="topFillSize" class="meta"></span></div><div id="topFillContent"></div><label class="add-photos compact" for="topFillInput" data-i18n="＋ 选择另一张照片">＋ 选择另一张照片</label><input id="topFillInput" class="file-input" type="file" accept="image/jpeg,image/png,image/webp"></div><div id="bottomFillArea" class="fill-area" hidden><div class="fill-heading"><span data-i18n="底部留白区域">底部留白区域</span><span id="bottomFillSize" class="meta"></span></div><div id="bottomFillContent"></div><label class="add-photos compact" for="bottomFillInput" data-i18n="＋ 选照片填满这里">＋ 选照片填满这里</label><input id="bottomFillInput" class="file-input" type="file" accept="image/jpeg,image/png,image/webp"></div></div>
-      <div id="balanceHint" class="balance-note" data-i18n="每格最多放 6 张照片，可单独调整取景。">每格最多放 6 张照片，可单独调整取景。</div></div>
+      <div id="balanceHint" class="balance-note" data-i18n="照片数量不限，可拖到封面上方或下方。">照片数量不限，可拖到封面上方或下方。</div></div>
       <div class="story-footer"><div class="story-options"><label for="paperColor"><span data-i18n="长图底色">长图底色</span> <input id="paperColor" type="color" value="#ffffff"></label><button id="demoStory" class="text-btn" data-i18n="填入示例照片">填入示例照片</button></div><button id="previewStory" class="btn secondary full"><span data-i18n="预览这一格的长图">预览这一格的长图</span> <span>↗</span></button></div>
     </section>
   </div>
