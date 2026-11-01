@@ -103,6 +103,16 @@ export class SwissReticleCursor {
         }
 
         const target = e.target;
+        if (
+          document.body.classList.contains('has-peek-open') ||
+          document.body.classList.contains('has-spotlight-open') ||
+          target?.closest?.('#peek-backdrop, #spotlight-backdrop')
+        ) {
+          this.ringEl.classList.remove('is-engaged');
+          if (this.labelEl) this.labelEl.textContent = '';
+          return;
+        }
+
         const hintEl = target?.closest?.('[data-cursor]');
         if (hintEl) {
           this.ringEl.classList.add('is-engaged');

@@ -127,8 +127,8 @@ function createCardElement(item, visualIdx, { forOrbit = false } = {}) {
     <div class="card-stage">
       <canvas class="card-canvas" aria-hidden="true"></canvas>
       <button type="button" class="card-hit-link" aria-label="${t('peekTitle')} ${item.displayTitle}" data-cursor="${t('peekCursor')}"></button>
+      ${blurb ? `<div class="card-blurb" aria-hidden="true">${blurb}</div>` : ''}
     </div>
-    ${blurb ? `<p class="card-blurb">${blurb}</p>` : ''}
     <div class="card-bottom">
       <div class="card-identity">
         <h2 class="card-title">${item.displayTitle}</h2>
@@ -331,6 +331,12 @@ function openPeek(item) {
   const ghBtn = document.getElementById('peek-open-gh');
   if (!backdrop || !frame) return;
 
+  document.body.classList.add('has-peek-open');
+  const ring = document.getElementById('swiss-cursor-ring');
+  const label = document.getElementById('swiss-cursor-label');
+  ring?.classList.remove('is-engaged');
+  if (label) label.textContent = '';
+
   urlEl.textContent = `${item.indexCode} · ${DISPLAY_DOMAIN}${item.routeLabel}/`;
   if (openBtn) openBtn.href = item.href;
   if (ghBtn) ghBtn.href = item.repoUrl;
@@ -343,6 +349,7 @@ function closePeek() {
   const frame = document.getElementById('peek-frame');
   if (!backdrop || backdrop.hidden) return;
   backdrop.hidden = true;
+  document.body.classList.remove('has-peek-open');
   if (frame) frame.src = 'about:blank';
 }
 
@@ -351,6 +358,11 @@ function openSpotlight() {
   const backdrop = document.getElementById('spotlight-backdrop');
   const input = document.getElementById('spotlight-input');
   if (!backdrop || !input) return;
+  document.body.classList.add('has-spotlight-open');
+  const ring = document.getElementById('swiss-cursor-ring');
+  const label = document.getElementById('swiss-cursor-label');
+  ring?.classList.remove('is-engaged');
+  if (label) label.textContent = '';
   backdrop.hidden = false;
   input.value = '';
   renderSpotlightResults('');
@@ -360,6 +372,7 @@ function openSpotlight() {
 function closeSpotlight() {
   const backdrop = document.getElementById('spotlight-backdrop');
   if (backdrop) backdrop.hidden = true;
+  document.body.classList.remove('has-spotlight-open');
 }
 
 function renderSpotlightResults(query) {
