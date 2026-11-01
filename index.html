@@ -1,38 +1,133 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title></title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>有点.意思</title>
+  <meta name="description" content="有点.意思.com — Jevons Interactive Studio & GitHub Pages Index" />
+  <link rel="icon" type="image/svg+xml" href="./portal/assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Noto+Sans+SC:wght@700;900&family=Space+Grotesk:wght@600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('ydys.theme.v1');
+        var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="./portal/styles/tokens.css" />
+  <link rel="stylesheet" href="./portal/styles/layout.css" />
 </head>
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        border: none;
-    }
-</style>
+<body>
+  <!-- Full-viewport 60fps Swiss Crosshair Magnetic Field & Pinball Physics Canvas -->
+  <canvas id="swiss-field" aria-hidden="true"></canvas>
 
-<body><noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <script>
-        ! function(a) {
-            function e(e) { for (var r, t, n = e[0], o = e[1], u = e[2], i = 0, l = []; i < n.length; i++) t = n[i], Object.prototype.hasOwnProperty.call(f, t) && f[t] && l.push(f[t][0]), f[t] = 0; for (r in o) Object.prototype.hasOwnProperty.call(o, r) && (a[r] = o[r]); for (s && s(e); l.length;) l.shift()(); return c.push.apply(c, u || []), p() }
+  <!-- Dual-Ring Swiss Precision Reticle Cursor -->
+  <div id="swiss-cursor" aria-hidden="true"></div>
+  <div id="swiss-cursor-ring" aria-hidden="true">
+    <svg class="cursor-gauge" viewBox="0 0 56 56">
+      <circle id="cursor-gauge-arc" cx="28" cy="28" r="26"></circle>
+    </svg>
+    <span id="swiss-cursor-label"></span>
+  </div>
 
-            function p() { for (var e, r = 0; r < c.length; r++) { for (var t = c[r], n = !0, o = 1; o < t.length; o++) { var u = t[o];
-                        0 !== f[u] && (n = !1) } n && (c.splice(r--, 1), e = i(i.s = t[0])) } return e } var t = {},
-                f = { 1: 0 },
-                c = [];
+  <div class="portal-shell">
+    <!-- Top Swiss Telemetry Bar -->
+    <header class="telemetry-bar">
+      <div class="telemetry-left">
+        <span class="live-beacon">
+          <span class="live-dot"></span>
+          <span>JEVONS // STUDIO</span>
+        </span>
+        <span class="telemetry-sep">/</span>
+        <span id="hud-coords" class="hud-coords">0000 · 0000</span>
+        <button type="button" id="zerog-pill" class="rail-btn is-active" hidden data-cursor="DOCK">0G · RESET</button>
+      </div>
 
-            function i(e) { if (t[e]) return t[e].exports; var r = t[e] = { i: e, l: !1, exports: {} }; return a[e].call(r.exports, r, r.exports, i), r.l = !0, r.exports } i.m = a, i.c = t, i.d = function(e, r, t) { i.o(e, r) || Object.defineProperty(e, r, { enumerable: !0, get: t }) }, i.r = function(e) { "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, { value: "Module" }), Object.defineProperty(e, "__esModule", { value: !0 }) }, i.t = function(r, e) { if (1 & e && (r = i(r)), 8 & e) return r; if (4 & e && "object" == typeof r && r && r.__esModule) return r; var t = Object.create(null); if (i.r(t), Object.defineProperty(t, "default", { enumerable: !0, value: r }), 2 & e && "string" != typeof r)
-                    for (var n in r) i.d(t, n, function(e) { return r[e] }.bind(null, n)); return t }, i.n = function(e) { var r = e && e.__esModule ? function() { return e.default } : function() { return e }; return i.d(r, "a", r), r }, i.o = function(e, r) { return Object.prototype.hasOwnProperty.call(e, r) }, i.p = "/"; var r = this["webpackJsonppixi-react"] = this["webpackJsonppixi-react"] || [],
-                n = r.push.bind(r);
-            r.push = e, r = r.slice(); for (var o = 0; o < r.length; o++) e(r[o]); var s = n;
-            p() }([])
-    </script>
-    <script src="/static/js/2.da11c32a.chunk.js"></script>
-    <script src="/static/js/main.612af0c7.chunk.js"></script>
+      <div class="telemetry-right">
+        <button type="button" id="spotlight-btn" class="rail-btn" aria-label="Quick Jump" data-cursor="⌘K">⌘K</button>
+        <button type="button" id="roulette-btn" class="rail-btn" aria-label="Random Teleport" data-cursor="SPIN">⚄</button>
+        <button type="button" id="sound-toggle" class="rail-btn" aria-label="Toggle Sound" data-cursor="SYNTH">♪ ON</button>
+        <button type="button" id="egg-counter" class="rail-btn" aria-label="Secrets" data-cursor="SECRETS">✦ 00/10</button>
+        <button type="button" id="theme-toggle" class="rail-btn" aria-label="Toggle Theme" data-cursor="ECLIPSE">◐ DARK</button>
+      </div>
+    </header>
+
+    <!-- Collapsible 10-Slot Cryptic Easter-Egg Specimen Strip -->
+    <div id="egg-drawer-wrap" class="egg-drawer-wrap">
+      <div id="egg-drawer" class="egg-drawer"></div>
+    </div>
+
+    <!-- Giant Kinetic Swiss Masthead (Zero Verbose Copy) -->
+    <section class="masthead">
+      <h1 class="brand-lockup" aria-label="有点.意思.com">
+        <span id="hero-word-left" class="brand-word" data-cursor="有点">有点</span>
+        <button type="button" id="hero-dot" class="brand-dot-btn" aria-label="Launch Pinball" data-cursor="PULL ●">
+          <span class="brand-dot-core"></span>
+        </button>
+        <span id="hero-word-right" class="brand-word" data-cursor="CLICK ◈">意思</span>
+        <span class="brand-tld">.COM</span>
+      </h1>
+
+      <div class="masthead-counter">
+        <span id="total-counter" class="counter-num">00</span>
+        <span class="counter-tag">LIVE PAGES</span>
+      </div>
+    </section>
+
+    <!-- Category Filters & 3 Kinetic Stage Switchers -->
+    <nav class="control-strip" aria-label="Stage Controls">
+      <div id="filter-pills" class="filter-pills"></div>
+      <div class="stage-modes">
+        <button type="button" class="pill-btn is-active" data-stage-mode="grid" data-cursor="BENTO">⊞ GRID</button>
+        <button type="button" class="pill-btn" data-stage-mode="orbit" data-cursor="3D RING">◎ ORBIT</button>
+        <button type="button" class="pill-btn" data-stage-mode="runway" data-cursor="STRIP">≡ RUNWAY</button>
+      </div>
+    </nav>
+
+    <!-- Dynamic Stage Container -->
+    <main id="stage-container" class="stage-container"></main>
+
+    <!-- Minimalist Swiss Serial Footer Rail -->
+    <footer class="footer-rail">
+      <button type="button" id="punycode-stamp" class="footer-stamp-btn" data-cursor="DECODE">XN--8OVP9S.XN--M8TXU.COM</button>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <a class="footer-stamp-btn" href="https://github.com/JevonsCode" target="_blank" rel="noopener" data-cursor="GITHUB ↗">GITHUB/JEVONSCODE ↗</a>
+        <button type="button" id="vault-seal" class="footer-stamp-btn" data-cursor="⚿">// 00</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Dimension Peek (◫) Live In-Portal Glass Viewport -->
+  <div id="peek-backdrop" class="peek-backdrop" hidden>
+    <div id="peek-window" class="peek-window" role="dialog" aria-modal="true" aria-label="Live Preview">
+      <div class="peek-bar">
+        <span id="peek-url" class="peek-url"></span>
+        <div class="peek-controls">
+          <button type="button" id="peek-viewport-toggle" class="rail-btn" data-cursor="SIZE">▯ MOBILE</button>
+          <a id="peek-open-gh" class="rail-btn" href="#" target="_blank" rel="noopener" data-cursor="GITHUB ↗">GITHUB ↗</a>
+          <a id="peek-open-ext" class="rail-btn is-active" href="#" target="_blank" rel="noopener" data-cursor="官网 ↗">官网 ↗</a>
+          <button type="button" id="peek-close" class="rail-btn" data-cursor="CLOSE">✕</button>
+        </div>
+      </div>
+      <iframe id="peek-frame" class="peek-frame" title="Pages Live Preview" loading="lazy"></iframe>
+    </div>
+  </div>
+
+  <!-- ⌘K Instant Spotlight Palette -->
+  <div id="spotlight-backdrop" class="spotlight-backdrop" hidden>
+    <div class="spotlight-box" role="dialog" aria-modal="true" aria-label="Quick Jump">
+      <input id="spotlight-input" class="spotlight-input" type="text" placeholder="JUMP // FULI, 3D, LOTTO, PHONE..." autocomplete="off" />
+      <div id="spotlight-list" class="spotlight-list"></div>
+    </div>
+  </div>
+
+  <!-- Secret Unlock Toast -->
+  <div id="egg-toast" class="egg-toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="./portal/main.js"></script>
 </body>
-
 </html>

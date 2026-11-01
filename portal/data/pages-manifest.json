@@ -1,0 +1,259 @@
+{
+  "owner": "JevonsCode",
+  "domain": "有点.意思.com",
+  "syncedAt": "2026-11-01T10:07:24.548Z",
+  "count": 21,
+  "items": [
+    {
+      "slug": "__temporary__",
+      "pageTitle": "UA Test",
+      "reachable": true,
+      "language": "HTML",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2022-08-10T08:51:37Z",
+      "repoUrl": "https://github.com/JevonsCode/__temporary__",
+      "localSubpath": false
+    },
+    {
+      "slug": "3d-solar-system",
+      "pageTitle": "3D Solar System",
+      "reachable": true,
+      "language": "JavaScript",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2025-10-22T08:39:00Z",
+      "repoUrl": "https://github.com/JevonsCode/3d-solar-system",
+      "localSubpath": false
+    },
+    {
+      "slug": "astron-solar-system",
+      "pageTitle": "Solaris Atlas",
+      "reachable": true,
+      "language": "JavaScript",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2026-03-20T04:12:44Z",
+      "repoUrl": "https://github.com/JevonsCode/astron-solar-system",
+      "localSubpath": false
+    },
+    {
+      "slug": "check-version",
+      "pageTitle": "版本检查",
+      "reachable": true,
+      "language": "HTML",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2025-06-05T16:56:58Z",
+      "repoUrl": "https://github.com/JevonsCode/check-version",
+      "localSubpath": false
+    },
+    {
+      "slug": "dingdong-voices",
+      "pageTitle": "声音库 · DingDong",
+      "reachable": true,
+      "language": "JavaScript",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2026-10-29T05:32:13Z",
+      "repoUrl": "https://github.com/JevonsCode/dingdong-voices",
+      "localSubpath": false
+    },
+    {
+      "slug": "DingDongBuddy",
+      "pageTitle": "DingDong — a desktop companion for your clipboard and AI Agents",
+      "reachable": true,
+      "language": "Dart",
+      "topics": [],
+      "stars": 5,
+      "pushedAt": "2026-11-01T00:58:16Z",
+      "repoUrl": "https://github.com/JevonsCode/DingDongBuddy",
+      "localSubpath": false
+    },
+    {
+      "slug": "fuli",
+      "pageTitle": "FULI 复利 · AI Agent 记忆与跨客户端协作",
+      "reachable": true,
+      "language": "JavaScript",
+      "topics": [
+        "agent-memory",
+        "ai-agents",
+        "claude-code",
+        "codex",
+        "cursor",
+        "knowledge-graph",
+        "local-first",
+        "mcp"
+      ],
+      "stars": 10,
+      "pushedAt": "2026-11-01T10:02:50Z",
+      "repoUrl": "https://github.com/JevonsCode/fuli",
+      "localSubpath": false
+    },
+    {
+      "slug": "fuli-avatar",
+      "pageTitle": "fuli-avatar · 给灵感一张脸",
+      "reachable": true,
+      "language": "JavaScript",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2026-11-01T09:32:45Z",
+      "repoUrl": "https://github.com/JevonsCode/fuli-avatar",
+      "localSubpath": false
+    },
+    {
+      "slug": "game-score-website",
+      "pageTitle": "Game Score Website",
+      "reachable": true,
+      "language": "HTML",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2025-12-10T02:05:59Z",
+      "repoUrl": "https://github.com/JevonsCode/game-score-website",
+      "localSubpath": false
+    },
+    {
+      "slug": "image2base64",
+      "pageTitle": "图片转 Base64 工具",
+      "reachable": true,
+      "language": "Vue",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2025-03-20T16:18:59Z",
+      "repoUrl": "https://github.com/JevonsCode/image2base64",
+      "localSubpath": false
+    },
+    {
+      "slug": "index",
+      "pageTitle": "Indexs ➹ (ノ￣▽￣)~ φ(>ω<*)",
+      "reachable": true,
+      "language": "HTML",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2026-07-23T02:37:47Z",
+      "repoUrl": "https://github.com/JevonsCode/index",
+      "localSubpath": false
+    },
+    {
+      "slug": "jianxiang",
+      "pageTitle": "间象 — 图像与留白",
+      "reachable": true,
+      "language": "JavaScript",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2026-10-08T20:47:01Z",
+      "repoUrl": "https://github.com/JevonsCode/JevonsCode.github.io/tree/master/jianxiang",
+      "localSubpath": true
+    },
+    {
+      "slug": "my-awesome-ai-tools",
+      "pageTitle": "我的数字工作站 | My Digital Workstation",
+      "reachable": true,
+      "language": "TypeScript",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2026-03-29T11:32:35Z",
+      "repoUrl": "https://github.com/JevonsCode/my-awesome-ai-tools",
+      "localSubpath": false
+    },
+    {
+      "slug": "notion-resume-builder",
+      "pageTitle": "Notion Style Resume Builder",
+      "reachable": true,
+      "language": "JavaScript",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2025-09-22T13:52:15Z",
+      "repoUrl": "https://github.com/JevonsCode/notion-resume-builder",
+      "localSubpath": false
+    },
+    {
+      "slug": "oled-burn-fix",
+      "pageTitle": "OLED 烁屏修复工具",
+      "reachable": true,
+      "language": "HTML",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2025-10-19T05:05:18Z",
+      "repoUrl": "https://github.com/JevonsCode/oled-burn-fix",
+      "localSubpath": false
+    },
+    {
+      "slug": "pages-index",
+      "pageTitle": "Jevons 的 GitHub Pages 合集",
+      "reachable": true,
+      "language": "JavaScript",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2025-10-21T05:48:05Z",
+      "repoUrl": "https://github.com/JevonsCode/pages-index",
+      "localSubpath": false
+    },
+    {
+      "slug": "phonebridge",
+      "pageTitle": "PhoneBridge — 让 AI 用上你的安卓手机",
+      "reachable": true,
+      "language": "Dart",
+      "topics": [
+        "accessibility",
+        "ai-agents",
+        "android",
+        "android-app",
+        "apk",
+        "automation",
+        "flutter",
+        "kotlin",
+        "mcp",
+        "open-source"
+      ],
+      "stars": 0,
+      "pushedAt": "2026-10-30T18:08:58Z",
+      "repoUrl": "https://github.com/JevonsCode/phonebridge",
+      "localSubpath": false
+    },
+    {
+      "slug": "postmessagetest",
+      "pageTitle": "",
+      "reachable": true,
+      "language": "JavaScript",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2026-10-08T20:47:01Z",
+      "repoUrl": "https://github.com/JevonsCode/JevonsCode.github.io/tree/master/postmessagetest",
+      "localSubpath": true
+    },
+    {
+      "slug": "tools",
+      "pageTitle": "tools",
+      "reachable": true,
+      "language": "HTML",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2025-08-05T08:12:21Z",
+      "repoUrl": "https://github.com/JevonsCode/tools",
+      "localSubpath": false
+    },
+    {
+      "slug": "typescript-interface-generate-markdown",
+      "pageTitle": "示例 | typescript-interface-generate-markdown",
+      "reachable": true,
+      "language": "TypeScript",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2025-06-11T09:40:55Z",
+      "repoUrl": "https://github.com/JevonsCode/typescript-interface-generate-markdown",
+      "localSubpath": false
+    },
+    {
+      "slug": "union-lotto",
+      "pageTitle": "UNION LOTTO",
+      "reachable": true,
+      "language": "JavaScript",
+      "topics": [],
+      "stars": 0,
+      "pushedAt": "2026-10-29T19:25:52Z",
+      "repoUrl": "https://github.com/JevonsCode/union-lotto",
+      "localSubpath": false
+    }
+  ]
+}

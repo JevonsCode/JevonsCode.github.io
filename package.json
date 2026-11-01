@@ -1,0 +1,9 @@
+{
+  "name": "ydys-swiss-kinetic-portal",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync": "node scripts/sync-pages.mjs",
+    "test": "node --test test/*.test.mjs"
+  }
+}

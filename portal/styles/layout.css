@@ -1,0 +1,1278 @@
+/* Swiss Modern Kinetic Gallery — Layout, Bento Stage, 3D Orbit Stage, Runway Stage, Reticle & Modals */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  selection-background-color: var(--accent);
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+html.has-custom-cursor,
+html.has-custom-cursor a,
+html.has-custom-cursor button {
+  cursor: none;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Background interactive field */
+#swiss-field {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Custom Dual-Ring Swiss Reticle Cursor */
+#swiss-cursor,
+#swiss-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9000;
+  will-change: transform;
+  display: none;
+}
+
+html.has-custom-cursor #swiss-cursor,
+html.has-custom-cursor #swiss-cursor-ring {
+  display: block;
+}
+
+#swiss-cursor::before {
+  content: '';
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+#swiss-cursor-ring {
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 50%;
+  transition:
+    width 0.28s var(--ease-out-expo),
+    height 0.28s var(--ease-out-expo),
+    margin 0.28s var(--ease-out-expo),
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+#swiss-cursor-ring.is-engaged {
+  width: 72px;
+  height: 72px;
+  margin: -36px 0 0 -36px;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  backdrop-filter: blur(3px);
+}
+
+#swiss-cursor-ring.is-down {
+  transform-origin: center;
+  border-color: var(--accent);
+}
+
+#swiss-cursor-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+#swiss-cursor-ring.is-engaged #swiss-cursor-label {
+  opacity: 1;
+}
+
+.cursor-gauge {
+  position: absolute;
+  inset: -6px;
+  width: calc(100% + 12px);
+  height: calc(100% + 12px);
+  transform: rotate(-90deg);
+}
+
+#cursor-gauge-arc {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-dasharray: 163.36;
+  stroke-dashoffset: 163.36;
+  stroke-linecap: round;
+}
+
+/* Architectural Swiss Frame */
+.portal-shell {
+  position: relative;
+  z-index: 1;
+  max-width: 1520px;
+  margin: 0 auto;
+  min-height: 100vh;
+  border-left: 1px solid var(--hairline);
+  border-right: 1px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sticky Top Telemetry Rail */
+.telemetry-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 22px;
+  height: 52px;
+  background: var(--bg-elevated);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--hairline);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+.telemetry-left,
+.telemetry-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.live-beacon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 var(--accent);
+  animation: beaconPulse 2.2s infinite;
+}
+
+@keyframes beaconPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 29, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(255, 59, 29, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 29, 0);
+  }
+}
+
+.telemetry-sep {
+  color: var(--hairline-strong);
+}
+
+.hud-coords {
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: var(--surface);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s var(--ease-spring),
+    color 0.2s ease;
+}
+
+.rail-btn:hover {
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.rail-btn.is-active,
+.rail-btn.is-complete {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Secret Easter-Egg Specimen Drawer */
+.egg-drawer-wrap {
+  overflow: hidden;
+  max-height: 0;
+  border-bottom: 0 solid var(--hairline);
+  background: var(--surface);
+  transition: max-height 0.4s var(--ease-out-expo), border-bottom-width 0.2s ease;
+}
+
+.egg-drawer-wrap.is-open {
+  max-height: 160px;
+  border-bottom-width: 1px;
+}
+
+.egg-drawer {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+}
+
+.egg-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px 6px;
+  border-right: 1px solid var(--hairline);
+  font-family: var(--font-mono);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.egg-slot:last-child {
+  border-right: none;
+}
+
+.egg-slot:hover {
+  background: var(--accent-soft);
+}
+
+.egg-slot.is-unlocked {
+  color: var(--accent);
+}
+
+.egg-slot.is-nudged {
+  animation: eggShake 0.34s ease;
+}
+
+@keyframes eggShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.egg-code {
+  font-size: 9px;
+  color: var(--ink-muted);
+}
+
+.egg-glyph {
+  font-size: 16px;
+  line-height: 1.1;
+}
+
+.egg-name {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* Giant Swiss Kinetic Masthead */
+.masthead {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 24px;
+  padding: clamp(28px, 4.5vw, 56px) clamp(20px, 3vw, 40px) clamp(22px, 3vw, 38px);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.brand-lockup {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: clamp(4px, 1vw, 14px);
+  line-height: 0.94;
+  user-select: none;
+}
+
+.brand-word {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-weight: 900;
+  font-size: clamp(54px, 9.2vw, 136px);
+  letter-spacing: -0.055em;
+  transition: transform 0.32s var(--ease-out-expo), color 0.2s ease;
+  animation: shutterUp 0.85s var(--ease-out-expo) both;
+}
+
+#hero-word-right {
+  animation-delay: 0.08s;
+}
+
+#hero-word-right:hover {
+  color: var(--accent);
+}
+
+#hero-word-right.is-flipping {
+  animation: wordFlip 0.32s var(--ease-spring);
+}
+
+@keyframes shutterUp {
+  from {
+    opacity: 0;
+    transform: translateY(34px) skewY(3deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) skewY(0);
+  }
+}
+
+@keyframes wordFlip {
+  0% { transform: translateY(-10px) scale(0.95); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* Slingshot Red Dot */
+.brand-dot-btn {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: clamp(28px, 3.8vw, 50px);
+  height: clamp(28px, 3.8vw, 50px);
+  align-self: center;
+  touch-action: none;
+  z-index: 5;
+}
+
+.brand-dot-core {
+  width: clamp(18px, 2.5vw, 32px);
+  height: clamp(18px, 2.5vw, 32px);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 24px rgba(255, 59, 29, 0.38);
+  transition: transform 0.25s var(--ease-spring);
+}
+
+.brand-dot-btn:hover .brand-dot-core {
+  transform: scale(1.24);
+}
+
+.brand-dot-btn.is-dragging .brand-dot-core {
+  transform: scale(0.92);
+}
+
+.brand-tld {
+  font-family: var(--font-mono);
+  font-size: clamp(14px, 1.8vw, 24px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  margin-left: 4px;
+  animation: shutterUp 0.9s 0.16s var(--ease-out-expo) both;
+}
+
+/* Big Swiss Odometer Index Counter */
+.masthead-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  font-family: var(--font-mono);
+}
+
+.counter-num {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5.4vw, 76px);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.counter-tag {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--ink-muted);
+}
+
+/* Swiss Filter & Stage Mode Control Bar */
+.control-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 22px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg);
+}
+
+.filter-pills,
+.stage-modes {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pill-btn {
+  height: 32px;
+  padding: 0 13px;
+  border: 1px solid var(--hairline);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  background: transparent;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    transform 0.2s var(--ease-spring);
+}
+
+.pill-btn:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.pill-btn.is-active {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+.pill-btn.is-vault {
+  border-style: dashed;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.pill-btn.is-vault.is-active {
+  background: var(--accent);
+  color: #fff;
+  border-style: solid;
+}
+
+/* =========================================================
+   STAGE MODE 1: SWISS ASYMMETRIC BENTO GRID (⊞ GRID)
+   ========================================================= */
+.stage-container {
+  position: relative;
+  flex: 1;
+}
+
+.stage-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-auto-rows: 256px;
+  grid-auto-flow: dense;
+}
+
+.portal-card {
+  --rx: 0deg;
+  --ry: 0deg;
+  --gx: 50%;
+  --gy: 50%;
+  --card-accent: var(--accent);
+  grid-column: span 3;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: var(--surface);
+  border-right: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition:
+    background-color 0.25s ease,
+    box-shadow 0.3s ease,
+    transform 0.24s var(--ease-out-expo);
+  animation: cardAppear 0.65s var(--ease-out-expo) both;
+}
+
+.portal-card[data-span='hero'] {
+  grid-column: span 6;
+  grid-row: span 2;
+}
+
+.portal-card[data-span='wide'] {
+  grid-column: span 6;
+}
+
+.portal-card[data-span='tall'] {
+  grid-column: span 3;
+  grid-row: span 2;
+}
+
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.portal-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    420px circle at var(--gx) var(--gy),
+    var(--glare),
+    transparent 65%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+  z-index: 3;
+}
+
+.portal-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--card-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.34s var(--ease-out-expo);
+  z-index: 4;
+}
+
+.portal-card:hover {
+  z-index: 6;
+  background: var(--surface-hover);
+  box-shadow: var(--shadow-card);
+  transform: perspective(960px) rotateX(var(--rx)) rotateY(var(--ry)) translateZ(6px);
+}
+
+.portal-card:hover::before {
+  opacity: 1;
+}
+
+.portal-card:hover::after {
+  transform: scaleX(1);
+}
+
+.portal-card.is-hit,
+.portal-card.is-roulette {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  background: var(--accent-soft);
+}
+
+/* Zero-G Easter Egg Floating Mode */
+body.is-zero-g .portal-card {
+  animation: zeroGFloat 3.8s ease-in-out infinite alternate;
+  animation-delay: var(--float-delay, 0s);
+  box-shadow: var(--shadow-card);
+}
+
+@keyframes zeroGFloat {
+  0% {
+    transform: translateY(-10px) rotate(calc(var(--float-tilt, 1.5deg) * -1));
+  }
+  100% {
+    transform: translateY(12px) rotate(var(--float-tilt, 1.5deg));
+  }
+}
+
+.card-top {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.card-index {
+  font-weight: 700;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.2s ease;
+}
+
+.portal-card:hover .card-index {
+  color: var(--card-accent);
+}
+
+.card-top-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.brand-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.brand-badge.is-light-seal {
+  background: #F7F5F0;
+}
+
+.brand-badge img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: block;
+}
+
+.brand-badge .img-dark {
+  display: none;
+}
+
+:root[data-theme='dark'] .brand-badge.has-dark-variant .img-light {
+  display: none;
+}
+
+:root[data-theme='dark'] .brand-badge.has-dark-variant .img-dark {
+  display: block;
+}
+
+.card-tag {
+  padding: 2px 7px;
+  border: 1px solid var(--hairline);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+}
+
+/* Official FULI Geometric Wordmark Watermark on FULI Hero Card */
+.fuli-wordmark-badge {
+  height: 15px;
+  width: auto;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* Live Interactive 3-Portrait fuli-avatar v5 Stage */
+.fuli-avatar-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 16px;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.fuli-avatar-trio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 700px;
+}
+
+.avatar-portrait-card {
+  width: clamp(68px, 7.6vw, 98px);
+  height: clamp(68px, 7.6vw, 98px);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1.5px solid var(--hairline-strong);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.16);
+  transition: transform 0.38s var(--ease-spring), box-shadow 0.3s ease;
+  background: #F6F5EF;
+}
+
+.avatar-portrait-card svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.avatar-portrait-card.is-pos-0 {
+  transform: translateX(14px) rotate(-8deg) scale(0.9);
+  z-index: 1;
+}
+
+.avatar-portrait-card.is-pos-1 {
+  transform: translateY(-4px) scale(1.06);
+  z-index: 3;
+  border-color: #34543B;
+}
+
+.avatar-portrait-card.is-pos-2 {
+  transform: translateX(-14px) rotate(8deg) scale(0.9);
+  z-index: 2;
+}
+
+.portal-card:hover .avatar-portrait-card.is-pos-0 {
+  transform: translateX(-8px) rotate(-14deg) scale(0.96);
+}
+
+.portal-card:hover .avatar-portrait-card.is-pos-1 {
+  transform: translateY(-10px) scale(1.13);
+}
+
+.portal-card:hover .avatar-portrait-card.is-pos-2 {
+  transform: translateX(8px) rotate(14deg) scale(0.96);
+}
+
+.fuli-avatar-caption {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  pointer-events: auto;
+}
+
+.fuli-avatar-name {
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+.fuli-avatar-roll {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #C9773F;
+  color: #C9773F;
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.2s var(--ease-spring);
+}
+
+.fuli-avatar-roll:hover {
+  background: #C9773F;
+  color: #fff;
+  transform: scale(1.08);
+}
+
+.card-stage {
+  position: relative;
+  flex: 1;
+  min-height: 130px;
+  width: 100%;
+  z-index: 2;
+}
+
+.card-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.card-hit-link {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+.card-bottom {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 16px 14px;
+  pointer-events: none;
+}
+
+.card-identity {
+  min-width: 0;
+}
+
+.card-title {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.portal-card[data-span='hero'] .card-title {
+  font-size: clamp(24px, 2.6vw, 34px);
+}
+
+.card-route {
+  display: block;
+  margin-top: 3px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-muted);
+  letter-spacing: 0.03em;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  pointer-events: auto;
+  flex-shrink: 0;
+}
+
+.icon-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 7px;
+  border: 1px solid var(--hairline-strong);
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.2s var(--ease-spring);
+}
+
+.icon-chip svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.icon-chip:hover {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+  transform: translateY(-1px) scale(1.04);
+}
+
+.icon-chip.is-site:hover {
+  background: var(--card-accent, var(--accent));
+  border-color: var(--card-accent, var(--accent));
+  color: #fff;
+}
+
+/* =========================================================
+   STAGE MODE 2: INTERACTIVE 3D ORBIT RING (◎ ORBIT)
+   ========================================================= */
+.stage-orbit-wrap {
+  position: relative;
+  height: min(72vh, 660px);
+  min-height: 500px;
+  display: grid;
+  place-items: center;
+  perspective: 1500px;
+  overflow: hidden;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.orbit-ring {
+  position: relative;
+  width: 300px;
+  height: 360px;
+  transform-style: preserve-3d;
+}
+
+.orbit-ring .portal-card {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--hairline-strong);
+  box-shadow: var(--shadow-card);
+  backface-visibility: visible;
+}
+
+.orbit-hint {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ink-muted);
+  padding: 5px 12px;
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+}
+
+/* =========================================================
+   STAGE MODE 3: BRUTALIST KINETIC RUNWAY STRIP (≡ RUNWAY)
+   ========================================================= */
+.stage-runway {
+  display: flex;
+  flex-direction: column;
+}
+
+.runway-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 74px 1fr auto auto;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 26px;
+  border-bottom: 1px solid var(--hairline);
+  overflow: hidden;
+  transition: padding-left 0.3s var(--ease-out-expo), color 0.2s ease;
+}
+
+.runway-row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.3s var(--ease-out-expo);
+  z-index: 0;
+}
+
+.runway-row:hover {
+  padding-left: 38px;
+  color: var(--bg);
+}
+
+.runway-row:hover::before {
+  transform: scaleY(1);
+}
+
+.runway-row > * {
+  position: relative;
+  z-index: 1;
+}
+
+.runway-idx {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.runway-name {
+  font-family: var(--font-sans);
+  font-size: clamp(22px, 3.2vw, 42px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.runway-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  opacity: 0.72;
+}
+
+.runway-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.runway-row:hover .icon-chip {
+  border-color: var(--bg);
+  background: transparent;
+  color: var(--bg);
+}
+
+.runway-row:hover .icon-chip:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* Swiss Footer Stamp Rail */
+.footer-rail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 22px;
+  border-top: 1px solid var(--hairline);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+}
+
+.footer-stamp-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  transition: color 0.2s ease;
+}
+
+.footer-stamp-btn:hover {
+  color: var(--accent);
+}
+
+/* Dimension Peek (◫) Live Preview Glass Viewport */
+.peek-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(8, 8, 10, 0.62);
+  backdrop-filter: blur(10px);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  animation: fadeFast 0.22s ease;
+}
+
+.peek-backdrop[hidden],
+.spotlight-backdrop[hidden] {
+  display: none;
+}
+
+@keyframes fadeFast {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.peek-window {
+  width: min(1220px, 95vw);
+  height: min(84vh, 840px);
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.35s var(--ease-out-expo);
+}
+
+.peek-window.is-mobile {
+  width: 412px;
+}
+
+.peek-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+  height: 44px;
+  border-bottom: 1px solid var(--hairline);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.peek-url {
+  color: var(--ink-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.peek-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.peek-frame {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: #fff;
+}
+
+/* ⌘K Spotlight Palette */
+.spotlight-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  background: rgba(8, 8, 10, 0.52);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 13vh;
+}
+
+.spotlight-box {
+  width: min(560px, 92vw);
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+
+.spotlight-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--hairline);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  outline: none;
+}
+
+.spotlight-list {
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.spotlight-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--hairline);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-align: left;
+}
+
+.spotlight-item:hover,
+.spotlight-item.is-selected {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* Easter Egg Unlock Toast */
+.egg-toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 800;
+  padding: 11px 16px;
+  background: var(--ink);
+  color: var(--bg);
+  border: 1px solid var(--accent);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  transform: translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.32s var(--ease-spring), opacity 0.25s ease;
+}
+
+.egg-toast.is-visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Responsive Swiss Breakpoints */
+@media (max-width: 1120px) {
+  .portal-card {
+    grid-column: span 4;
+  }
+  .portal-card[data-span='hero'],
+  .portal-card[data-span='wide'] {
+    grid-column: span 8;
+  }
+  .portal-card[data-span='tall'] {
+    grid-column: span 4;
+  }
+}
+
+@media (max-width: 760px) {
+  .hud-coords,
+  .hide-sm {
+    display: none;
+  }
+  .egg-drawer {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .egg-drawer-wrap.is-open {
+    max-height: 240px;
+  }
+  .masthead {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  .masthead-counter {
+    align-items: flex-start;
+  }
+  .stage-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 224px;
+  }
+  .portal-card,
+  .portal-card[data-span='hero'],
+  .portal-card[data-span='wide'],
+  .portal-card[data-span='tall'] {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+  .portal-card[data-span='hero'] {
+    grid-row: span 2;
+  }
+  .runway-row {
+    grid-template-columns: 44px 1fr auto;
+    padding: 14px 16px;
+  }
+  .runway-meta {
+    display: none;
+  }
+}
