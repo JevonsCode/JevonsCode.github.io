@@ -6,7 +6,13 @@ const STORAGE_KEY = 'ydys.sound.v1';
 class MicroSynth {
   constructor() {
     this.ctx = null;
-    this.enabled = localStorage.getItem(STORAGE_KEY) !== 'off';
+    let enabled = true;
+    try {
+      enabled = localStorage.getItem(STORAGE_KEY) !== 'off';
+    } catch {
+      enabled = true;
+    }
+    this.enabled = enabled;
     this.lastHoverAt = 0;
   }
 
@@ -25,7 +31,9 @@ class MicroSynth {
 
   toggle() {
     this.enabled = !this.enabled;
-    localStorage.setItem(STORAGE_KEY, this.enabled ? 'on' : 'off');
+    try {
+      localStorage.setItem(STORAGE_KEY, this.enabled ? 'on' : 'off');
+    } catch {}
     if (this.enabled) {
       this.ensureContext();
       this.playNote(659.25, 0.09, 'sine', 0.05);
