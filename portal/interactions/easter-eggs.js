@@ -2,22 +2,23 @@
 
 import { synth } from '../audio/micro-synth.js';
 import { scrambleText } from './cursor-and-tilt.js';
+import { currentLang, PREFIX_VARIANTS } from '../i18n/locale.js';
 
 export const EGG_REGISTRY = [
-  { id: 'pinball', code: '01', glyph: '●', hint: '弹', label: 'PINBALL' },
-  { id: 'wordplay', code: '02', glyph: '◈', hint: '词', label: 'MORPH' },
-  { id: 'eclipse', code: '03', glyph: '◐', hint: '蚀', label: 'ECLIPSE' },
-  { id: 'vortex', code: '04', glyph: '◎', hint: '旋', label: 'VORTEX' },
-  { id: 'zerog', code: '05', glyph: '◌', hint: '浮', label: 'ZERO-G' },
-  { id: 'konami', code: '06', glyph: '⚡', hint: '秘', label: 'OVERDRIVE' },
-  { id: 'dingdong', code: '07', glyph: '🔔', hint: '铃', label: 'DINGDONG' },
-  { id: 'warp', code: '08', glyph: '✦', hint: '跃', label: 'WARP' },
-  { id: 'punycode', code: '09', glyph: '⌘', hint: '译', label: 'PUNYCODE' },
-  { id: 'vault', code: '10', glyph: '⚿', hint: '藏', label: 'VAULT' },
+  { id: 'pinball', code: '01', glyph: '●', hint: '弹', hintEn: 'PULL', label: 'PINBALL' },
+  { id: 'wordplay', code: '02', glyph: '◈', hint: '词', hintEn: 'WORD', label: 'MORPH' },
+  { id: 'eclipse', code: '03', glyph: '◐', hint: '蚀', hintEn: 'SHADE', label: 'ECLIPSE' },
+  { id: 'vortex', code: '04', glyph: '◎', hint: '旋', hintEn: 'SPIN', label: 'VORTEX' },
+  { id: 'zerog', code: '05', glyph: '◌', hint: '浮', hintEn: 'FLOAT', label: 'ZERO-G' },
+  { id: 'konami', code: '06', glyph: '⚡', hint: '秘', hintEn: 'CODE', label: 'OVERDRIVE' },
+  { id: 'dingdong', code: '07', glyph: '🔔', hint: '铃', hintEn: 'BELL', label: 'DINGDONG' },
+  { id: 'warp', code: '08', glyph: '✦', hint: '跃', hintEn: 'LEAP', label: 'WARP' },
+  { id: 'punycode', code: '09', glyph: '⌘', hint: '译', hintEn: 'DECODE', label: 'PUNYCODE' },
+  { id: 'vault', code: '10', glyph: '⚿', hint: '藏', hintEn: 'HIDDEN', label: 'VAULT' },
 ];
 
 const STORAGE_KEY = 'ydys.eggs.v1';
-const WORDPLAY_VARIANTS = ['意思', '东西', '上头', '离谱', '浪漫', '硬核', '未来', '造物'];
+const WORDPLAY_VARIANTS = PREFIX_VARIANTS;
 const KONAMI_SEQ = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
 
 export class EasterEggController {
@@ -108,14 +109,15 @@ export class EasterEggController {
     this.drawerEl.innerHTML = '';
     for (const egg of EGG_REGISTRY) {
       const done = this.unlocked.has(egg.id);
+      const hint = currentLang() === 'en' ? egg.hintEn : egg.hint;
       const cell = document.createElement('button');
       cell.type = 'button';
       cell.className = `egg-slot${done ? ' is-unlocked' : ''}`;
-      cell.setAttribute('data-cursor', done ? 'REPLAY' : egg.hint);
+      cell.setAttribute('data-cursor', done ? 'REPLAY' : hint);
       cell.innerHTML = `
         <span class="egg-code">${egg.code}</span>
         <span class="egg-glyph">${done ? egg.glyph : '?'}</span>
-        <span class="egg-name">${done ? egg.label : egg.hint}</span>
+        <span class="egg-name">${done ? egg.label : hint}</span>
       `;
       cell.addEventListener('click', () => {
         synth.playClick();
@@ -212,23 +214,22 @@ export class EasterEggController {
   }
 
   cycleWordplay() {
-    const wordEl = document.getElementById('hero-word-right');
+    const wordEl = document.getElementById('hero-word-left');
     if (!wordEl) return;
     this.wordIndex = (this.wordIndex + 1) % WORDPLAY_VARIANTS.length;
     const next = WORDPLAY_VARIANTS[this.wordIndex];
     wordEl.classList.remove('is-flipping');
     void wordEl.offsetWidth;
     wordEl.classList.add('is-flipping');
-    scrambleText(wordEl, next, 260);
+    scrambleText(wordEl, next.prefix, 260);
+    document.dispatchEvent(new CustomEvent('ydys:wordchange', { detail: { prefix: next.prefix } }));
     synth.playHover(this.wordIndex * 2);
     this.unlock('wordplay');
   }
 
   bindWordplay() {
-    const rightEl = document.getElementById('hero-word-right');
     const leftEl = document.getElementById('hero-word-left');
-    rightEl?.addEventListener('click', () => this.cycleWordplay());
-    leftEl?.addEventListener('dblclick', () => this.cycleWordplay());
+    leftEl?.addEventListener('click', () => this.cycleWordplay());
   }
 
   toggleZeroG() {

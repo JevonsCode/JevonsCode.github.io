@@ -64,6 +64,7 @@ async function main() {
         slug: repo.name,
         pageTitle: probe.pageTitle,
         reachable: probe.reachable,
+        description: repo.description || '',
         language: repo.language || '',
         topics: Array.isArray(repo.topics) ? repo.topics : [],
         stars: repo.stargazers_count || 0,

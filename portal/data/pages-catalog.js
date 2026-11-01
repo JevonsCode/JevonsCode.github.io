@@ -23,6 +23,7 @@ export const CURATED_STAGE_META = Object.freeze({
     logo: './portal/assets/brands/fuli-logo.png',
     logoLightBg: true,
     order: 1,
+    hot: true,
   },
   DingDongBuddy: {
     displayTitle: '叮咚 · DINGDONG',
@@ -34,6 +35,7 @@ export const CURATED_STAGE_META = Object.freeze({
     logo: './portal/assets/brands/dingdong-icon.png',
     logoDark: './portal/assets/brands/dingdong-icon-w.png',
     order: 2,
+    hot: true,
   },
   phonebridge: {
     displayTitle: 'PHONEBRIDGE',
@@ -208,6 +210,31 @@ export const CURATED_STAGE_META = Object.freeze({
   },
 });
 
+// One-line hover introductions. Repos without an entry fall back to their GitHub description.
+export const PROJECT_BLURBS = Object.freeze({
+  fuli: { zh: '让 AI Agent 记住你的品味与判断，跨客户端接力协作', en: 'Keeps your taste and judgment across AI agents and clients.' },
+  DingDongBuddy: { zh: '本地 AI Agent 的桌面小伙伴，剪贴板与提醒一手掌握', en: 'A desktop companion for your clipboard and local AI agents.' },
+  phonebridge: { zh: '让 AI 看见屏幕，替你点按、滑动和打字的安卓桥', en: 'Lets your AI see, tap, swipe and type on your Android phone.' },
+  'fuli-avatar': { zh: '零依赖、确定性生成的 SVG 角色头像', en: 'Dependency-free, deterministic SVG character avatars.' },
+  jianxiang: { zh: '图像与留白的排版小工坊，可离线安装', en: 'A pocket studio for images and negative space, works offline.' },
+  'dingdong-voices': { zh: '叮咚社区提示音库，每段不超过 3 秒', en: 'Community notification sounds for DingDong, 3 seconds or less.' },
+  '3d-solar-system': { zh: '用虚拟摇杆漫游的 Three.js 3D 太阳系', en: 'Fly through a Three.js solar system with a virtual joystick.' },
+  'astron-solar-system': { zh: '太阳系星球图鉴', en: 'An illustrated atlas of the solar system.' },
+  'union-lotto': { zh: '双色球号码小工具', en: 'A little Union Lotto number picker.' },
+  'my-awesome-ai-tools': { zh: '我的数字工作站，常用 AI 工具一站直达', en: 'My digital workstation: favorite AI tools in one place.' },
+  'game-score-website': { zh: '德州扑克等桌游计分板，手机上顺手', en: "Mobile-friendly scorekeeping for Texas Hold'em and friends." },
+  'notion-resume-builder': { zh: 'Notion 风格的轻量简历生成器', en: 'A lightweight, Notion-style resume builder.' },
+  'oled-burn-fix': { zh: '全屏循环变色，缓解 OLED 烧屏', en: 'Cycles full-screen colors to ease OLED burn-in.' },
+  image2base64: { zh: '把图片一键转成 Base64', en: 'Turns images into Base64 strings.' },
+  'typescript-interface-generate-markdown': { zh: '从 TypeScript 接口生成 Markdown 文档', en: 'Generates Markdown docs from TypeScript interfaces.' },
+  tools: { zh: '随手做的小工具合集', en: 'A grab bag of small tools.' },
+  'check-version': { zh: '一眼看清当前版本是否最新', en: 'Checks at a glance whether you are on the latest version.' },
+  index: { zh: '早期的网址导航，支持标签与搜索', en: 'An early link index with tags and search.' },
+  'pages-index': { zh: '这个门户的初版存档', en: 'The first draft of this portal.' },
+  __temporary__: { zh: 'UA 识别测试页', en: 'A user-agent test page.' },
+  postmessagetest: { zh: 'postMessage 跨窗口通信测试', en: 'A cross-window postMessage test.' },
+});
+
 const FALLBACK_ACCENTS = ['#FF3B1D', '#1967D2', '#0F6B55', '#E09F3E', '#6367F2', '#EC4899', '#06B6D4'];
 
 export function hashSeed(input) {
@@ -282,6 +309,7 @@ export function mergePagesCatalog(manifestItems = [], liveGithubRepos = [], opti
       ...prev,
       slug: repo.name,
       language: repo.language || prev.language || '',
+      description: repo.description || prev.description || '',
       topics: Array.isArray(repo.topics) && repo.topics.length ? repo.topics : prev.topics || [],
       stars: typeof repo.stargazers_count === 'number' ? repo.stargazers_count : prev.stars || 0,
       pushedAt: repo.pushed_at || prev.pushedAt || '',
@@ -302,6 +330,8 @@ export function mergePagesCatalog(manifestItems = [], liveGithubRepos = [], opti
       span: curated?.span || 'standard',
       accent: curated?.accent || FALLBACK_ACCENTS[seed % FALLBACK_ACCENTS.length],
       accentAlt: curated?.accentAlt || null,
+      blurb: PROJECT_BLURBS[slug] || (raw.description ? { zh: raw.description, en: raw.description } : null),
+      hot: Boolean(curated?.hot),
       logo: curated?.logo || null,
       logoDark: curated?.logoDark || null,
       logoLightBg: Boolean(curated?.logoLightBg),

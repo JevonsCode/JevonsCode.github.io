@@ -48,6 +48,7 @@
       </div>
 
       <div class="telemetry-right">
+        <button type="button" id="lang-toggle" class="rail-btn" aria-label="Switch to English" data-cursor="LANG">EN</button>
         <button type="button" id="spotlight-btn" class="rail-btn" aria-label="Quick Jump" data-cursor="⌘K">⌘K</button>
         <button type="button" id="roulette-btn" class="rail-btn" aria-label="Random Teleport" data-cursor="SPIN">⚄</button>
         <button type="button" id="sound-toggle" class="rail-btn" aria-label="Toggle Sound" data-cursor="SYNTH">♪ ON</button>
@@ -64,17 +65,19 @@
     <!-- Giant Kinetic Swiss Masthead (Zero Verbose Copy) -->
     <section class="masthead">
       <h1 class="brand-lockup" aria-label="有点.意思.com">
-        <span id="hero-word-left" class="brand-word" data-cursor="有点">有点</span>
+        <button type="button" id="hero-word-left" class="brand-word brand-word-btn" data-cursor="MORPH ◈">有点</button>
         <button type="button" id="hero-dot" class="brand-dot-btn" aria-label="Launch Pinball" data-cursor="PULL ●">
           <span class="brand-dot-core"></span>
         </button>
-        <span id="hero-word-right" class="brand-word" data-cursor="CLICK ◈">意思</span>
+        <span id="hero-word-right" class="brand-word">意思</span>
         <span class="brand-tld">.COM</span>
       </h1>
 
+      <div id="brand-gloss" class="brand-gloss" hidden></div>
+
       <div class="masthead-counter">
         <span id="total-counter" class="counter-num">00</span>
-        <span class="counter-tag">LIVE PAGES</span>
+        <span class="counter-tag" data-i18n="livePages">在线作品</span>
       </div>
     </section>
 

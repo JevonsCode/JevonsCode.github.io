@@ -86,3 +86,32 @@ test('hashSeed is deterministic and non-negative', () => {
   assert.notEqual(hashSeed('fuli'), hashSeed('phonebridge'));
   assert.ok(hashSeed('any-slug') >= 0);
 });
+
+test('fuli and DingDongBuddy are marked as hot/recommended with bilingual blurbs', () => {
+  const manifest = [
+    { slug: 'fuli', repoUrl: 'https://github.com/JevonsCode/fuli' },
+    { slug: 'DingDongBuddy', repoUrl: 'https://github.com/JevonsCode/DingDongBuddy' },
+    { slug: 'phonebridge', repoUrl: 'https://github.com/JevonsCode/phonebridge' },
+  ];
+  const merged = mergePagesCatalog(manifest, [], { hostname: '有点.意思.com' });
+  const fuli = merged.find((i) => i.slug === 'fuli');
+  const dingdong = merged.find((i) => i.slug === 'DingDongBuddy');
+  const phonebridge = merged.find((i) => i.slug === 'phonebridge');
+
+  assert.equal(fuli.hot, true);
+  assert.equal(dingdong.hot, true);
+  assert.equal(phonebridge.hot, false);
+
+  assert.ok(fuli.blurb?.zh && fuli.blurb?.en);
+  assert.ok(dingdong.blurb?.zh && dingdong.blurb?.en);
+});
+
+test('locale and prefix variants provide expected wordplay options', async () => {
+  const { PREFIX_VARIANTS, t } = await import('../portal/i18n/locale.js');
+  assert.ok(PREFIX_VARIANTS.length >= 6);
+  assert.ok(PREFIX_VARIANTS.some((p) => p.prefix === '有点'));
+  assert.ok(PREFIX_VARIANTS.some((p) => p.prefix === '差点'));
+  assert.ok(PREFIX_VARIANTS.some((p) => p.prefix === '意思'));
+  assert.equal(t('site'), '官网 ↗');
+});
+

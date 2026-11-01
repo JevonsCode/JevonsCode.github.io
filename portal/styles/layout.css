@@ -24,6 +24,28 @@ body {
   color: #fff;
 }
 
+/* Prevent accidental text highlight on interactive UI components */
+.portal-shell,
+.brand-lockup,
+.telemetry-bar,
+.control-strip,
+.portal-card,
+.footer-rail,
+.dimension-peek,
+.spotlight-modal,
+button,
+a {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input,
+textarea,
+.peek-frame {
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+
 html.has-custom-cursor,
 html.has-custom-cursor a,
 html.has-custom-cursor button {
@@ -349,16 +371,86 @@ html.has-custom-cursor #swiss-cursor-ring {
   animation: shutterUp 0.85s var(--ease-out-expo) both;
 }
 
+.brand-word-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+#hero-word-left {
+  cursor: pointer;
+}
+
+#hero-word-left:hover {
+  color: var(--accent);
+}
+
+#hero-word-left.is-flipping {
+  animation: wordFlip 0.32s var(--ease-spring);
+}
+
 #hero-word-right {
   animation-delay: 0.08s;
 }
 
-#hero-word-right:hover {
-  color: var(--accent);
+/* English Gloss under the Masthead */
+.brand-gloss {
+  grid-column: 1 / -1;
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  border-left-width: 3px;
+  border-left-color: var(--accent);
+  border-radius: 0 6px 6px 0;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--ink-muted);
+  max-width: 640px;
+  animation: shutterUp 0.35s var(--ease-out-expo) both;
 }
 
-#hero-word-right.is-flipping {
-  animation: wordFlip 0.32s var(--ease-spring);
+.brand-gloss[hidden] {
+  display: none !important;
+}
+
+.brand-gloss .gloss-pinyin {
+  display: block;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.brand-gloss .gloss-dot {
+  color: var(--accent);
+  font-weight: 900;
+}
+
+.brand-gloss .gloss-dot-highlight {
+  color: var(--accent);
+  font-size: 13px;
+}
+
+.brand-gloss .gloss-line {
+  display: block;
+  font-size: 11px;
+}
+
+.brand-gloss b {
+  color: var(--ink);
+}
+
+.brand-gloss em {
+  font-style: normal;
+  color: var(--card-accent, var(--accent));
+  font-weight: 600;
 }
 
 @keyframes shutterUp {
@@ -658,6 +750,54 @@ body.is-zero-g .portal-card {
   gap: 7px;
 }
 
+/* Recommended / Hot Flagship Badge */
+.hot-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px 2px 5px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 69, 0, 0.16), rgba(255, 140, 0, 0.22));
+  border: 1px solid rgba(255, 77, 0, 0.45);
+  color: #ff4500;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  box-shadow: 0 0 12px rgba(255, 69, 0, 0.28);
+  animation: hotPulse 2.2s ease-in-out infinite;
+  white-space: nowrap;
+}
+
+:root[data-theme='dark'] .hot-badge {
+  background: linear-gradient(135deg, rgba(255, 69, 0, 0.25), rgba(255, 140, 0, 0.35));
+  border-color: rgba(255, 100, 30, 0.65);
+  color: #ff6b3d;
+  box-shadow: 0 0 16px rgba(255, 80, 0, 0.4);
+}
+
+.hot-flame {
+  display: inline-block;
+  font-size: 11px;
+  transform-origin: 50% 90%;
+  animation: flameFlicker 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes hotPulse {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(255, 69, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(255, 69, 0, 0.45);
+  }
+}
+
+@keyframes flameFlicker {
+  0% { transform: rotate(-3deg) scale(0.96); }
+  50% { transform: rotate(4deg) scale(1.08); }
+  100% { transform: rotate(-2deg) scale(1.02); }
+}
+
 .brand-badge {
   display: inline-grid;
   place-items: center;
@@ -829,6 +969,37 @@ body.is-zero-g .portal-card {
   position: absolute;
   inset: 0;
   z-index: 3;
+}
+
+/* One-line introduction shown on hover */
+.card-blurb {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 56px;
+  z-index: 5;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.24s var(--ease-out-expo), transform 0.24s var(--ease-out-expo);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.portal-card:hover .card-blurb {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .card-bottom {

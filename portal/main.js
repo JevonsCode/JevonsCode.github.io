@@ -6,6 +6,15 @@ import { CardArtDirector } from './visuals/card-art.js';
 import { SwissFieldCanvas } from './visuals/field-canvas.js';
 import { SwissReticleCursor, bindCardTiltAndScramble } from './interactions/cursor-and-tilt.js';
 import { EasterEggController } from './interactions/easter-eggs.js';
+import {
+  t,
+  pickText,
+  currentLang,
+  setLang,
+  onLangChange,
+  applyStaticTranslations,
+  renderBrandGloss,
+} from './i18n/locale.js';
 
 const THEME_STORAGE_KEY = 'ydys.theme.v1';
 
@@ -51,6 +60,10 @@ function animateCounter(targetValue) {
   requestAnimationFrame(step);
 }
 
+function escapeHtml(text) {
+  return String(text || '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
+}
+
 function renderBrandBadgeHtml(item) {
   if (!item.logo) return '';
   const cls = [
@@ -80,7 +93,7 @@ function renderFilterPills() {
     btn.type = 'button';
     btn.className = `pill-btn${state.activeTag === tag ? ' is-active' : ''}${tag === 'VAULT' ? ' is-vault' : ''}`;
     btn.setAttribute('data-cursor', tag);
-    btn.textContent = `${tag === 'VAULT' ? '⚿ VAULT' : tag} · ${String(count).padStart(2, '0')}`;
+    btn.textContent = `${t(`tag_${tag}`)} · ${String(count).padStart(2, '0')}`;
     btn.addEventListener('click', () => {
       synth.playClick();
       state.activeTag = tag;
@@ -101,28 +114,27 @@ function createCardElement(item, visualIdx, { forOrbit = false } = {}) {
   article.style.setProperty('--card-accent', item.accent);
   article.style.animationDelay = `${Math.min(visualIdx * 32, 360)}ms`;
 
+  const blurb = escapeHtml(pickText(item.blurb));
   article.innerHTML = `
     <div class="card-top">
       <span class="card-index">${String(visualIdx + 1).padStart(2, '0')} // ${item.stamp}</span>
       <span class="card-top-right">
+        ${renderHotBadgeHtml(item)}
         ${renderBrandBadgeHtml(item)}
-        <span class="card-tag">${item.tag}</span>
+        <span class="card-tag">${t(`tag_${item.tag}`)}</span>
       </span>
     </div>
     <div class="card-stage">
       <canvas class="card-canvas" aria-hidden="true"></canvas>
-      <a class="card-hit-link" href="${item.href}" target="_blank" rel="noopener" aria-label="官网 ${item.displayTitle}" data-cursor="官网 ↗"></a>
+      <button type="button" class="card-hit-link" aria-label="${t('peekTitle')} ${item.displayTitle}" data-cursor="${t('peekCursor')}"></button>
     </div>
+    ${blurb ? `<p class="card-blurb">${blurb}</p>` : ''}
     <div class="card-bottom">
       <div class="card-identity">
         <h2 class="card-title">${item.displayTitle}</h2>
         <span class="card-route">${DISPLAY_DOMAIN}${item.routeLabel}</span>
       </div>
-      <div class="card-actions">
-        <button type="button" class="icon-chip act-peek" title="站内预览" aria-label="预览 ${item.displayTitle}" data-cursor="PEEK ◫">◫</button>
-        <a class="icon-chip act-gh" href="${item.repoUrl}" target="_blank" rel="noopener" title="GitHub 仓库" aria-label="GitHub ${item.slug}" data-cursor="GITHUB ↗">${GITHUB_ICON_SVG}</a>
-        <a class="icon-chip is-site" href="${item.href}" target="_blank" rel="noopener" title="打开官网" aria-label="官网 ${item.displayTitle}" data-cursor="官网 ↗">官网 ↗</a>
-      </div>
+      ${renderLinkActionsHtml(item)}
     </div>
   `;
 
@@ -138,35 +150,28 @@ function createCardElement(item, visualIdx, { forOrbit = false } = {}) {
     if (state.hoveredItem === item) state.hoveredItem = null;
   });
 
-  // Triple-clicking DingDong triggers the bouncing mascot rain easter egg!
-  if (item.slug === 'DingDongBuddy' || item.slug === 'dingdong-voices') {
-    let clicks = 0;
-    let timer = 0;
-    article.addEventListener('pointerdown', () => {
-      clicks += 1;
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        clicks = 0;
-      }, 650);
-      if (clicks >= 3) {
-        clicks = 0;
-        field?.triggerBellRain();
-      }
-    });
-  }
-
-  article.querySelector('.act-peek')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  // Clicking anywhere on the card except its link buttons opens the in-portal preview.
+  article.addEventListener('click', (e) => {
+    if (e.target.closest('a, .fuli-avatar-roll')) return;
     synth.playClick();
     openPeek(item);
   });
 
-  article.querySelector('.act-gh')?.addEventListener('click', () => {
-    synth.playClick();
-  });
-
   return article;
+}
+
+function renderHotBadgeHtml(item) {
+  if (!item.hot) return '';
+  return `<span class="hot-badge" title="${t('hotTitle')}"><span class="hot-flame" aria-hidden="true">🔥</span>${t('hot')}</span>`;
+}
+
+function renderLinkActionsHtml(item) {
+  return `
+    <div class="card-actions">
+      <a class="icon-chip is-site" href="${item.href}" target="_blank" rel="noopener" title="${t('siteTitle')}" data-cursor="${t('siteCursor')}">${t('site')}</a>
+      <a class="icon-chip" href="${item.repoUrl}" target="_blank" rel="noopener" title="${t('githubTitle')}" data-cursor="${t('githubCursor')}">${GITHUB_ICON_SVG}<span>GitHub</span></a>
+    </div>
+  `;
 }
 
 function stopOrbitLoop() {
@@ -185,7 +190,7 @@ function renderOrbitStage(container, items) {
 
   const hint = document.createElement('div');
   hint.className = 'orbit-hint';
-  hint.textContent = 'DRAG / SCROLL · 360°';
+  hint.textContent = t('orbitHint');
   wrap.appendChild(hint);
   container.appendChild(wrap);
 
@@ -259,27 +264,26 @@ function renderRunwayStage(container, items) {
     const row = document.createElement('div');
     row.className = 'runway-row';
     row.dataset.slug = item.slug;
-    row.setAttribute('data-cursor', '官网 ↗');
+    row.setAttribute('data-cursor', t('peekCursor'));
+    const blurb = escapeHtml(pickText(item.blurb));
     row.innerHTML = `
       <span class="runway-idx" style="display:inline-flex;align-items:center;gap:8px;">
         <span>${String(idx + 1).padStart(2, '0')}</span>
         ${renderBrandBadgeHtml(item)}
       </span>
-      <a class="runway-name" href="${item.href}" target="_blank" rel="noopener">${item.displayTitle}</a>
-      <span class="runway-meta">${item.tag} · ${DISPLAY_DOMAIN}${item.routeLabel}</span>
-      <div class="runway-actions">
-        <button type="button" class="icon-chip act-peek" aria-label="预览 ${item.displayTitle}" data-cursor="PEEK ◫">◫</button>
-        <a class="icon-chip" href="${item.repoUrl}" target="_blank" rel="noopener" aria-label="GitHub ${item.slug}" data-cursor="GITHUB ↗">${GITHUB_ICON_SVG}<span>GH</span></a>
-        <a class="icon-chip is-site" href="${item.href}" target="_blank" rel="noopener" aria-label="官网 ${item.displayTitle}" data-cursor="官网 ↗">官网 ↗</a>
-      </div>
+      <span class="runway-name">${item.displayTitle}${renderHotBadgeHtml(item)}</span>
+      <span class="runway-meta">
+        <span class="runway-route">${t(`tag_${item.tag}`)} · ${DISPLAY_DOMAIN}${item.routeLabel}</span>
+        ${blurb ? `<span class="runway-blurb">${blurb}</span>` : ''}
+      </span>
+      ${renderLinkActionsHtml(item)}
     `;
     row.addEventListener('pointerenter', () => {
       state.hoveredItem = item;
       synth.playHover(idx);
     });
-    row.querySelector('.act-peek')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+    row.addEventListener('click', (e) => {
+      if (e.target.closest('a')) return;
       synth.playClick();
       openPeek(item);
     });
@@ -367,35 +371,29 @@ function renderSpotlightResults(query) {
       !q ||
       item.displayTitle.toLowerCase().includes(q) ||
       item.slug.toLowerCase().includes(q) ||
-      item.tag.toLowerCase().includes(q)
+      item.tag.toLowerCase().includes(q) ||
+      pickText(item.blurb).toLowerCase().includes(q)
   );
 
   listEl.innerHTML = '';
   matches.forEach((item, idx) => {
     const row = document.createElement('div');
     row.className = `spotlight-item${idx === 0 ? ' is-selected' : ''}`;
-    row.dataset.href = item.href;
-    row.dataset.repo = item.repoUrl;
+    row.dataset.slug = item.slug;
+    row.title = pickText(item.blurb);
     row.innerHTML = `
-      <span style="display:inline-flex;align-items:center;gap:8px;">
+      <span style="display:inline-flex;align-items:center;gap:8px;min-width:0;">
         <strong>${item.indexCode}</strong>
         ${renderBrandBadgeHtml(item)}
         <span>${item.displayTitle}</span>
+        ${renderHotBadgeHtml(item)}
       </span>
-      <span style="display:inline-flex;align-items:center;gap:6px;">
-        <a class="icon-chip" href="${item.repoUrl}" target="_blank" rel="noopener" title="GitHub">${GITHUB_ICON_SVG}<span>GH</span></a>
-        <a class="icon-chip is-site" href="${item.href}" target="_blank" rel="noopener" title="官网">官网 ↗</a>
-      </span>
+      ${renderLinkActionsHtml(item)}
     `;
     row.addEventListener('click', (e) => {
-      if (e.target.closest('a')) {
-        synth.playClick();
-        closeSpotlight();
-        return;
-      }
       synth.playClick();
       closeSpotlight();
-      window.open(item.href, '_blank', 'noopener');
+      if (!e.target.closest('a')) openPeek(item);
     });
     listEl.appendChild(row);
   });
@@ -414,7 +412,7 @@ function toggleThemeWithEclipse(event) {
   const applyTheme = () => {
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem(THEME_STORAGE_KEY, next);
-    if (btn) btn.textContent = next === 'dark' ? '☀ LIGHT' : '◐ DARK';
+    if (btn) btn.textContent = next === 'dark' ? t('themeLight') : t('themeDark');
     artDirector.refreshTheme();
     field?.refreshTheme();
   };
@@ -494,23 +492,17 @@ function bindControls() {
     });
   });
 
-  const themeBtn = document.getElementById('theme-toggle');
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  if (themeBtn) {
-    themeBtn.textContent = isDark ? '☀ LIGHT' : '◐ DARK';
-    themeBtn.addEventListener('click', (e) => toggleThemeWithEclipse(e));
-  }
+  document.getElementById('theme-toggle')?.addEventListener('click', (e) => toggleThemeWithEclipse(e));
 
   const soundBtn = document.getElementById('sound-toggle');
-  const syncSoundLabel = () => {
-    if (!soundBtn) return;
-    soundBtn.textContent = synth.enabled ? '♪ ON' : '♪ OFF';
-    soundBtn.classList.toggle('is-active', synth.enabled);
-  };
-  syncSoundLabel();
   soundBtn?.addEventListener('click', () => {
     synth.toggle();
-    syncSoundLabel();
+    syncChromeLabels();
+  });
+
+  document.getElementById('lang-toggle')?.addEventListener('click', () => {
+    synth.playClick();
+    setLang(currentLang() === 'en' ? 'zh' : 'en');
   });
 
   window.addEventListener('pointerdown', () => synth.ensureContext(), { once: true });
@@ -540,11 +532,11 @@ function bindControls() {
   spotInput?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       const first = document.querySelector('.spotlight-item');
-      if (first) {
-        const dest = e.shiftKey ? first.dataset.repo : first.dataset.href;
+      const item = first && state.allItems.find((entry) => entry.slug === first.dataset.slug);
+      if (item) {
         synth.playClick();
         closeSpotlight();
-        if (dest) window.open(dest, '_blank', 'noopener');
+        openPeek(item);
       }
     } else if (e.key === 'Escape') {
       closeSpotlight();
@@ -555,11 +547,10 @@ function bindControls() {
     synth.playClick();
     closePeek();
   });
-  document.getElementById('peek-viewport-toggle')?.addEventListener('click', (e) => {
+  document.getElementById('peek-viewport-toggle')?.addEventListener('click', () => {
     synth.playClick();
-    const win = document.getElementById('peek-window');
-    const mobile = win?.classList.toggle('is-mobile');
-    e.currentTarget.textContent = mobile ? '▭ DESKTOP' : '▯ MOBILE';
+    document.getElementById('peek-window')?.classList.toggle('is-mobile');
+    syncChromeLabels();
   });
   document.getElementById('peek-backdrop')?.addEventListener('click', (e) => {
     if (e.target.id === 'peek-backdrop') closePeek();
@@ -585,7 +576,53 @@ function bindControls() {
   });
 }
 
+/* Labels whose text depends on both the locale and live UI state. */
+function syncChromeLabels() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const themeBtn = document.getElementById('theme-toggle');
+  if (themeBtn) themeBtn.textContent = isDark ? t('themeLight') : t('themeDark');
+
+  const langBtn = document.getElementById('lang-toggle');
+  if (langBtn) {
+    langBtn.textContent = t('langToggle');
+    langBtn.setAttribute('aria-label', t('langToggleAria'));
+  }
+
+  const soundBtn = document.getElementById('sound-toggle');
+  if (soundBtn) {
+    soundBtn.textContent = synth.enabled ? t('soundOn') : t('soundOff');
+    soundBtn.classList.toggle('is-active', synth.enabled);
+  }
+
+  const viewportBtn = document.getElementById('peek-viewport-toggle');
+  const mobile = document.getElementById('peek-window')?.classList.contains('is-mobile');
+  if (viewportBtn) viewportBtn.textContent = mobile ? t('desktopView') : t('mobileView');
+}
+
+function syncBrandGloss(prefix) {
+  const leftEl = document.getElementById('hero-word-left');
+  renderBrandGloss(document.getElementById('brand-gloss'), prefix || leftEl?.textContent?.trim() || '有点');
+}
+
 async function bootstrap() {
+  applyStaticTranslations();
+  syncChromeLabels();
+  syncBrandGloss();
+
+  document.addEventListener('ydys:wordchange', (e) => {
+    syncBrandGloss(e.detail?.prefix);
+  });
+
+  onLangChange(() => {
+    syncChromeLabels();
+    syncBrandGloss();
+    eggs?.renderDrawer();
+    if (state.allItems.length) {
+      renderFilterPills();
+      renderStage();
+    }
+  });
+
   const fieldCanvas = document.getElementById('swiss-field');
   field = new SwissFieldCanvas(fieldCanvas, {
     onEasterEgg: (id) => eggs?.unlock(id),
