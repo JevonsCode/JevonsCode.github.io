@@ -1,7 +1,7 @@
 {
   "owner": "JevonsCode",
   "domain": "有点.意思.com",
-  "syncedAt": "2026-11-03T14:13:14.784Z",
+  "syncedAt": "2026-11-03T23:22:21.995Z",
   "count": 21,
   "items": [
     {
@@ -72,7 +72,7 @@
       "language": "Dart",
       "topics": [],
       "stars": 5,
-      "pushedAt": "2026-11-03T12:45:37Z",
+      "pushedAt": "2026-11-03T16:56:57Z",
       "repoUrl": "https://github.com/JevonsCode/DingDongBuddy",
       "localSubpath": false
     },
@@ -93,7 +93,7 @@
         "mcp"
       ],
       "stars": 10,
-      "pushedAt": "2026-11-03T13:12:31Z",
+      "pushedAt": "2026-11-03T19:46:12Z",
       "repoUrl": "https://github.com/JevonsCode/fuli",
       "localSubpath": false
     },
@@ -270,7 +270,7 @@
       "language": "JavaScript",
       "topics": [],
       "stars": 0,
-      "pushedAt": "2026-11-01T18:45:37Z",
+      "pushedAt": "2026-11-03T20:26:25Z",
       "repoUrl": "https://github.com/JevonsCode/union-lotto",
       "localSubpath": false
     }
