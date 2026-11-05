@@ -1,7 +1,7 @@
 {
   "owner": "JevonsCode",
   "domain": "有点.意思.com",
-  "syncedAt": "2026-11-05T06:45:14.144Z",
+  "syncedAt": "2026-11-05T19:59:29.395Z",
   "count": 21,
   "items": [
     {
@@ -72,7 +72,7 @@
       "language": "Dart",
       "topics": [],
       "stars": 5,
-      "pushedAt": "2026-11-04T16:51:11Z",
+      "pushedAt": "2026-11-05T18:57:19Z",
       "repoUrl": "https://github.com/JevonsCode/DingDongBuddy",
       "localSubpath": false
     },
@@ -93,7 +93,7 @@
         "mcp"
       ],
       "stars": 10,
-      "pushedAt": "2026-11-05T04:46:31Z",
+      "pushedAt": "2026-11-05T19:53:58Z",
       "repoUrl": "https://github.com/JevonsCode/fuli",
       "localSubpath": false
     },
