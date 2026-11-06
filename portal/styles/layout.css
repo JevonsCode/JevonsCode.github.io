@@ -789,6 +789,48 @@ html.has-custom-cursor #swiss-cursor-ring {
   transform: scale(1.04);
 }
 
+/* Random Periodic Cyberpunk Signal Malfunction / Static Crackle ("滋滋滋") */
+.cyber-signal-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  pointer-events: none;
+  z-index: 9998;
+  mix-blend-mode: screen;
+}
+
+.cyber-signal-overlay[hidden] {
+  display: none !important;
+}
+
+body.is-signal-glitch .portal-shell {
+  transform: translate3d(var(--signal-jx, 0px), var(--signal-jy, 0px), 0)
+    skewX(var(--signal-skew, 0deg));
+  filter:
+    drop-shadow(-4px 0 0 rgba(0, 240, 255, 0.85))
+    drop-shadow(4px 0 0 rgba(255, 0, 85, 0.85))
+    contrast(1.28)
+    saturate(1.65);
+}
+
+body.is-signal-dropout .portal-shell {
+  opacity: 0.24;
+  filter:
+    drop-shadow(-9px 0 0 #00f0ff)
+    drop-shadow(9px 0 0 #ff0055)
+    contrast(2.4)
+    brightness(0.45);
+}
+
+body.is-signal-invert .portal-shell {
+  filter:
+    invert(0.92)
+    hue-rotate(160deg)
+    drop-shadow(-6px 0 0 #fcee09)
+    drop-shadow(6px 0 0 #00f0ff);
+}
+
 .stage-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));

@@ -120,6 +120,64 @@ class MicroSynth {
       this.playNote(hz, 0.24, 'sawtooth', 0.028, i * 0.045);
     });
   }
+
+  // Cyberpunk "滋滋滋" electromagnetic static crackle & carrier dropout
+  playSignalInterference(durationMs = 580) {
+    const ctx = this.ensureContext();
+    if (!ctx || ctx.state !== 'running') return;
+
+    const durSec = Math.max(0.25, Math.min(1.1, durationMs / 1000));
+    const now = ctx.currentTime;
+    const sampleRate = ctx.sampleRate;
+    const frameCount = Math.floor(sampleRate * durSec);
+    const buffer = ctx.createBuffer(1, frameCount, sampleRate);
+    const data = buffer.getChannelData(0);
+
+    // Generate gated crackle + static snow ("滋滋滋" stutter bursts)
+    for (let i = 0; i < frameCount; i += 1) {
+      const t = i / sampleRate;
+      const stutterGate =
+        Math.sin(t * 78) > -0.15 && Math.cos(t * 31) > -0.35 ? 1 : 0.08;
+      const crackleSpike = Math.random() < 0.06 ? (Math.random() * 2 - 1) * 1.8 : 0;
+      data[i] = ((Math.random() * 2 - 1) * 0.75 + crackleSpike) * stutterGate;
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const bandpass = ctx.createBiquadFilter();
+    bandpass.type = 'bandpass';
+    bandpass.frequency.setValueAtTime(1850, now);
+    bandpass.frequency.linearRampToValueAtTime(3400, now + durSec * 0.45);
+    bandpass.frequency.linearRampToValueAtTime(920, now + durSec);
+    bandpass.Q.setValueAtTime(2.4, now);
+
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.001, now);
+    noiseGain.gain.linearRampToValueAtTime(0.055, now + 0.02);
+    noiseGain.gain.setValueAtTime(0.012, now + durSec * 0.36);
+    noiseGain.gain.setValueAtTime(0.06, now + durSec * 0.52);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + durSec);
+
+    noise.connect(bandpass);
+    bandpass.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+    noise.start(now);
+    noise.stop(now + durSec + 0.02);
+
+    // Low 60Hz electrical AC hum drop
+    const hum = ctx.createOscillator();
+    const humGain = ctx.createGain();
+    hum.type = 'sawtooth';
+    hum.frequency.setValueAtTime(64, now);
+    hum.frequency.linearRampToValueAtTime(38, now + durSec);
+    humGain.gain.setValueAtTime(0.018, now);
+    humGain.gain.exponentialRampToValueAtTime(0.0001, now + durSec);
+    hum.connect(humGain);
+    humGain.connect(ctx.destination);
+    hum.start(now);
+    hum.stop(now + durSec + 0.02);
+  }
 }
 
 export const synth = new MicroSynth();

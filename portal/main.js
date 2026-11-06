@@ -7,6 +7,7 @@ import { SwissFieldCanvas } from './visuals/field-canvas.js';
 import { SwissReticleCursor, bindCardTiltAndScramble } from './interactions/cursor-and-tilt.js';
 import { EasterEggController } from './interactions/easter-eggs.js';
 import { mountCyberLoader } from './stage/cyber-loader.js';
+import { startCyberSignalGlitchLoop } from './stage/signal-glitch.js';
 import {
   t,
   pickText,
@@ -797,6 +798,7 @@ async function bootstrap() {
   state.allItems = items;
   renderFilterPills();
   renderStage();
+  startCyberSignalGlitchLoop({ minMs: 20000, maxMs: 44000 });
 }
 
 bootstrap();
