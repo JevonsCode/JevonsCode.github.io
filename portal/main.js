@@ -690,7 +690,33 @@ async function bootstrap() {
 
   bindControls();
 
-  state.allItems = await loadLivePagesCatalog({
+  const bootLogs = [
+    '>> [0x01] NEURAL_HANDSHAKE :: XN--8OVP9S.XN--M8TXU.COM',
+    '>> [0x02] INJECTING_FLAGSHIP_CORES :: FULI // DINGDONG // PHONEBRIDGE',
+    '>> [0x03] IGNITING_SOLARIS_3D_ORRERY // 60FPS_SHADER_LOCK',
+    '>> [0x04] OVERDRIVE_READY // 正在展开赛博作品矩阵...',
+  ];
+  const fillEl = document.getElementById('cyber-boot-fill');
+  const pctEl = document.getElementById('cyber-boot-pct');
+  const logEl = document.getElementById('cyber-boot-log');
+  const bootStart = performance.now();
+  const minBootMs = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 920;
+
+  let bootRaf = 0;
+  const animateBootHud = (now) => {
+    const p = Math.min(0.96, (now - bootStart) / Math.max(1, minBootMs));
+    const pct = Math.round(18 + p * 80);
+    if (fillEl) fillEl.style.width = `${pct}%`;
+    if (pctEl) pctEl.textContent = `${String(pct).padStart(2, '0')}%`;
+    if (logEl) {
+      const idx = Math.min(bootLogs.length - 1, Math.floor(p * bootLogs.length));
+      logEl.textContent = bootLogs[idx];
+    }
+    if (p < 0.96) bootRaf = requestAnimationFrame(animateBootHud);
+  };
+  if (minBootMs > 0) bootRaf = requestAnimationFrame(animateBootHud);
+
+  const catalogPromise = loadLivePagesCatalog({
     onRemoteUpdate: (updatedItems) => {
       if (updatedItems.length !== state.allItems.length) {
         state.allItems = updatedItems;
@@ -701,6 +727,23 @@ async function bootstrap() {
       }
     },
   });
+
+  const [items] = await Promise.all([
+    catalogPromise,
+    minBootMs > 0 ? new Promise((r) => setTimeout(r, minBootMs)) : Promise.resolve(),
+  ]);
+  if (bootRaf) cancelAnimationFrame(bootRaf);
+  if (fillEl) fillEl.style.width = '100%';
+  if (pctEl) pctEl.textContent = '100%';
+  if (logEl) logEl.textContent = bootLogs[bootLogs.length - 1];
+
+  const loadEl = document.getElementById('stage-loading');
+  if (loadEl && minBootMs > 0) {
+    loadEl.classList.add('is-exiting');
+    await new Promise((r) => setTimeout(r, 260));
+  }
+
+  state.allItems = items;
   renderFilterPills();
   renderStage();
 }
