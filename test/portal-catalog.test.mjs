@@ -159,12 +159,20 @@ test('cyber-loader exposes 8 distinct cosmic cyberpunk scenes with zero Chinese 
   assert.notEqual(idx1, idx2);
 });
 
-test('signal-glitch generates random 20s-44s Cyberpunk signal drop intervals', async () => {
-  const { randomSignalDelayMs } = await import('../portal/stage/signal-glitch.js');
+test('signal-glitch generates random 20s-44s Cyberpunk signal drop intervals with 1/5 probability', async () => {
+  const {
+    randomSignalDelayMs,
+    DEFAULT_SIGNAL_PROBABILITY,
+    shouldTriggerSignalGlitch,
+  } = await import('../portal/stage/signal-glitch.js');
   for (let i = 0; i < 25; i += 1) {
     const ms = randomSignalDelayMs(20000, 44000);
     assert.ok(ms >= 20000 && ms <= 44000);
   }
+  assert.equal(DEFAULT_SIGNAL_PROBABILITY, 0.2);
+  assert.equal(shouldTriggerSignalGlitch(0.2, () => 0.19), true);
+  assert.equal(shouldTriggerSignalGlitch(0.2, () => 0.2), false);
+  assert.equal(shouldTriggerSignalGlitch(0.2, () => 0.85), false);
 });
 
 test('SEO and AIEO files (robots.txt, sitemap.xml, llms.txt, llms-full.txt, index.html JSON-LD) cover FULI, DingDong, and PhoneBridge', async () => {

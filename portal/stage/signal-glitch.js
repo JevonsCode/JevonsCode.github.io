@@ -14,8 +14,17 @@ const ERROR_BANNERS = [
   'BLACKWALL_INTERFERENCE // 0x9F',
 ];
 
+export const DEFAULT_SIGNAL_PROBABILITY = 0.2; // 1/5 probability per 20s-44s window
+
 export function randomSignalDelayMs(minMs = 20000, maxMs = 44000) {
   return Math.floor(minMs + Math.random() * (maxMs - minMs));
+}
+
+export function shouldTriggerSignalGlitch(
+  probability = DEFAULT_SIGNAL_PROBABILITY,
+  rng = Math.random
+) {
+  return rng() < probability;
 }
 
 export function startCyberSignalGlitchLoop(options = {}) {
@@ -25,6 +34,7 @@ export function startCyberSignalGlitchLoop(options = {}) {
 
   const minMs = options.minMs ?? 20000;
   const maxMs = options.maxMs ?? 44000;
+  const probability = options.probability ?? DEFAULT_SIGNAL_PROBABILITY;
 
   let timerId = 0;
   let rafId = 0;
@@ -241,7 +251,14 @@ export function startCyberSignalGlitchLoop(options = {}) {
     if (stopped) return;
     if (timerId) clearTimeout(timerId);
     const delay = randomSignalDelayMs(minMs, maxMs);
-    timerId = setTimeout(triggerSignalMalfunction, delay);
+    timerId = setTimeout(() => {
+      if (stopped) return;
+      if (shouldTriggerSignalGlitch(probability)) {
+        triggerSignalMalfunction();
+      } else {
+        scheduleNext();
+      }
+    }, delay);
   }
 
   scheduleNext();
