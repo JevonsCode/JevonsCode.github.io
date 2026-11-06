@@ -18,10 +18,32 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="./portal/styles/tokens.css?v=8" />
-  <link rel="stylesheet" href="./portal/styles/layout.css?v=8" />
+  <link rel="stylesheet" href="./portal/styles/tokens.css?v=9" />
+  <link rel="stylesheet" href="./portal/styles/layout.css?v=9" />
 </head>
 <body>
+  <!-- Full-Viewport Cyber-Cosmos Overdrive Stage (Fullscreen Mode) -->
+  <div id="cyber-fullscreen-stage" class="cyber-load-stage is-fullscreen" role="status" aria-live="polite" aria-label="CYBERNETIC OVERDRIVE">
+    <canvas class="cyber-stage-canvas" aria-hidden="true"></canvas>
+    <div class="cyber-scan-beam" aria-hidden="true"></div>
+    <div class="cyber-corner is-tl" aria-hidden="true">
+      <span class="cyber-hud-code">0x01 // THREE_BODY_CHAOS</span>
+    </div>
+    <div class="cyber-corner is-tr" aria-hidden="true">
+      <span class="cyber-hud-hex">0x7F9A // 0xE401</span>
+    </div>
+    <div class="cyber-corner is-bl" aria-hidden="true">
+      <span class="cyber-hud-sub">TRISOLARAN_GRAVITY_SYZYGY // ORBITAL_COLLAPSE</span>
+    </div>
+    <div class="cyber-corner-group is-br">
+      <button type="button" class="cyber-corner cyber-scene-btn" data-cyber-mode-toggle>
+        [ FULL ⇄ STAGE ]
+      </button>
+      <button type="button" class="cyber-corner cyber-scene-btn" data-cyber-scene-switch>
+        [ SHIFT_COSMOS // ↻ ]
+      </button>
+    </div>
+  </div>
   <!-- Full-viewport 60fps Swiss Crosshair Magnetic Field & Pinball Physics Canvas -->
   <canvas id="swiss-field" aria-hidden="true"></canvas>
 
@@ -91,23 +113,28 @@
       </div>
     </nav>
 
-    <!-- Dynamic Stage Container (with Full-Viewport Multi-Scene Cyberpunk Canvas Cinema) -->
+    <!-- Dynamic Stage Container (with Regional Stage Cyber-Cosmos Overdrive) -->
     <main id="stage-container" class="stage-container">
-      <div id="stage-loading" class="cyber-load-stage is-fullscreen" role="status" aria-live="polite" aria-label="CYBERNETIC OVERDRIVE">
+      <div id="stage-loading" class="cyber-load-stage is-regional" role="status" aria-live="polite" aria-label="CYBERNETIC OVERDRIVE">
         <canvas class="cyber-stage-canvas" aria-hidden="true"></canvas>
         <div class="cyber-scan-beam" aria-hidden="true"></div>
         <div class="cyber-corner is-tl" aria-hidden="true">
-          <span class="cyber-hud-code">0x01 // ONI_KATANA_SLASH</span>
+          <span class="cyber-hud-code">0x02 // GARGANTUA_QUASAR_HOLE</span>
         </div>
         <div class="cyber-corner is-tr" aria-hidden="true">
-          <span class="cyber-hud-hex">0x7F9A // 0xE401</span>
+          <span class="cyber-hud-hex">0x9A1C // 0xF08B</span>
         </div>
         <div class="cyber-corner is-bl" aria-hidden="true">
-          <span class="cyber-hud-sub">MECHA_SAMURAI_WIREFRAME // BLADE_STORM</span>
+          <span class="cyber-hud-sub">RELATIVISTIC_ACCRETION_DISK // GAMMA_JETS</span>
         </div>
-        <button type="button" id="cyber-scene-switch" class="cyber-corner is-br cyber-scene-btn">
-          [ SHIFT_REALITY // ↻ ]
-        </button>
+        <div class="cyber-corner-group is-br">
+          <button type="button" class="cyber-corner cyber-scene-btn" data-cyber-mode-toggle>
+            [ FULL ⇄ STAGE ]
+          </button>
+          <button type="button" class="cyber-corner cyber-scene-btn" data-cyber-scene-switch>
+            [ SHIFT_COSMOS // ↻ ]
+          </button>
+        </div>
       </div>
     </main>
 
@@ -161,7 +188,7 @@
   <!-- Secret Unlock Toast -->
   <div id="egg-toast" class="egg-toast" role="status" aria-live="polite"></div>
 
-  <script src="./ydys-badge.js?v=8" defer></script>
-  <script type="module" src="./portal/main.js?v=8"></script>
+  <script src="./ydys-badge.js?v=9" defer></script>
+  <script type="module" src="./portal/main.js?v=9"></script>
 </body>
 </html>

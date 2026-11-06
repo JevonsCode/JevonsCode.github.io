@@ -141,14 +141,21 @@ test('ydys-badge.js UMD module exports cyberpunk badge API with strict fixed geo
   assert.ok(badge.CSS_TEXT.includes('transform: none !important;'));
 });
 
-test('cyber-loader exposes 5 distinct cyberpunk scenes with zero Chinese or progress bar text', async () => {
+test('cyber-loader exposes 8 distinct cosmic cyberpunk scenes with zero Chinese or progress bar text', async () => {
   const { CYBER_SCENES, pickNextCyberSceneIndex } = await import('../portal/stage/cyber-loader.js');
-  assert.equal(CYBER_SCENES.length, 5);
+  assert.equal(CYBER_SCENES.length, 8);
+  const ids = CYBER_SCENES.map((s) => s.id);
+  assert.ok(ids.includes('three-body-chaos'));
+  assert.ok(ids.includes('gargantua-quasar'));
+  assert.ok(ids.includes('meteor-apocalypse'));
+  assert.ok(ids.includes('ringed-gas-giant'));
   for (const scene of CYBER_SCENES) {
     assert.equal(/[\u4e00-\u9fa5]/.test(scene.code + scene.sub), false);
     assert.equal((scene.code + scene.sub).includes('有点'), false);
   }
-  const idx = pickNextCyberSceneIndex();
-  assert.ok(Number.isInteger(idx) && idx >= 0 && idx < CYBER_SCENES.length);
+  const idx1 = pickNextCyberSceneIndex();
+  const idx2 = pickNextCyberSceneIndex(idx1);
+  assert.ok(Number.isInteger(idx1) && idx1 >= 0 && idx1 < CYBER_SCENES.length);
+  assert.notEqual(idx1, idx2);
 });
 

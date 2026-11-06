@@ -1,58 +1,81 @@
-// Procedural Multi-Scene 3D Cyberpunk Overdrive Canvas Loader
-// Zero Chinese characters, zero brand wordmarks, zero traditional progress bars.
-// Guarantees a different procedural 3D Cyberpunk spectacle on every page entry/refresh.
+// Procedural Multi-Scene 3D Cyberpunk Cosmos Overdrive Canvas Loader
+// Supports BOTH Fullscreen (`is-fullscreen`) and Regional Stage (`is-regional` / `is-compact`) modes.
+// Features crazy Cyberpunk Cosmic phenomena: Three-Body Chaos, Gargantua Black Hole & Quasar Jets,
+// Cyber Meteor Apocalypse & Planetary Shield, Ringed Gas Giant & Moons, Magnetar Supernova,
+// Dyson Swarm Megastructure, Colliding Spiral Galaxies, and Oni Katana Star-Warp.
 
-const DECK_KEY = 'ydys.cyber.deck.v2';
-const LAST_KEY = 'ydys.cyber.last.v2';
+const DECK_KEY = 'ydys.cyber.cosmos.deck.v3';
+const LAST_KEY = 'ydys.cyber.cosmos.last.v3';
 
 export const CYBER_SCENES = [
   {
-    id: 'oni-katana',
-    code: '0x01 // ONI_KATANA_SLASH',
-    sub: 'MECHA_SAMURAI_WIREFRAME // BLADE_STORM',
+    id: 'three-body-chaos',
+    code: '0x01 // THREE_BODY_CHAOS',
+    sub: 'TRISOLARAN_GRAVITY_SYZYGY // ORBITAL_COLLAPSE',
     accent: '#ff0055',
     secondary: '#00f0ff',
   },
   {
-    id: 'hyper-warp',
-    code: '0x02 // NIGHTCITY_HYPERWARP',
-    sub: 'MACH_09_MEGASTRUCTURE // TUNNEL_BREACH',
+    id: 'gargantua-quasar',
+    code: '0x02 // GARGANTUA_QUASAR_HOLE',
+    sub: 'RELATIVISTIC_ACCRETION_DISK // GAMMA_JETS',
+    accent: '#fcee09',
+    secondary: '#ff0055',
+  },
+  {
+    id: 'meteor-apocalypse',
+    code: '0x03 // CYBER_METEOR_STORM',
+    sub: 'BOLIDE_SWARM_IMPACT // PLANETARY_SHIELD_BREACH',
     accent: '#00f0ff',
     secondary: '#fcee09',
   },
   {
-    id: 'blackwall-vortex',
-    code: '0x03 // BLACKWALL_AI_BREACH',
-    sub: 'ROGUE_NEURAL_SINGULARITY // DATA_VORTEX',
-    accent: '#ff0055',
-    secondary: '#fcee09',
+    id: 'ringed-gas-giant',
+    code: '0x04 // RINGED_EXOPLANET_X9',
+    sub: '4X_ASTEROID_RINGS // ORBITAL_MOON_LASERS',
+    accent: '#b829ff',
+    secondary: '#00f0ff',
   },
   {
-    id: 'tesseract-overload',
-    code: '0x04 // TESSERACT_MELTDOWN',
-    sub: '4D_HYPERCUBE_REACTOR // PLASMA_COILS',
+    id: 'magnetar-supernova',
+    code: '0x05 // MAGNETAR_SUPERNOVA',
+    sub: '1000HZ_PULSAR_BEAMS // SHOCKWAVE_SHELLS',
+    accent: '#00ff66',
+    secondary: '#ff0055',
+  },
+  {
+    id: 'dyson-swarm',
+    code: '0x06 // DYSON_SWARM_CORE',
+    sub: 'STELLAR_CAGE_HARVESTER // SOLAR_FLARE_ARCS',
     accent: '#fcee09',
     secondary: '#00f0ff',
   },
   {
-    id: 'synth-canyon',
-    code: '0x05 // SYNTH_CANYON_2099',
-    sub: 'OUTRUN_TERRAIN_GRID // TWIN_GLITCH_SUN',
+    id: 'galactic-collision',
+    code: '0x07 // GALACTIC_COLLISION',
+    sub: 'TWIN_SPIRAL_TIDAL_CRASH // STARBURST_NOVA',
+    accent: '#ff0055',
+    secondary: '#00f0ff',
+  },
+  {
+    id: 'oni-star-warp',
+    code: '0x08 // ONI_KATANA_STARWARP',
+    sub: 'MECHA_SAMURAI_MASK // HYPERDRIVE_BLADES',
     accent: '#00f0ff',
     secondary: '#ff0055',
   },
 ];
 
-const GLYPH_POOL = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789ABCDEF∆╬▓░▒◈❖⚡';
-
-export function pickNextCyberSceneIndex() {
+export function pickNextCyberSceneIndex(excludeIndex = -1) {
   const total = CYBER_SCENES.length;
-  let last = -1;
+  let last = excludeIndex;
   let deck = [];
 
   try {
-    const rawLast = sessionStorage.getItem(LAST_KEY);
-    if (rawLast !== null) last = parseInt(rawLast, 10);
+    if (last < 0) {
+      const rawLast = sessionStorage.getItem(LAST_KEY);
+      if (rawLast !== null) last = parseInt(rawLast, 10);
+    }
     const rawDeck = sessionStorage.getItem(DECK_KEY);
     if (rawDeck) {
       const parsed = JSON.parse(rawDeck);
@@ -61,7 +84,7 @@ export function pickNextCyberSceneIndex() {
       }
     }
   } catch {
-    // Ignore storage errors in private browsing
+    // Ignore storage errors
   }
 
   if (deck.length === 0) {
@@ -80,7 +103,13 @@ export function pickNextCyberSceneIndex() {
     }
   }
 
-  const chosen = deck.shift();
+  let chosen = deck.shift();
+  if (chosen === excludeIndex && deck.length > 0) {
+    const next = deck.shift();
+    deck.push(chosen);
+    chosen = next;
+  }
+
   try {
     sessionStorage.setItem(LAST_KEY, String(chosen));
     sessionStorage.setItem(DECK_KEY, JSON.stringify(deck));
@@ -91,112 +120,22 @@ export function pickNextCyberSceneIndex() {
   return chosen;
 }
 
-// Build 3D Cyber-Oni Samurai Mask wireframe vertices & edges
-function createOniMesh() {
-  const verts = [
-    // Forehead & Horn Crest (0..7)
-    [0, -1.15, 0.35],
-    [-0.55, -0.95, 0.25],
-    [0.55, -0.95, 0.25],
-    [-1.15, -1.85, -0.15], // Left Cyber Horn tip
-    [1.15, -1.85, -0.15],  // Right Cyber Horn tip
-    [-0.32, -1.35, 0.15],
-    [0.32, -1.35, 0.15],
-    [0, -1.55, 0.05],
-    // Visor & Brow Ridge (8..15)
-    [0, -0.45, 0.72],
-    [-0.48, -0.52, 0.62],
-    [0.48, -0.52, 0.62],
-    [-0.95, -0.32, 0.28],
-    [0.95, -0.32, 0.28],
-    [-0.22, -0.22, 0.76],
-    [0.22, -0.22, 0.76],
-    [0, -0.1, 0.88],
-    // Cheek Armor & Fangs (16..25)
-    [-0.88, 0.28, 0.35],
-    [0.88, 0.28, 0.35],
-    [-0.58, 0.45, 0.68],
-    [0.58, 0.45, 0.68],
-    [-0.42, 0.88, 0.78], // Left Fang tip
-    [0.42, 0.88, 0.78],  // Right Fang tip
-    [0, 0.52, 0.82],
-    [-0.36, 1.12, 0.48],
-    [0.36, 1.12, 0.48],
-    [0, 1.28, 0.56],     // Chin point
-    // Rear Cranium Stabilizers (26..29)
-    [-1.18, -0.65, -0.45],
-    [1.18, -0.65, -0.45],
-    [-0.92, 0.65, -0.38],
-    [0.92, 0.65, -0.38],
-  ];
-
-  const edges = [
-    // Horns & Brow
-    [0, 1], [0, 2], [0, 7], [1, 5], [2, 6], [5, 7], [6, 7],
-    [1, 3], [5, 3], [2, 4], [6, 4], [3, 26], [4, 27],
-    // Visor Slits (glowing eyes)
-    [0, 8], [1, 9], [2, 10], [8, 9], [8, 10], [9, 11], [10, 12],
-    [9, 13], [10, 14], [13, 11], [14, 12], [13, 15], [14, 15], [8, 15],
-    // Cheek & Jaw
-    [11, 16], [12, 17], [13, 18], [14, 19], [15, 22],
-    [16, 18], [17, 19], [18, 22], [19, 22],
-    // Fangs & Mandible
-    [18, 20], [22, 20], [19, 21], [22, 21],
-    [16, 23], [17, 24], [20, 23], [21, 24], [23, 25], [24, 25], [22, 25],
-    // Outer Mech Frame
-    [11, 26], [12, 27], [16, 28], [17, 29], [26, 28], [27, 29], [23, 28], [24, 29],
-  ];
-
-  const visorTriangles = [
-    [9, 11, 13],
-    [10, 12, 14],
-    [18, 20, 22],
-    [19, 21, 22],
-  ];
-
-  return { verts, edges, visorTriangles };
-}
-
-// Build 4D Tesseract (16 vertices, 32 edges)
-function createTesseract() {
-  const verts4D = [];
-  for (let i = 0; i < 16; i += 1) {
-    verts4D.push([
-      i & 1 ? 1 : -1,
-      i & 2 ? 1 : -1,
-      i & 4 ? 1 : -1,
-      i & 8 ? 1 : -1,
-    ]);
-  }
-  const edges = [];
-  for (let i = 0; i < 16; i += 1) {
-    for (let j = i + 1; j < 16; j += 1) {
-      const diff = i ^ j;
-      if (diff && (diff & (diff - 1)) === 0) {
-        edges.push([i, j]);
-      }
-    }
-  }
-  return { verts4D, edges };
-}
-
 function rotate3D(pt, rx, ry, rz) {
   let [x, y, z] = pt;
-  // Rotate Y
   const cy = Math.cos(ry);
   const sy = Math.sin(ry);
   const x1 = x * cy + z * sy;
   const z1 = -x * sy + z * cy;
   x = x1;
   z = z1;
-  // Rotate X
+
   const cx = Math.cos(rx);
   const sx = Math.sin(rx);
   const y2 = y * cx - z * sx;
   const z2 = y * sx + z * cx;
   y = y2;
   z = z2;
-  // Rotate Z
+
   const cz = Math.cos(rz);
   const sz = Math.sin(rz);
   const x3 = x * cz - y * sz;
@@ -204,18 +143,95 @@ function rotate3D(pt, rx, ry, rz) {
   return [x3, y3, z];
 }
 
+function createOniMesh() {
+  const verts = [
+    [0, -1.15, 0.35], [-0.55, -0.95, 0.25], [0.55, -0.95, 0.25],
+    [-1.15, -1.85, -0.15], [1.15, -1.85, -0.15], [-0.32, -1.35, 0.15],
+    [0.32, -1.35, 0.15], [0, -1.55, 0.05], [0, -0.45, 0.72],
+    [-0.48, -0.52, 0.62], [0.48, -0.52, 0.62], [-0.95, -0.32, 0.28],
+    [0.95, -0.32, 0.28], [-0.22, -0.22, 0.76], [0.22, -0.22, 0.76],
+    [0, -0.1, 0.88], [-0.88, 0.28, 0.35], [0.88, 0.28, 0.35],
+    [-0.58, 0.45, 0.68], [0.58, 0.45, 0.68], [-0.42, 0.88, 0.78],
+    [0.42, 0.88, 0.78], [0, 0.52, 0.82], [-0.36, 1.12, 0.48],
+    [0.36, 1.12, 0.48], [0, 1.28, 0.56], [-1.18, -0.65, -0.45],
+    [1.18, -0.65, -0.45], [-0.92, 0.65, -0.38], [0.92, 0.65, -0.38],
+  ];
+  const edges = [
+    [0, 1], [0, 2], [0, 7], [1, 5], [2, 6], [5, 7], [6, 7],
+    [1, 3], [5, 3], [2, 4], [6, 4], [3, 26], [4, 27],
+    [0, 8], [1, 9], [2, 10], [8, 9], [8, 10], [9, 11], [10, 12],
+    [9, 13], [10, 14], [13, 11], [14, 12], [13, 15], [14, 15], [8, 15],
+    [11, 16], [12, 17], [13, 18], [14, 19], [15, 22],
+    [16, 18], [17, 19], [18, 22], [19, 22],
+    [18, 20], [22, 20], [19, 21], [22, 21],
+    [16, 23], [17, 24], [20, 23], [21, 24], [23, 25], [24, 25], [22, 25],
+    [11, 26], [12, 27], [16, 28], [17, 29], [26, 28], [27, 29], [23, 28], [24, 29],
+  ];
+  const visorTriangles = [
+    [9, 11, 13], [10, 12, 14], [18, 20, 22], [19, 21, 22],
+  ];
+  return { verts, edges, visorTriangles };
+}
+
+// Helper to draw a 3D wireframe sphere / planet
+function drawWireSphere(ctx, cx, cy, radius, rx, ry, rz, latLines, lonLines, color, lineWidth = 1.4) {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lineWidth;
+  ctx.beginPath();
+
+  // Latitude rings
+  for (let i = 1; i < latLines; i += 1) {
+    const phi = (i / latLines) * Math.PI;
+    const y0 = Math.cos(phi);
+    const r0 = Math.sin(phi);
+    const steps = 28;
+    for (let s = 0; s <= steps; s += 1) {
+      const theta = (s / steps) * Math.PI * 2;
+      const [x, y, z] = rotate3D([r0 * Math.cos(theta), y0, r0 * Math.sin(theta)], rx, ry, rz);
+      const fov = 3.6 / (3.6 - z * 0.65);
+      const sx = cx + x * radius * fov;
+      const sy = cy + y * radius * fov;
+      if (s === 0) ctx.moveTo(sx, sy);
+      else ctx.lineTo(sx, sy);
+    }
+  }
+
+  // Longitude meridians
+  for (let j = 0; j < lonLines; j += 1) {
+    const theta = (j / lonLines) * Math.PI * 2;
+    const steps = 28;
+    for (let s = 0; s <= steps; s += 1) {
+      const phi = (s / steps) * Math.PI;
+      const [x, y, z] = rotate3D(
+        [Math.sin(phi) * Math.cos(theta), Math.cos(phi), Math.sin(phi) * Math.sin(theta)],
+        rx,
+        ry,
+        rz
+      );
+      const fov = 3.6 / (3.6 - z * 0.65);
+      const sx = cx + x * radius * fov;
+      const sy = cy + y * radius * fov;
+      if (s === 0) ctx.moveTo(sx, sy);
+      else ctx.lineTo(sx, sy);
+    }
+  }
+  ctx.stroke();
+}
+
 export function mountCyberLoader(container, options = {}) {
-  if (!container) return { stop: () => {}, nextScene: () => {} };
+  if (!container) return { stop: () => {}, nextScene: () => {}, getSceneIndex: () => 0 };
 
   const canvas = container.querySelector('.cyber-stage-canvas');
   const codeEl = container.querySelector('.cyber-hud-code');
   const subEl = container.querySelector('.cyber-hud-sub');
   const hexEl = container.querySelector('.cyber-hud-hex');
-  if (!canvas) return { stop: () => {}, nextScene: () => {} };
+  if (!canvas) return { stop: () => {}, nextScene: () => {}, getSceneIndex: () => 0 };
 
   const ctx = canvas.getContext('2d');
   let sceneIndex =
-    typeof options.sceneIndex === 'number' ? options.sceneIndex : pickNextCyberSceneIndex();
+    typeof options.sceneIndex === 'number'
+      ? options.sceneIndex
+      : pickNextCyberSceneIndex(options.excludeIndex ?? -1);
 
   let width = 0;
   let height = 0;
@@ -227,30 +243,92 @@ export function mountCyberLoader(container, options = {}) {
   let pointerX = 0;
   let pointerY = 0;
 
+  // --- Shared & Per-Scene State ---
+  const bgStars = Array.from({ length: 140 }, () => ({
+    x: Math.random(),
+    y: Math.random(),
+    size: 0.8 + Math.random() * 2.2,
+    blink: Math.random() * Math.PI * 2,
+    color: ['#00f0ff', '#ff0055', '#fcee09', '#ffffff'][Math.floor(Math.random() * 4)],
+  }));
+
+  // Scene 0: Three-Body Chaotic Gravitational System (3 Suns + 1 Trisolaris Planet)
+  const threeBodies = [
+    { x: -0.95, y: -0.45, z: 0.2, vx: 0.45, vy: -0.68, vz: 0.35, m: 1.35, color: '#00f0ff', r: 0.26, trail: [] },
+    { x: 0.98, y: 0.35, z: -0.25, vx: -0.52, vy: 0.58, vz: -0.28, m: 1.42, color: '#ff0055', r: 0.28, trail: [] },
+    { x: 0.05, y: 0.85, z: 0.35, vx: 0.12, vy: -0.15, vz: -0.48, m: 1.28, color: '#fcee09', r: 0.24, trail: [] },
+  ];
+  const trisolaris = {
+    x: 0.18,
+    y: -0.12,
+    z: 0,
+    vx: -0.82,
+    vy: 0.64,
+    vz: 0.52,
+    trail: [],
+    shockwaves: [],
+  };
+
+  // Scene 1: Gargantua Black Hole Accretion Disk Particles
+  const accretionDisk = Array.from({ length: 340 }, (_, i) => ({
+    radius: 0.52 + Math.pow(Math.random(), 1.5) * 2.15,
+    angle: Math.random() * Math.PI * 2,
+    speed: 1.8 + Math.random() * 3.8,
+    yOffset: (Math.random() - 0.5) * 0.08,
+    color: i % 3 === 0 ? '#ff0055' : i % 3 === 1 ? '#fcee09' : '#00f0ff',
+  }));
+
+  // Scene 2: Crazy Cyber Meteor Shower Swarm & Impact Explosions
+  const meteors = Array.from({ length: 56 }, () => ({
+    x: (Math.random() - 0.2) * 2.6,
+    y: (Math.random() - 0.8) * 2.6,
+    z: Math.random() * 3 + 0.3,
+    speed: 1.8 + Math.random() * 2.8,
+    len: 0.28 + Math.random() * 0.55,
+    color: ['#00f0ff', '#ff0055', '#fcee09', '#00ff66', '#b829ff'][Math.floor(Math.random() * 5)],
+    width: 1.5 + Math.random() * 3.2,
+  }));
+  const shieldImpacts = [];
+
+  // Scene 3: Ringed Exoplanet Asteroid Particles & Moons
+  const ringAsteroids = Array.from({ length: 280 }, (_, i) => {
+    const band = i % 3;
+    const baseR = band === 0 ? 1.35 : band === 1 ? 1.78 : 2.22;
+    return {
+      r: baseR + (Math.random() - 0.5) * 0.22,
+      a: Math.random() * Math.PI * 2,
+      spd: (band % 2 === 0 ? 1 : -1) * (0.65 + (2.5 - baseR) * 0.55),
+      color: band === 0 ? '#00f0ff' : band === 1 ? '#ff0055' : '#fcee09',
+      size: 1.2 + Math.random() * 2.6,
+    };
+  });
+
+  // Scene 6: Colliding Twin Spiral Galaxies
+  const galaxyStars = Array.from({ length: 380 }, (_, i) => {
+    const galaxy = i < 190 ? 0 : 1;
+    const arm = i % 3;
+    const dist = 0.08 + Math.pow(Math.random(), 1.25) * 1.45;
+    const angle = dist * 4.2 + (arm * Math.PI * 2) / 3 + (Math.random() - 0.5) * 0.45;
+    return {
+      galaxy,
+      dist,
+      angle,
+      z: (Math.random() - 0.5) * 0.16,
+      color:
+        galaxy === 0
+          ? i % 4 === 0
+            ? '#ffffff'
+            : '#00f0ff'
+          : i % 4 === 0
+            ? '#fcee09'
+            : '#ff0055',
+    };
+  });
+
+  // Scene 7: Oni Mesh & Slashes
   const oniMesh = createOniMesh();
-  const tesseract = createTesseract();
-
-  // Procedural state for slashes, particles, vortex nodes
   const slashes = [];
-  const sparks = [];
   let lastSlashAt = 0;
-
-  const warpStars = Array.from({ length: 160 }, () => ({
-    x: (Math.random() - 0.5) * 4,
-    y: (Math.random() - 0.5) * 4,
-    z: Math.random() * 12 + 0.5,
-    color: ['#00f0ff', '#ff0055', '#fcee09', '#b829ff'][Math.floor(Math.random() * 4)],
-  }));
-
-  const vortexNodes = Array.from({ length: 260 }, (_, i) => ({
-    angle: (i / 260) * Math.PI * 24,
-    height: (Math.random() - 0.5) * 3.6,
-    radius: 0.25 + Math.random() * 1.9,
-    speed: 1.4 + Math.random() * 2.6,
-    glyph: GLYPH_POOL[Math.floor(Math.random() * GLYPH_POOL.length)],
-    isGlyph: i % 5 === 0,
-    color: i % 3 === 0 ? '#ff0055' : i % 3 === 1 ? '#00f0ff' : '#fcee09',
-  }));
 
   function updateHudMeta() {
     const meta = CYBER_SCENES[sceneIndex] || CYBER_SCENES[0];
@@ -261,8 +339,8 @@ export function mountCyberLoader(container, options = {}) {
 
   function resize() {
     const rect = container.getBoundingClientRect();
-    width = Math.max(320, rect.width || window.innerWidth);
-    height = Math.max(240, rect.height || window.innerHeight);
+    width = Math.max(280, rect.width || window.innerWidth);
+    height = Math.max(220, rect.height || window.innerHeight);
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.floor(width * dpr);
     canvas.height = Math.floor(height * dpr);
@@ -281,95 +359,684 @@ export function mountCyberLoader(container, options = {}) {
   resize();
   updateHudMeta();
 
-  // --- SCENE 0: CYBER ONI SAMURAI MASK & KATANA SLASH STORM ---
-  function renderOniKatana(t, cx, cy, scale) {
-    // Spawn diagonal Katana slashes periodically
-    if (t - lastSlashAt > 0.24) {
-      lastSlashAt = t;
-      const angle = (Math.random() - 0.5) * 1.4 + (Math.random() < 0.5 ? 0.45 : -0.45);
-      const offsetX = (Math.random() - 0.5) * width * 0.35;
-      const offsetY = (Math.random() - 0.5) * height * 0.35;
-      const color = Math.random() < 0.5 ? '#00f0ff' : Math.random() < 0.7 ? '#ff0055' : '#fcee09';
-      slashes.push({
-        x: cx + offsetX,
-        y: cy + offsetY,
-        angle,
-        born: t,
-        color,
-      });
-      for (let i = 0; i < 18; i += 1) {
-        const dir = angle + (Math.random() - 0.5) * 0.7;
-        const spd = 240 + Math.random() * 680;
-        sparks.push({
-          x: cx + offsetX + (Math.random() - 0.5) * 160,
-          y: cy + offsetY + (Math.random() - 0.5) * 160,
-          vx: Math.cos(dir) * spd * (Math.random() < 0.5 ? 1 : -1),
-          vy: Math.sin(dir) * spd * (Math.random() < 0.5 ? 1 : -1),
-          born: t,
-          color,
-        });
+  function drawStarfield(t) {
+    for (const st of bgStars) {
+      const alpha = 0.25 + 0.75 * Math.abs(Math.sin(t * 3.5 + st.blink));
+      ctx.fillStyle = st.color;
+      ctx.globalAlpha = alpha;
+      ctx.fillRect(st.x * width, st.y * height, st.size, st.size);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // =========================================================================
+  // SCENE 0: THREE-BODY CHAOS (疯狂赛博三体运动 & 行星撕裂)
+  // =========================================================================
+  function renderThreeBodyChaos(t, cx, cy, scale) {
+    drawStarfield(t);
+
+    // Step chaotic N-body gravitational physics (sub-stepped for fierce whips)
+    const dt = 0.016;
+    const G = 1.95;
+    for (let step = 0; step < 3; step += 1) {
+      for (let i = 0; i < 3; i += 1) {
+        let ax = -threeBodies[i].x * 0.85; // Central containment well so suns never escape screen
+        let ay = -threeBodies[i].y * 0.85;
+        let az = -threeBodies[i].z * 0.85;
+        for (let j = 0; j < 3; j += 1) {
+          if (i === j) continue;
+          const dx = threeBodies[j].x - threeBodies[i].x;
+          const dy = threeBodies[j].y - threeBodies[i].y;
+          const dz = threeBodies[j].z - threeBodies[i].z;
+          const distSq = dx * dx + dy * dy + dz * dz + 0.14;
+          const dist = Math.sqrt(distSq);
+          const f = (G * threeBodies[j].m) / distSq;
+          ax += (dx / dist) * f;
+          ay += (dy / dist) * f;
+          az += (dz / dist) * f;
+        }
+        threeBodies[i].vx = (threeBodies[i].vx + ax * dt) * 0.996;
+        threeBodies[i].vy = (threeBodies[i].vy + ay * dt) * 0.996;
+        threeBodies[i].vz = (threeBodies[i].vz + az * dt) * 0.996;
       }
+
+      for (const b of threeBodies) {
+        b.x += b.vx * dt;
+        b.y += b.vy * dt;
+        b.z += b.vz * dt;
+      }
+
+      // Trisolaris planet whipped by all 3 suns
+      let pax = -trisolaris.x * 1.1;
+      let pay = -trisolaris.y * 1.1;
+      let paz = -trisolaris.z * 1.1;
+      for (const b of threeBodies) {
+        const dx = b.x - trisolaris.x;
+        const dy = b.y - trisolaris.y;
+        const dz = b.z - trisolaris.z;
+        const distSq = dx * dx + dy * dy + dz * dz + 0.09;
+        const dist = Math.sqrt(distSq);
+        const f = (G * b.m * 1.25) / distSq;
+        pax += (dx / dist) * f;
+        pay += (dy / dist) * f;
+        paz += (dz / dist) * f;
+      }
+      trisolaris.vx = Math.max(-3.4, Math.min(3.4, (trisolaris.vx + pax * dt) * 0.992));
+      trisolaris.vy = Math.max(-3.4, Math.min(3.4, (trisolaris.vy + pay * dt) * 0.992));
+      trisolaris.vz = Math.max(-3.4, Math.min(3.4, (trisolaris.vz + paz * dt) * 0.992));
+      trisolaris.x += trisolaris.vx * dt;
+      trisolaris.y += trisolaris.vy * dt;
+      trisolaris.z += trisolaris.vz * dt;
     }
 
-    // Background radial cyber equalizer halo
-    const ringRadius = scale * 1.48;
-    const bars = 48;
+    const camRx = pointerY * 0.45 + Math.sin(t * 0.6) * 0.2;
+    const camRy = pointerX * 0.45 + t * 0.35;
+
+    const project = (pt) => {
+      const [x, y, z] = rotate3D(pt, camRx, camRy, 0);
+      const fov = 3.8 / (3.8 - z);
+      return [cx + x * scale * fov, cy + y * scale * fov, fov, z];
+    };
+
+    // Record orbital ribbon trails
+    for (const b of threeBodies) {
+      b.trail.push([b.x, b.y, b.z]);
+      if (b.trail.length > 55) b.trail.shift();
+    }
+    trisolaris.trail.push([trisolaris.x, trisolaris.y, trisolaris.z]);
+    if (trisolaris.trail.length > 75) trisolaris.trail.shift();
+
+    // Draw Gravitational Tension Triangle & Plasma Bridges between the 3 Suns
+    const sunScreen = threeBodies.map((b) => project([b.x, b.y, b.z]));
+    ctx.strokeStyle = 'rgba(252, 238, 9, 0.38)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.moveTo(sunScreen[0][0], sunScreen[0][1]);
+    ctx.lineTo(sunScreen[1][0], sunScreen[1][1]);
+    ctx.lineTo(sunScreen[2][0], sunScreen[2][1]);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Draw Blazing Sun Trails
+    for (const b of threeBodies) {
+      if (b.trail.length < 2) continue;
+      ctx.strokeStyle = b.color;
+      ctx.shadowColor = b.color;
+      ctx.shadowBlur = 16;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      b.trail.forEach((pt, idx) => {
+        const [sx, sy] = project(pt);
+        if (idx === 0) ctx.moveTo(sx, sy);
+        else ctx.lineTo(sx, sy);
+      });
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+
+    // Draw Trisolaris Chaotic Planet Trail
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    trisolaris.trail.forEach((pt, idx) => {
+      const [sx, sy] = project(pt);
+      if (idx === 0) ctx.moveTo(sx, sy);
+      else ctx.lineTo(sx, sy);
+    });
+    ctx.stroke();
+
+    // Draw the 3 Cyber Suns (Wireframe + Glowing Corona)
+    threeBodies.forEach((b, idx) => {
+      const [sx, sy, fov] = sunScreen[idx];
+      const sr = scale * b.r * fov;
+      const grad = ctx.createRadialGradient(sx, sy, sr * 0.1, sx, sy, sr * 2.1);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.3, b.color);
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(sx, sy, sr * 2.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      drawWireSphere(ctx, sx, sy, sr * 0.85, t * 2 + idx, t * 1.5, 0, 5, 6, '#ffffff', 1.4);
+    });
+
+    // Draw Trisolaris Cyber-Planet & Tidal Lightning to Nearest Sun
+    const [px, py, pfov] = project([trisolaris.x, trisolaris.y, trisolaris.z]);
+    const pr = scale * 0.13 * pfov;
+    drawWireSphere(ctx, px, py, pr, -t * 4, t * 3, 0, 5, 6, '#00ff66', 1.8);
+
+    // Jagged gravitational lightning from suns to Trisolaris
+    for (let i = 0; i < 3; i += 1) {
+      const [sx, sy] = sunScreen[i];
+      const dist = Math.hypot(sx - px, sy - py);
+      if (dist < scale * 1.45) {
+        ctx.strokeStyle = threeBodies[i].color;
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        for (let s = 1; s < 7; s += 1) {
+          const u = s / 7;
+          ctx.lineTo(
+            sx + (px - sx) * u + (Math.random() - 0.5) * 26,
+            sy + (py - sy) * u + (Math.random() - 0.5) * 26
+          );
+        }
+        ctx.lineTo(px, py);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // =========================================================================
+  // SCENE 1: GARGANTUA QUASAR BLACK HOLE (巨型赛博黑洞 & 相对论双极喷流)
+  // =========================================================================
+  function renderGargantuaQuasar(t, cx, cy, scale) {
+    drawStarfield(t);
+
+    const tiltX = 1.18 + pointerY * 0.25;
+    const tiltZ = -0.32 + pointerX * 0.25;
+    const bhRadius = scale * 0.46;
+
+    // Relativistic Quasar Gamma-Ray Jets shooting from North & South poles
     ctx.save();
     ctx.translate(cx, cy);
-    ctx.rotate(t * 0.45);
-    for (let i = 0; i < bars; i += 1) {
-      const a = (i / bars) * Math.PI * 2;
-      const amp =
-        14 +
-        Math.abs(Math.sin(t * 9 + i * 0.7)) * scale * 0.38 +
-        (i % 4 === 0 ? scale * 0.2 : 0);
-      const x0 = Math.cos(a) * ringRadius;
-      const y0 = Math.sin(a) * ringRadius;
-      const x1 = Math.cos(a) * (ringRadius + amp);
-      const y1 = Math.sin(a) * (ringRadius + amp);
-      ctx.strokeStyle = i % 3 === 0 ? '#ff0055' : i % 3 === 1 ? '#00f0ff' : '#fcee09';
-      ctx.lineWidth = i % 4 === 0 ? 3 : 1.5;
+    ctx.rotate(tiltZ);
+    const jetLen = Math.max(width, height) * 0.85;
+    for (const dir of [-1, 1]) {
+      const jetGrad = ctx.createLinearGradient(0, 0, 0, dir * jetLen);
+      jetGrad.addColorStop(0, '#ffffff');
+      jetGrad.addColorStop(0.18, '#00f0ff');
+      jetGrad.addColorStop(0.55, 'rgba(255, 0, 85, 0.55)');
+      jetGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = jetGrad;
       ctx.beginPath();
-      ctx.moveTo(x0, y0);
-      ctx.lineTo(x1, y1);
+      ctx.moveTo(-bhRadius * 0.22, 0);
+      ctx.lineTo(-bhRadius * 1.35, dir * jetLen);
+      ctx.lineTo(bhRadius * 1.35, dir * jetLen);
+      ctx.lineTo(bhRadius * 0.22, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      // Helical lightning spiraling up the Quasar Jet
+      ctx.strokeStyle = '#fcee09';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let y = 0; y <= jetLen; y += 18) {
+        const wave = Math.sin(y * 0.04 - t * 18) * (12 + y * 0.08);
+        if (y === 0) ctx.moveTo(wave, dir * y);
+        else ctx.lineTo(wave, dir * y);
+      }
       ctx.stroke();
     }
     ctx.restore();
 
-    // Project 3D Oni Mesh with chromatic triple pass
-    const ry = Math.sin(t * 1.9) * 0.58 + pointerX * 0.55;
-    const rx = Math.cos(t * 1.4) * 0.24 + pointerY * 0.38;
-    const rz = Math.sin(t * 0.9) * 0.12;
+    // Gravitational Lensing Upper & Lower Halo Rings (Interstellar Gargantua style)
+    for (let ring = 1; ring <= 5; ring += 1) {
+      const r = bhRadius * (1.08 + ring * 0.14);
+      ctx.strokeStyle = ring % 2 === 0 ? '#00f0ff' : '#ff0055';
+      ctx.lineWidth = 2.6 - ring * 0.3;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
 
-    const projected = oniMesh.verts.map((v) => {
-      const [x, y, z] = rotate3D(v, rx, ry, rz);
-      const fov = 3.4 / (3.4 - z);
-      return [cx + x * scale * fov, cy + y * scale * fov, z];
-    });
+    // 3D Swirling Relativistic Accretion Disk (with gravitational lensing warp for back-half particles)
+    for (const p of accretionDisk) {
+      const a = p.angle + t * (p.speed / p.radius);
+      const x0 = Math.cos(a) * p.radius;
+      const z0 = Math.sin(a) * p.radius;
+      const y0 = p.yOffset;
 
-    const passes = [
-      { dx: -5, dy: 0, color: 'rgba(0, 240, 255, 0.75)', lw: 1.8 },
-      { dx: 5, dy: 0, color: 'rgba(255, 0, 85, 0.75)', lw: 1.8 },
-      { dx: 0, dy: 0, color: '#fcee09', lw: 2.2 },
+      let [rx, ry, rz] = rotate3D([x0, y0, z0], tiltX, 0, tiltZ);
+      // Gravitational lensing: bend back-side disk particles upward & downward around the shadow!
+      if (rz < 0) {
+        const bend = Math.exp(-Math.abs(rx) * 1.2) * 0.65;
+        ry += (ry >= 0 ? 1 : -1) * bend;
+      }
+
+      const fov = 3.8 / (3.8 - rz * 0.55);
+      const sx = cx + rx * scale * fov;
+      const sy = cy + ry * scale * fov;
+
+      const tailA = a - 0.16;
+      let [tx, ty, tz] = rotate3D(
+        [Math.cos(tailA) * p.radius, y0, Math.sin(tailA) * p.radius],
+        tiltX,
+        0,
+        tiltZ
+      );
+      if (tz < 0) {
+        const bend = Math.exp(-Math.abs(tx) * 1.2) * 0.65;
+        ty += (ty >= 0 ? 1 : -1) * bend;
+      }
+      const tfov = 3.8 / (3.8 - tz * 0.55);
+
+      ctx.strokeStyle = p.color;
+      ctx.lineWidth = Math.max(1.4, 3.2 * fov);
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(cx + tx * scale * tfov, cy + ty * scale * tfov);
+      ctx.stroke();
+    }
+
+    // Event Horizon Abyss Core + Photon Sphere Ring
+    ctx.fillStyle = '#030208';
+    ctx.shadowColor = '#ff0055';
+    ctx.shadowBlur = 36;
+    ctx.beginPath();
+    ctx.arc(cx, cy, bhRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = '#fcee09';
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    ctx.arc(cx, cy, bhRadius, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+
+  // =========================================================================
+  // SCENE 2: CYBER METEOR APOCALYPSE (狂暴赛博流星雨火风暴 & 行星护盾撞击)
+  // =========================================================================
+  function renderMeteorApocalypse(t, cx, cy, scale) {
+    drawStarfield(t);
+
+    // Target Cyber-Planet in lower-right quadrant with Hexagonal Geodesic Shield
+    const planetX = cx + scale * 0.62 + pointerX * 30;
+    const planetY = cy + scale * 0.34 + pointerY * 25;
+    const planetR = scale * 0.68;
+
+    drawWireSphere(ctx, planetX, planetY, planetR, t * 0.8, -t * 1.2, 0.3, 8, 10, '#00f0ff', 1.5);
+    drawWireSphere(
+      ctx,
+      planetX - 4,
+      planetY,
+      planetR,
+      t * 0.8,
+      -t * 1.2,
+      0.3,
+      8,
+      10,
+      'rgba(255, 0, 85, 0.55)',
+      1.2
+    );
+
+    // Hyper-Velocity Diagonal Meteor Swarm
+    const dirX = 0.78;
+    const dirY = 0.62;
+
+    for (const m of meteors) {
+      m.x += dirX * m.speed * 0.024;
+      m.y += dirY * m.speed * 0.024;
+
+      const sx = cx + m.x * scale * 1.6;
+      const sy = cy + m.y * scale * 1.6;
+
+      // Check impact against Planetary Shield!
+      const distToPlanet = Math.hypot(sx - planetX, sy - planetY);
+      if (distToPlanet < planetR * 1.08) {
+        shieldImpacts.push({
+          x: sx,
+          y: sy,
+          color: m.color,
+          born: t,
+        });
+        m.x = -1.8 + (Math.random() - 0.5) * 1.6;
+        m.y = -1.6 + (Math.random() - 0.5) * 1.4;
+        continue;
+      }
+
+      if (sx > width + 200 || sy > height + 200) {
+        m.x = -1.8 + (Math.random() - 0.5) * 2.2;
+        m.y = -1.6 + (Math.random() - 0.5) * 1.8;
+      }
+
+      const tailLen = m.len * scale * 1.35;
+      const tx = sx - dirX * tailLen;
+      const ty = sy - dirY * tailLen;
+
+      const grad = ctx.createLinearGradient(sx, sy, tx, ty);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.25, m.color);
+      grad.addColorStop(1, 'transparent');
+
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = m.width;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(tx, ty);
+      ctx.stroke();
+
+      // Glowing Meteor Bolide Head
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = m.color;
+      ctx.shadowBlur = 18;
+      ctx.beginPath();
+      ctx.arc(sx, sy, m.width * 1.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
+    // Render Planetary Shield Impact Shockwaves & Shatter Shards
+    for (let i = shieldImpacts.length - 1; i >= 0; i -= 1) {
+      const imp = shieldImpacts[i];
+      const age = t - imp.born;
+      if (age > 0.42) {
+        shieldImpacts.splice(i, 1);
+        continue;
+      }
+      const p = 1 - age / 0.42;
+      const ringR = (1 - p) * scale * 0.55 + 8;
+      ctx.strokeStyle = imp.color;
+      ctx.lineWidth = 3.2 * p;
+      ctx.beginPath();
+      ctx.arc(imp.x, imp.y, ringR, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Hexagonal shield flash at impact point
+      ctx.strokeStyle = '#fcee09';
+      ctx.lineWidth = 2 * p;
+      ctx.beginPath();
+      for (let s = 0; s < 6; s += 1) {
+        const a = (s / 6) * Math.PI * 2 + age * 6;
+        const hx = imp.x + Math.cos(a) * ringR * 0.65;
+        const hy = imp.y + Math.sin(a) * ringR * 0.65;
+        if (s === 0) ctx.moveTo(hx, hy);
+        else ctx.lineTo(hx, hy);
+      }
+      ctx.closePath();
+      ctx.stroke();
+    }
+  }
+
+  // =========================================================================
+  // SCENE 3: RINGED GAS GIANT EXOPLANET & MOONS (超级巨行星四重星环 & 卫星群)
+  // =========================================================================
+  function renderRingedGasGiant(t, cx, cy, scale) {
+    drawStarfield(t);
+
+    const rx = 1.05 + pointerY * 0.35;
+    const ry = t * 0.55 + pointerX * 0.45;
+    const rz = -0.38;
+    const planetR = scale * 0.68;
+
+    // Chromatic RGB Wireframe Gas Giant Planet
+    drawWireSphere(ctx, cx - 4, cy, planetR, rx, ry, rz, 9, 12, 'rgba(0, 240, 255, 0.72)', 1.5);
+    drawWireSphere(ctx, cx + 4, cy, planetR, rx, ry, rz, 9, 12, 'rgba(255, 0, 85, 0.72)', 1.5);
+    drawWireSphere(ctx, cx, cy, planetR, rx, ry, rz, 9, 12, '#fcee09', 1.8);
+
+    // 4 Concentric Counter-Rotating Asteroid Rings
+    for (const ast of ringAsteroids) {
+      const a = ast.a + t * ast.spd;
+      const [x, y, z] = rotate3D([Math.cos(a) * ast.r, 0, Math.sin(a) * ast.r], rx, 0, rz);
+      const fov = 3.8 / (3.8 - z * 0.5);
+      const sx = cx + x * scale * fov;
+      const sy = cy + y * scale * fov;
+
+      ctx.fillStyle = ast.color;
+      ctx.fillRect(sx - ast.size * 0.5, sy - ast.size * 0.5, ast.size, ast.size);
+    }
+
+    // 4 Orbiting Cyber-Moons firing telemetry lasers to the Gas Giant
+    for (let m = 0; m < 4; m += 1) {
+      const orbitR = 1.55 + m * 0.38;
+      const ma = t * (1.4 - m * 0.22) + m * 1.7;
+      const [mx, my, mz] = rotate3D(
+        [Math.cos(ma) * orbitR, Math.sin(ma * 2) * 0.28, Math.sin(ma) * orbitR],
+        rx,
+        0,
+        rz
+      );
+      const fov = 3.8 / (3.8 - mz * 0.5);
+      const sx = cx + mx * scale * fov;
+      const sy = cy + my * scale * fov;
+      const mr = (12 + m * 3) * fov;
+
+      ctx.strokeStyle = m % 2 === 0 ? '#00f0ff' : '#ff0055';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(sx, sy, mr, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Orbital laser lock to planet core
+      if (Math.sin(t * 9 + m * 2) > 0.1) {
+        ctx.strokeStyle = 'rgba(252, 238, 9, 0.65)';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        ctx.lineTo(cx, cy);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // =========================================================================
+  // SCENE 4: MAGNETAR SUPERNOVA COLLAPSE (千赫兹脉冲磁星 & 超新星冲击波壳层)
+  // =========================================================================
+  function renderMagnetarSupernova(t, cx, cy, scale) {
+    drawStarfield(t);
+
+    // Dual Lighthouse Relativistic Pulsar Beams sweeping at high speed
+    const beamAngle = t * 5.8;
+    const beamLen = Math.max(width, height) * 0.95;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(beamAngle);
+    for (const dir of [-1, 1]) {
+      const grad = ctx.createLinearGradient(0, 0, dir * beamLen, 0);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.2, '#00ff66');
+      grad.addColorStop(0.6, 'rgba(0, 240, 255, 0.45)');
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(0, -10);
+      ctx.lineTo(dir * beamLen, -beamLen * 0.22);
+      ctx.lineTo(dir * beamLen, beamLen * 0.22);
+      ctx.lineTo(0, 10);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // Expanding 3D Supernova Remnant Shockwave Shells
+    for (let s = 0; s < 3; s += 1) {
+      const phase = ((t * 0.85 + s / 3) % 1);
+      const shellR = (0.28 + phase * 1.65) * scale;
+      const color = s === 0 ? '#ff0055' : s === 1 ? '#00f0ff' : '#fcee09';
+      ctx.globalAlpha = 1 - phase * 0.78;
+      drawWireSphere(
+        ctx,
+        cx,
+        cy,
+        shellR,
+        t * (1.2 + s * 0.4) + pointerY * 0.5,
+        t * (1.5 - s * 0.3) + pointerX * 0.5,
+        s,
+        6,
+        8,
+        color,
+        2.2 * (1 - phase * 0.5)
+      );
+    }
+    ctx.globalAlpha = 1;
+
+    // Intense Magnetar Core
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = '#00ff66';
+    ctx.shadowBlur = 38;
+    ctx.beginPath();
+    ctx.arc(cx, cy, scale * 0.22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  // =========================================================================
+  // SCENE 5: DYSON SWARM MEGASPHERE (赛博戴森球恒星反应堆 & 日冕耀斑电弧)
+  // =========================================================================
+  function renderDysonSwarm(t, cx, cy, scale) {
+    drawStarfield(t);
+
+    // Central Raging Cyber-Sun
+    const sunR = scale * 0.46;
+    const sunGrad = ctx.createRadialGradient(cx, cy, 4, cx, cy, sunR * 1.8);
+    sunGrad.addColorStop(0, '#ffffff');
+    sunGrad.addColorStop(0.35, '#fcee09');
+    sunGrad.addColorStop(0.7, '#ff0055');
+    sunGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = sunGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, sunR * 1.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 6 Interlocking 3D Dyson Gimbal Megastructure Rings
+    for (let ring = 0; ring < 6; ring += 1) {
+      const r = scale * (0.72 + ring * 0.19);
+      const rx = t * (0.8 + ring * 0.22) * (ring % 2 === 0 ? 1 : -1) + pointerY * 0.5;
+      const ry = t * (0.65 + ring * 0.18) + pointerX * 0.5;
+      const rz = ring * 0.52;
+
+      ctx.strokeStyle = ring % 3 === 0 ? '#00f0ff' : ring % 3 === 1 ? '#fcee09' : '#ff0055';
+      ctx.lineWidth = 3.2;
+      ctx.beginPath();
+      const segs = 32;
+      for (let s = 0; s <= segs; s += 1) {
+        const a = (s / segs) * Math.PI * 2;
+        const [x, y, z] = rotate3D([Math.cos(a), Math.sin(a), 0], rx, ry, rz);
+        const fov = 3.8 / (3.8 - z * 0.6);
+        const sx = cx + x * r * fov;
+        const sy = cy + y * r * fov;
+        if (s === 0) ctx.moveTo(sx, sy);
+        else ctx.lineTo(sx, sy);
+
+        // Energy harvester nodes along ring
+        if (s % 4 === 0) {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(sx - 3, sy - 3, 6, 6);
+        }
+      }
+      ctx.stroke();
+    }
+  }
+
+  // =========================================================================
+  // SCENE 6: GALACTIC COLLISION SPIRAL (双星系碰撞引力潮汐涡旋)
+  // =========================================================================
+  function renderGalacticCollision(t, cx, cy, scale) {
+    // Two Galaxy Centers orbiting and colliding in 3D
+    const sep = 0.58 * Math.cos(t * 0.95);
+    const gCenters = [
+      [-sep, -0.22 * Math.sin(t * 0.95), 0],
+      [sep, 0.22 * Math.sin(t * 0.95), 0],
     ];
 
-    for (const pass of passes) {
+    const rx = 0.78 + pointerY * 0.35;
+    const ry = pointerX * 0.45 + Math.sin(t * 0.5) * 0.25;
+
+    for (const st of galaxyStars) {
+      const gc = gCenters[st.galaxy];
+      const spin = st.angle + t * (1.4 / (st.dist + 0.25)) * (st.galaxy === 0 ? 1 : -1);
+      const px = gc[0] + Math.cos(spin) * st.dist;
+      const py = gc[1] + st.z;
+      const pz = gc[2] + Math.sin(spin) * st.dist;
+
+      const [x, y, z] = rotate3D([px, py, pz], rx, ry, t * 0.22);
+      const fov = 3.8 / (3.8 - z * 0.65);
+      const sx = cx + x * scale * fov;
+      const sy = cy + y * scale * fov;
+
+      const tailSpin = spin - 0.14 * (st.galaxy === 0 ? 1 : -1);
+      const [tx, ty, tz] = rotate3D(
+        [gc[0] + Math.cos(tailSpin) * st.dist, py, gc[2] + Math.sin(tailSpin) * st.dist],
+        rx,
+        ry,
+        t * 0.22
+      );
+      const tfov = 3.8 / (3.8 - tz * 0.65);
+
+      ctx.strokeStyle = st.color;
+      ctx.lineWidth = Math.max(1.3, 2.8 * fov);
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(cx + tx * scale * tfov, cy + ty * scale * tfov);
+      ctx.stroke();
+    }
+
+    // Glowing Galactic Nuclei & Tidal Bridge
+    const n0 = rotate3D(gCenters[0], rx, ry, t * 0.22);
+    const n1 = rotate3D(gCenters[1], rx, ry, t * 0.22);
+    const s0 = [cx + n0[0] * scale, cy + n0[1] * scale];
+    const s1 = [cx + n1[0] * scale, cy + n1[1] * scale];
+
+    ctx.strokeStyle = '#fcee09';
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(s0[0], s0[1]);
+    for (let i = 1; i < 8; i += 1) {
+      const u = i / 8;
+      ctx.lineTo(
+        s0[0] + (s1[0] - s0[0]) * u + (Math.random() - 0.5) * 32,
+        s0[1] + (s1[1] - s0[1]) * u + (Math.random() - 0.5) * 32
+      );
+    }
+    ctx.lineTo(s1[0], s1[1]);
+    ctx.stroke();
+
+    for (const [idx, sc] of [s0, s1].entries()) {
+      ctx.fillStyle = idx === 0 ? '#00f0ff' : '#ff0055';
+      ctx.shadowColor = ctx.fillStyle;
+      ctx.shadowBlur = 32;
+      ctx.beginPath();
+      ctx.arc(sc[0], sc[1], scale * 0.14, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+  }
+
+  // =========================================================================
+  // SCENE 7: ONI KATANA STAR-WARP (赛博鬼面武士 & 星际折跃刀光)
+  // =========================================================================
+  function renderOniStarWarp(t, cx, cy, scale) {
+    drawStarfield(t);
+
+    if (t - lastSlashAt > 0.24) {
+      lastSlashAt = t;
+      slashes.push({
+        x: cx + (Math.random() - 0.5) * width * 0.35,
+        y: cy + (Math.random() - 0.5) * height * 0.35,
+        angle: (Math.random() - 0.5) * 1.5 + (Math.random() < 0.5 ? 0.45 : -0.45),
+        born: t,
+        color: Math.random() < 0.5 ? '#00f0ff' : '#ff0055',
+      });
+    }
+
+    const ry = Math.sin(t * 1.9) * 0.58 + pointerX * 0.55;
+    const rx = Math.cos(t * 1.4) * 0.24 + pointerY * 0.38;
+    const projected = oniMesh.verts.map((v) => {
+      const [x, y, z] = rotate3D(v, rx, ry, Math.sin(t * 0.9) * 0.12);
+      const fov = 3.4 / (3.4 - z);
+      return [cx + x * scale * fov, cy + y * scale * fov];
+    });
+
+    for (const pass of [
+      { dx: -5, color: 'rgba(0, 240, 255, 0.78)', lw: 1.8 },
+      { dx: 5, color: 'rgba(255, 0, 85, 0.78)', lw: 1.8 },
+      { dx: 0, color: '#fcee09', lw: 2.2 },
+    ]) {
       ctx.strokeStyle = pass.color;
       ctx.lineWidth = pass.lw;
       ctx.beginPath();
       for (const [a, b] of oniMesh.edges) {
-        const pa = projected[a];
-        const pb = projected[b];
-        ctx.moveTo(pa[0] + pass.dx, pa[1] + pass.dy);
-        ctx.lineTo(pb[0] + pass.dx, pb[1] + pass.dy);
+        ctx.moveTo(projected[a][0] + pass.dx, projected[a][1]);
+        ctx.lineTo(projected[b][0] + pass.dx, projected[b][1]);
       }
       ctx.stroke();
     }
 
-    // Glowing Visor & Fang Fills
-    ctx.fillStyle = 'rgba(255, 0, 85, 0.78)';
-    ctx.shadowColor = '#ff0055';
-    ctx.shadowBlur = 24;
+    ctx.fillStyle = 'rgba(255, 0, 85, 0.82)';
     for (const [a, b, c] of oniMesh.visorTriangles) {
       ctx.beginPath();
       ctx.moveTo(projected[a][0], projected[a][1]);
@@ -378,457 +1045,40 @@ export function mountCyberLoader(container, options = {}) {
       ctx.closePath();
       ctx.fill();
     }
-    ctx.shadowBlur = 0;
 
-    // Render Katana Slashes
     for (let i = slashes.length - 1; i >= 0; i -= 1) {
       const s = slashes[i];
       const age = t - s.born;
-      if (age > 0.34) {
+      if (age > 0.32) {
         slashes.splice(i, 1);
         continue;
       }
-      const p = 1 - age / 0.34;
-      const len = Math.max(width, height) * 1.25;
+      const p = 1 - age / 0.32;
+      const len = Math.max(width, height) * 1.2;
       ctx.save();
       ctx.translate(s.x, s.y);
       ctx.rotate(s.angle);
       ctx.strokeStyle = s.color;
-      ctx.lineWidth = 10 * p;
-      ctx.shadowColor = s.color;
-      ctx.shadowBlur = 28;
+      ctx.lineWidth = 9 * p;
       ctx.beginPath();
       ctx.moveTo(-len, 0);
       ctx.lineTo(len, 0);
       ctx.stroke();
-
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 3 * p;
-      ctx.beginPath();
-      ctx.moveTo(-len * 0.85, 0);
-      ctx.lineTo(len * 0.85, 0);
-      ctx.stroke();
       ctx.restore();
     }
-
-    // Render Sparks
-    for (let i = sparks.length - 1; i >= 0; i -= 1) {
-      const sp = sparks[i];
-      const age = t - sp.born;
-      if (age > 0.42) {
-        sparks.splice(i, 1);
-        continue;
-      }
-      const p = 1 - age / 0.42;
-      const x = sp.x + sp.vx * age;
-      const y = sp.y + sp.vy * age;
-      ctx.strokeStyle = sp.color;
-      ctx.lineWidth = 2.4 * p;
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x - sp.vx * 0.035, y - sp.vy * 0.035);
-      ctx.stroke();
-    }
   }
 
-  // --- SCENE 1: NIGHT CITY HYPER-WARP MEGASTRUCTURE TUNNEL ---
-  function renderHyperWarp(t, cx, cy, scale) {
-    const vanishX = cx + Math.sin(t * 2.1) * scale * 0.45 + pointerX * scale * 0.6;
-    const vanishY = cy + Math.cos(t * 1.6) * scale * 0.32 + pointerY * scale * 0.5;
-
-    // 32 Concentric Polygonal Megastructure Gates rushing toward camera
-    const gateCount = 28;
-    const speed = (t * 6.5) % 1;
-    const prevGates = [];
-
-    for (let i = gateCount; i >= 1; i -= 1) {
-      const depth = i - speed;
-      if (depth <= 0.18) continue;
-      const fov = (scale * 3.1) / depth;
-      const twist = depth * 0.14 - t * 1.2;
-      const gx = vanishX + (cx - vanishX) * (1 / depth);
-      const gy = vanishY + (cy - vanishY) * (1 / depth);
-
-      const sides = i % 3 === 0 ? 4 : 8;
-      const pts = [];
-      for (let s = 0; s < sides; s += 1) {
-        const a = (s / sides) * Math.PI * 2 + twist;
-        const rx = Math.cos(a) * fov * (sides === 4 ? 1.15 : 1);
-        const ry = Math.sin(a) * fov * 0.78;
-        pts.push([gx + rx, gy + ry]);
-      }
-
-      const color =
-        i % 4 === 0
-          ? '#fcee09'
-          : i % 3 === 0
-            ? '#ff0055'
-            : i % 2 === 0
-              ? '#00f0ff'
-              : '#b829ff';
-      const alpha = Math.min(1, (gateCount - depth) / gateCount + 0.15);
-
-      ctx.strokeStyle = color;
-      ctx.globalAlpha = alpha;
-      ctx.lineWidth = Math.min(4.5, 9 / depth);
-      ctx.beginPath();
-      pts.forEach((p, idx) => {
-        if (idx === 0) ctx.moveTo(p[0], p[1]);
-        else ctx.lineTo(p[0], p[1]);
-      });
-      ctx.closePath();
-      ctx.stroke();
-
-      // Connect longitudinal neon rails between octagon gates
-      if (sides === 8 && prevGates.length === 8) {
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.32)';
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        for (let s = 0; s < 8; s += 2) {
-          ctx.moveTo(prevGates[s][0], prevGates[s][1]);
-          ctx.lineTo(pts[s][0], pts[s][1]);
-        }
-        ctx.stroke();
-      }
-      if (sides === 8) {
-        prevGates.length = 0;
-        prevGates.push(...pts);
-      }
-    }
-    ctx.globalAlpha = 1;
-
-    // High-speed Neon Light Streaks
-    for (const star of warpStars) {
-      star.z -= 0.22;
-      if (star.z <= 0.2) {
-        star.z = 12;
-        star.x = (Math.random() - 0.5) * 4;
-        star.y = (Math.random() - 0.5) * 4;
-      }
-      const f1 = (scale * 2.2) / star.z;
-      const f2 = (scale * 2.2) / (star.z + 0.65);
-      const x1 = vanishX + star.x * f1;
-      const y1 = vanishY + star.y * f1;
-      const x2 = vanishX + star.x * f2;
-      const y2 = vanishY + star.y * f2;
-
-      ctx.strokeStyle = star.color;
-      ctx.lineWidth = Math.min(4, 5 / star.z);
-      ctx.beginPath();
-      ctx.moveTo(x1, y1);
-      ctx.lineTo(x2, y2);
-      ctx.stroke();
-    }
-
-    // Center Fighter HUD Lock-On Reticle
-    ctx.save();
-    ctx.translate(vanishX, vanishY);
-    ctx.rotate(-t * 2.4);
-    ctx.strokeStyle = '#fcee09';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(-26, -26, 52, 52);
-    ctx.rotate(t * 4.8);
-    ctx.strokeStyle = '#ff0055';
-    ctx.beginPath();
-    ctx.arc(0, 0, 42, 0, Math.PI * 1.35);
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  // --- SCENE 2: BLACKWALL ROGUE AI SINGULARITY VORTEX ---
-  function renderBlackwallVortex(t, cx, cy, scale) {
-    // Background Red-Alert Fracture Waves
-    ctx.strokeStyle = 'rgba(255, 0, 85, 0.26)';
-    ctx.lineWidth = 1.5;
-    for (let row = -6; row <= 6; row += 1) {
-      const yBase = cy + row * (height / 13);
-      ctx.beginPath();
-      for (let x = 0; x <= width; x += 28) {
-        const wave =
-          Math.sin(x * 0.018 + t * 8 + row) * 18 +
-          (Math.random() < 0.08 ? (Math.random() - 0.5) * 45 : 0);
-        if (x === 0) ctx.moveTo(x, yBase + wave);
-        else ctx.lineTo(x, yBase + wave);
-      }
-      ctx.stroke();
-    }
-
-    // Swirling 3D Neural Tornado & Katakana/Hex Glyphs
-    ctx.font = '900 14px "JetBrains Mono", monospace';
-    const tiltX = 0.42 + pointerY * 0.35;
-    const tiltY = pointerX * 0.45;
-
-    for (const node of vortexNodes) {
-      const a = node.angle + t * node.speed;
-      const funnel = 0.25 + Math.abs(node.height) * 0.85;
-      const r = node.radius * funnel;
-      const vx = Math.cos(a) * r;
-      const vz = Math.sin(a) * r;
-      const vy = node.height + Math.sin(t * 3 + node.angle) * 0.12;
-
-      const [rx, ry, rz] = rotate3D([vx, vy, vz], tiltX, tiltY, Math.sin(t * 0.7) * 0.18);
-      const fov = 3.6 / (3.6 - rz);
-      const sx = cx + rx * scale * fov;
-      const sy = cy + ry * scale * fov;
-
-      if (node.isGlyph) {
-        ctx.fillStyle = node.color;
-        ctx.fillText(node.glyph, sx, sy);
-      } else {
-        const tailA = a - 0.22;
-        const [tx, ty, tz] = rotate3D(
-          [Math.cos(tailA) * r, vy, Math.sin(tailA) * r],
-          tiltX,
-          tiltY,
-          Math.sin(t * 0.7) * 0.18
-        );
-        const tfov = 3.6 / (3.6 - tz);
-        ctx.strokeStyle = node.color;
-        ctx.lineWidth = Math.max(1.2, 2.6 * fov);
-        ctx.beginPath();
-        ctx.moveTo(sx, sy);
-        ctx.lineTo(cx + tx * scale * tfov, cy + ty * scale * tfov);
-        ctx.stroke();
-      }
-    }
-
-    // Central Gravitational Singularity Core
-    const pulse = 1 + Math.sin(t * 16) * 0.16;
-    const coreR = scale * 0.38 * pulse;
-    const grad = ctx.createRadialGradient(cx, cy, 4, cx, cy, coreR * 2.2);
-    grad.addColorStop(0, '#ffffff');
-    grad.addColorStop(0.25, '#ff0055');
-    grad.addColorStop(0.65, 'rgba(0, 240, 255, 0.45)');
-    grad.addColorStop(1, 'transparent');
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(cx, cy, coreR * 2.2, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = '#05040a';
-    ctx.strokeStyle = '#fcee09';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(cx, cy, coreR * 0.62, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-  }
-
-  // --- SCENE 3: 4D TESSERACT HYPERCUBE MELTDOWN & TESLA PLASMA ARCS ---
-  function renderTesseractMeltdown(t, cx, cy, scale) {
-    // 8 High-Voltage Jagged Plasma Arcs from viewport border to center
-    const coilCount = 8;
-    for (let c = 0; c < coilCount; c += 1) {
-      const baseAngle = (c / coilCount) * Math.PI * 2 + t * 0.5;
-      const outerR = Math.max(width, height) * 0.65;
-      const ex = cx + Math.cos(baseAngle) * outerR;
-      const ey = cy + Math.sin(baseAngle) * outerR;
-      const ix = cx + Math.cos(baseAngle) * scale * 0.45;
-      const iy = cy + Math.sin(baseAngle) * scale * 0.45;
-
-      ctx.strokeStyle = c % 2 === 0 ? '#00f0ff' : '#ff0055';
-      ctx.lineWidth = c % 2 === 0 ? 2.4 : 1.8;
-      ctx.shadowColor = ctx.strokeStyle;
-      ctx.shadowBlur = 16;
-      ctx.beginPath();
-      ctx.moveTo(ex, ey);
-      const segs = 12;
-      for (let s = 1; s < segs; s += 1) {
-        const u = s / segs;
-        const px = ex + (ix - ex) * u + (Math.random() - 0.5) * 48 * (1 - u * 0.5);
-        const py = ey + (iy - ey) * u + (Math.random() - 0.5) * 48 * (1 - u * 0.5);
-        ctx.lineTo(px, py);
-      }
-      ctx.lineTo(ix, iy);
-      ctx.stroke();
-    }
-    ctx.shadowBlur = 0;
-
-    // 4D Rotation in XW, YW, ZW planes
-    const aXW = t * 1.45;
-    const aYW = t * 1.12;
-    const aZW = t * 0.85;
-    const rx3 = t * 0.9 + pointerY * 0.5;
-    const ry3 = t * 1.2 + pointerX * 0.5;
-
-    const projected = tesseract.verts4D.map((v4) => {
-      let [x, y, z, w] = v4;
-      // Rotate XW
-      let nx = x * Math.cos(aXW) - w * Math.sin(aXW);
-      let nw = x * Math.sin(aXW) + w * Math.cos(aXW);
-      x = nx;
-      w = nw;
-      // Rotate YW
-      let ny = y * Math.cos(aYW) - w * Math.sin(aYW);
-      nw = y * Math.sin(aYW) + w * Math.cos(aYW);
-      y = ny;
-      w = nw;
-      // Rotate ZW
-      let nz = z * Math.cos(aZW) - w * Math.sin(aZW);
-      nw = z * Math.sin(aZW) + w * Math.cos(aZW);
-      z = nz;
-      w = nw;
-
-      // 4D -> 3D perspective
-      const wDist = 2.65 / (2.65 - w);
-      const p3 = rotate3D([x * wDist, y * wDist, z * wDist], rx3, ry3, t * 0.4);
-      // 3D -> 2D perspective
-      const zDist = 3.8 / (3.8 - p3[2]);
-      return [
-        cx + p3[0] * scale * 0.72 * zDist,
-        cy + p3[1] * scale * 0.72 * zDist,
-        w,
-      ];
-    });
-
-    // Chromatic RGB Passes for 4D Tesseract Edges
-    const passes = [
-      { dx: -4, color: 'rgba(0, 240, 255, 0.78)', lw: 2 },
-      { dx: 4, color: 'rgba(255, 0, 85, 0.78)', lw: 2 },
-      { dx: 0, color: '#fcee09', lw: 2.4 },
-    ];
-
-    for (const pass of passes) {
-      ctx.strokeStyle = pass.color;
-      ctx.lineWidth = pass.lw;
-      ctx.beginPath();
-      for (const [i, j] of tesseract.edges) {
-        ctx.moveTo(projected[i][0] + pass.dx, projected[i][1]);
-        ctx.lineTo(projected[j][0] + pass.dx, projected[j][1]);
-      }
-      ctx.stroke();
-    }
-
-    // Glowing Vertex Nodes
-    for (const [px, py, w] of projected) {
-      ctx.fillStyle = w > 0 ? '#00f0ff' : '#ff0055';
-      ctx.fillRect(px - 4, py - 4, 8, 8);
-    }
-  }
-
-  // --- SCENE 4: SYNTHWAVE 2099 WIREFRAME CANYON & TWIN GLITCH SUN ---
-  function renderSynthCanyon(t, cx, cy, scale) {
-    const horizonY = cy - height * 0.06 + pointerY * 28;
-    const sunX = cx + pointerX * 45;
-    const sunY = horizonY - scale * 0.36;
-    const sunR = scale * 0.85;
-
-    // Giant Sliced Glitch Sun
-    ctx.save();
-    const sunGrad = ctx.createLinearGradient(sunX, sunY - sunR, sunX, sunY + sunR);
-    sunGrad.addColorStop(0, '#fcee09');
-    sunGrad.addColorStop(0.55, '#ff0055');
-    sunGrad.addColorStop(1, '#7a00ff');
-    ctx.fillStyle = sunGrad;
-    ctx.shadowColor = '#ff0055';
-    ctx.shadowBlur = 42;
-    ctx.beginPath();
-    ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-
-    // Horizontal cyberpunk cutouts across the lower half of the sun
-    ctx.fillStyle = '#05040c';
-    for (let s = 0; s < 8; s += 1) {
-      const sliceY = sunY + s * (sunR * 0.13);
-      const sliceH = 3 + s * 2.2;
-      ctx.fillRect(sunX - sunR * 1.2, sliceY, sunR * 2.4, sliceH);
-    }
-    ctx.restore();
-
-    // 3D Scrolling Wireframe Mountain Canyon
-    const cols = 28;
-    const rows = 20;
-    const scroll = (t * 6.5) % 1;
-
-    for (let r = rows; r >= 1; r -= 1) {
-      const z = r - scroll;
-      if (z <= 0.25) continue;
-      const fov1 = (scale * 2.6) / z;
-      const fov2 = (scale * 2.6) / (z + 1);
-
-      ctx.strokeStyle = r % 2 === 0 ? '#00f0ff' : '#ff0055';
-      ctx.lineWidth = Math.min(3, 5.2 / z);
-      ctx.beginPath();
-
-      for (let c = -cols / 2; c <= cols / 2; c += 1) {
-        const worldZ = Math.floor(t * 6.5) + r;
-        const canyonWall = Math.max(0, Math.abs(c) - 2.2);
-        const h1 =
-          Math.pow(canyonWall, 1.42) * 0.14 +
-          Math.sin(worldZ * 0.45 + c * 0.8) * (canyonWall > 0 ? 0.32 : 0.04);
-
-        const sx = sunX + c * 0.55 * fov1;
-        const sy = horizonY + (1.25 - h1) * fov1;
-
-        if (c === -cols / 2) ctx.moveTo(sx, sy);
-        else ctx.lineTo(sx, sy);
-
-        // Longitudinal rib lines
-        if (r < rows && c % 2 === 0) {
-          const nextWorldZ = worldZ + 1;
-          const h2 =
-            Math.pow(canyonWall, 1.42) * 0.14 +
-            Math.sin(nextWorldZ * 0.45 + c * 0.8) * (canyonWall > 0 ? 0.32 : 0.04);
-          const nx = sunX + c * 0.55 * fov2;
-          const ny = horizonY + (1.25 - h2) * fov2;
-          ctx.moveTo(sx, sy);
-          ctx.lineTo(nx, ny);
-          ctx.moveTo(sx, sy);
-        }
-      }
-      ctx.stroke();
-    }
-
-    // Lightning bolts striking canyon peaks
-    if (Math.sin(t * 23) > 0.45) {
-      const boltX = sunX + (Math.random() < 0.5 ? -1 : 1) * scale * (0.8 + Math.random() * 0.9);
-      ctx.strokeStyle = '#fcee09';
-      ctx.lineWidth = 2.8;
-      ctx.shadowColor = '#fcee09';
-      ctx.shadowBlur = 20;
-      ctx.beginPath();
-      ctx.moveTo(boltX, 0);
-      let bx = boltX;
-      for (let y = 0; y < horizonY + 80; y += 28) {
-        bx += (Math.random() - 0.5) * 44;
-        ctx.lineTo(bx, y);
-      }
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-    }
-  }
-
-  // Real-time Horizontal Slice Glitch Post-Processor
   function applyGlitchSlices(t) {
     const isExiting = container.classList.contains('is-exiting');
-    const burst = isExiting || Math.sin(t * 17) > 0.62 || Math.random() < 0.24;
+    const burst = isExiting || Math.sin(t * 17) > 0.65 || Math.random() < 0.22;
     if (!burst) return;
 
     const sliceCount = isExiting ? 9 : 4;
     for (let i = 0; i < sliceCount; i += 1) {
       const sy = Math.random() * height;
-      const sh = 6 + Math.random() * 38;
-      const shift = (Math.random() - 0.5) * (isExiting ? 90 : 36);
-      ctx.drawImage(
-        canvas,
-        0,
-        sy * dpr,
-        width * dpr,
-        sh * dpr,
-        shift,
-        sy,
-        width,
-        sh
-      );
-
-      if (Math.random() < 0.55) {
-        ctx.fillStyle =
-          Math.random() < 0.5
-            ? 'rgba(0, 240, 255, 0.22)'
-            : 'rgba(255, 0, 85, 0.24)';
-        ctx.fillRect(0, sy, width, Math.min(8, sh * 0.35));
-      }
+      const sh = 6 + Math.random() * 34;
+      const shift = (Math.random() - 0.5) * (isExiting ? 90 : 34);
+      ctx.drawImage(canvas, 0, sy * dpr, width * dpr, sh * dpr, shift, sy, width, sh);
     }
   }
 
@@ -836,24 +1086,38 @@ export function mountCyberLoader(container, options = {}) {
     if (stopped) return;
     const t = (now - startTime) * 0.001;
 
-    // Motion trail clear
-    ctx.fillStyle = 'rgba(5, 4, 12, 0.36)';
+    ctx.fillStyle = 'rgba(5, 4, 12, 0.34)';
     ctx.fillRect(0, 0, width, height);
 
     const cx = width * 0.5;
     const cy = height * 0.5;
-    const scale = Math.min(width, height) * 0.28;
+    const scale = Math.min(width, height) * 0.3;
 
-    if (sceneIndex === 0) {
-      renderOniKatana(t, cx, cy, scale);
-    } else if (sceneIndex === 1) {
-      renderHyperWarp(t, cx, cy, scale);
-    } else if (sceneIndex === 2) {
-      renderBlackwallVortex(t, cx, cy, scale);
-    } else if (sceneIndex === 3) {
-      renderTesseractMeltdown(t, cx, cy, scale);
-    } else {
-      renderSynthCanyon(t, cx, cy, scale);
+    switch (sceneIndex) {
+      case 0:
+        renderThreeBodyChaos(t, cx, cy, scale);
+        break;
+      case 1:
+        renderGargantuaQuasar(t, cx, cy, scale);
+        break;
+      case 2:
+        renderMeteorApocalypse(t, cx, cy, scale);
+        break;
+      case 3:
+        renderRingedGasGiant(t, cx, cy, scale);
+        break;
+      case 4:
+        renderMagnetarSupernova(t, cx, cy, scale);
+        break;
+      case 5:
+        renderDysonSwarm(t, cx, cy, scale);
+        break;
+      case 6:
+        renderGalacticCollision(t, cx, cy, scale);
+        break;
+      default:
+        renderOniStarWarp(t, cx, cy, scale);
+        break;
     }
 
     applyGlitchSlices(t);
@@ -873,13 +1137,14 @@ export function mountCyberLoader(container, options = {}) {
     rafId = requestAnimationFrame(frame);
   }
 
-  // Initial solid fill before first trail frame
   ctx.fillStyle = '#05040c';
   ctx.fillRect(0, 0, width, height);
   rafId = requestAnimationFrame(frame);
 
   return {
+    getSceneIndex: () => sceneIndex,
     getScene: () => CYBER_SCENES[sceneIndex],
+    resize,
     nextScene: () => {
       sceneIndex = (sceneIndex + 1) % CYBER_SCENES.length;
       ctx.fillStyle = '#05040c';

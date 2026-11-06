@@ -707,24 +707,52 @@ async function bootstrap() {
 
   bindControls();
 
+  const fullEl = document.getElementById('cyber-fullscreen-stage');
   const loadEl = document.getElementById('stage-loading');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const stageCyber = !reducedMotion && loadEl ? mountCyberLoader(loadEl) : null;
 
-  let bootDeadline = performance.now() + (reducedMotion ? 0 : 1450);
-  const switchBtn = document.getElementById('cyber-scene-switch');
-  switchBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    synth.playClick();
-    stageCyber?.nextScene();
-    bootDeadline = Math.max(bootDeadline, performance.now() + 1450);
+  const fullCyber = !reducedMotion && fullEl ? mountCyberLoader(fullEl) : null;
+  const stageCyber =
+    !reducedMotion && loadEl
+      ? mountCyberLoader(loadEl, { excludeIndex: fullCyber?.getSceneIndex() ?? -1 })
+      : null;
+
+  let fullDeadline = performance.now() + (reducedMotion ? 0 : 960);
+  let stageDeadline = performance.now() + (reducedMotion ? 0 : 1860);
+
+  document.querySelectorAll('[data-cyber-scene-switch]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      synth.playClick();
+      if (fullEl && !fullEl.hidden && !fullEl.classList.contains('is-exiting')) {
+        fullCyber?.nextScene();
+        fullDeadline = performance.now() + 1450;
+        stageDeadline = Math.max(stageDeadline, fullDeadline + 900);
+      } else {
+        stageCyber?.nextScene();
+        stageDeadline = performance.now() + 1450;
+      }
+    });
   });
 
-  const waitBootCinema = async () => {
-    while (performance.now() < bootDeadline) {
-      await new Promise((r) => setTimeout(r, 80));
-    }
-  };
+  document.querySelectorAll('[data-cyber-mode-toggle]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      synth.playClick();
+      if (!fullEl) return;
+      if (fullEl.hidden || fullEl.classList.contains('is-exiting')) {
+        fullEl.classList.remove('is-exiting');
+        fullEl.hidden = false;
+        fullCyber?.resize();
+        fullDeadline = performance.now() + 1500;
+        stageDeadline = Math.max(stageDeadline, fullDeadline + 800);
+      } else {
+        fullEl.classList.add('is-exiting');
+        fullDeadline = 0;
+        stageDeadline = Math.max(stageDeadline, performance.now() + 1350);
+      }
+    });
+  });
 
   const catalogPromise = loadLivePagesCatalog({
     onRemoteUpdate: (updatedItems) => {
@@ -738,11 +766,31 @@ async function bootstrap() {
     },
   });
 
-  const [items] = await Promise.all([catalogPromise, waitBootCinema()]);
+  // Phase 1: Fullscreen Cyber-Cosmos Overdrive
+  while (!reducedMotion && performance.now() < fullDeadline) {
+    await new Promise((r) => setTimeout(r, 70));
+  }
+  if (fullEl && !reducedMotion) {
+    fullEl.classList.add('is-exiting');
+    setTimeout(() => {
+      fullEl.hidden = true;
+      fullCyber?.stop();
+    }, 340);
+  } else if (fullEl) {
+    fullEl.hidden = true;
+    fullCyber?.stop();
+  }
+
+  // Phase 2: Regional Stage Cyber-Cosmos Overdrive inside #stage-container
+  while (!reducedMotion && performance.now() < stageDeadline) {
+    await new Promise((r) => setTimeout(r, 70));
+  }
+
+  const items = await catalogPromise;
 
   if (loadEl && !reducedMotion) {
     loadEl.classList.add('is-exiting');
-    await new Promise((r) => setTimeout(r, 340));
+    await new Promise((r) => setTimeout(r, 320));
   }
   stageCyber?.stop();
 
