@@ -320,6 +320,34 @@
   }
 
   var sparkTimer = null;
+  var CLARITY_ID = 'z9inempyr4';
+
+  function ensureTelemetry() {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    if (CLARITY_ID && !window.clarity && typeof document.createElement === 'function') {
+      try {
+        (function (c, l, a, r, i, t, y) {
+          c[a] =
+            c[a] ||
+            function () {
+              (c[a].q = c[a].q || []).push(arguments);
+            };
+          t = l.createElement(r);
+          t.async = 1;
+          t.src = 'https://www.clarity.ms/tag/' + i;
+          y = l.getElementsByTagName(r)[0];
+          if (y && y.parentNode) {
+            y.parentNode.insertBefore(t, y);
+          } else if (l.head) {
+            l.head.appendChild(t);
+          }
+        })(window, document, 'clarity', 'script', CLARITY_ID);
+      } catch (_err) {
+        // Ignore telemetry load errors in restricted or test environments
+      }
+    }
+  }
+
   function ensureGlobalSparkLoop() {
     if (sparkTimer || typeof window === 'undefined' || typeof document === 'undefined') return;
     sparkTimer = setInterval(function () {
@@ -361,6 +389,7 @@
 
   function mountAll(rootNode) {
     injectStyles();
+    ensureTelemetry();
     var scope = rootNode || (typeof document !== 'undefined' ? document : null);
     if (!scope || !scope.querySelectorAll) return [];
 
