@@ -321,7 +321,7 @@
 
   var sparkTimer = null;
   var CLARITY_ID = 'z9inempyr4';
-  var GA_ID = 'G-MFGEX5L3X8';
+  var GA_ID = 'GTM-MJL6D7PD';
 
   function ensureTelemetry() {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
@@ -351,7 +351,7 @@
       try {
         var gs = document.createElement('script');
         gs.async = true;
-        gs.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+        gs.src = 'https://www.googletagmanager.com/gtm.js?id=' + GA_ID;
         if (document.head) {
           document.head.appendChild(gs);
         }
