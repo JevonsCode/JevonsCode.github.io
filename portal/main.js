@@ -326,9 +326,12 @@ function renderStage() {
 }
 
 /* Dimension Peek (◫) Live Preview Glass Modal */
+let peekLoadTimer = 0;
+
 function openPeek(item) {
   const backdrop = document.getElementById('peek-backdrop');
   const frame = document.getElementById('peek-frame');
+  const loadingEl = document.getElementById('peek-loading');
   const urlEl = document.getElementById('peek-url');
   const openBtn = document.getElementById('peek-open-ext');
   const ghBtn = document.getElementById('peek-open-gh');
@@ -343,6 +346,11 @@ function openPeek(item) {
   urlEl.textContent = `${item.indexCode} · ${DISPLAY_DOMAIN}${item.routeLabel}/`;
   if (openBtn) openBtn.href = item.href;
   if (ghBtn) ghBtn.href = item.repoUrl;
+  if (loadingEl) loadingEl.hidden = false;
+  if (peekLoadTimer) clearTimeout(peekLoadTimer);
+  peekLoadTimer = setTimeout(() => {
+    if (loadingEl) loadingEl.hidden = true;
+  }, 5000);
   frame.src = item.href;
   backdrop.hidden = false;
 }
@@ -350,8 +358,14 @@ function openPeek(item) {
 function closePeek() {
   const backdrop = document.getElementById('peek-backdrop');
   const frame = document.getElementById('peek-frame');
+  const loadingEl = document.getElementById('peek-loading');
   if (!backdrop || backdrop.hidden) return;
   backdrop.hidden = true;
+  if (peekLoadTimer) {
+    clearTimeout(peekLoadTimer);
+    peekLoadTimer = 0;
+  }
+  if (loadingEl) loadingEl.hidden = true;
   document.body.classList.remove('has-peek-open');
   if (frame) frame.src = 'about:blank';
 }
@@ -571,6 +585,16 @@ function bindControls() {
   document.getElementById('peek-backdrop')?.addEventListener('click', (e) => {
     if (e.target.id === 'peek-backdrop') closePeek();
   });
+  document.getElementById('peek-frame')?.addEventListener('load', () => {
+    const frame = document.getElementById('peek-frame');
+    if (!frame || frame.getAttribute('src') === 'about:blank') return;
+    if (peekLoadTimer) {
+      clearTimeout(peekLoadTimer);
+      peekLoadTimer = 0;
+    }
+    const loadingEl = document.getElementById('peek-loading');
+    if (loadingEl) loadingEl.hidden = true;
+  });
 
   window.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
@@ -666,7 +690,17 @@ async function bootstrap() {
 
   bindControls();
 
-  state.allItems = await loadLivePagesCatalog();
+  state.allItems = await loadLivePagesCatalog({
+    onRemoteUpdate: (updatedItems) => {
+      if (updatedItems.length !== state.allItems.length) {
+        state.allItems = updatedItems;
+        renderFilterPills();
+        renderStage();
+      } else {
+        state.allItems = updatedItems;
+      }
+    },
+  });
   renderFilterPills();
   renderStage();
 }

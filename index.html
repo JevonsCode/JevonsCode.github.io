@@ -18,8 +18,8 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="./portal/styles/tokens.css?v=4" />
-  <link rel="stylesheet" href="./portal/styles/layout.css?v=4" />
+  <link rel="stylesheet" href="./portal/styles/tokens.css?v=6" />
+  <link rel="stylesheet" href="./portal/styles/layout.css?v=6" />
 </head>
 <body>
   <!-- Full-viewport 60fps Swiss Crosshair Magnetic Field & Pinball Physics Canvas -->
@@ -91,8 +91,25 @@
       </div>
     </nav>
 
-    <!-- Dynamic Stage Container -->
-    <main id="stage-container" class="stage-container"></main>
+    <!-- Dynamic Stage Container (with instant initial Swiss Loading Skeleton) -->
+    <main id="stage-container" class="stage-container">
+      <div id="stage-loading" class="stage-loading" role="status" aria-live="polite">
+        <div class="stage-loading-hud">
+          <div class="swiss-loader-badge">
+            <span class="swiss-loader-ring" aria-hidden="true"></span>
+            <span data-i18n="stageLoading">正在加载在线作品…</span>
+          </div>
+        </div>
+        <div class="stage-grid" aria-hidden="true">
+          <div class="portal-card skeleton-card" data-span="hero"><div class="card-top"><span class="skeleton-bar is-sm"></span><span class="skeleton-bar is-sm"></span></div><div class="card-bottom"><span class="skeleton-bar is-lg"></span><span class="skeleton-bar is-sm"></span></div></div>
+          <div class="portal-card skeleton-card" data-span="wide"><div class="card-top"><span class="skeleton-bar is-sm"></span><span class="skeleton-bar is-sm"></span></div><div class="card-bottom"><span class="skeleton-bar is-md"></span><span class="skeleton-bar is-sm"></span></div></div>
+          <div class="portal-card skeleton-card"><div class="card-top"><span class="skeleton-bar is-sm"></span><span class="skeleton-bar is-sm"></span></div><div class="card-bottom"><span class="skeleton-bar is-md"></span><span class="skeleton-bar is-sm"></span></div></div>
+          <div class="portal-card skeleton-card"><div class="card-top"><span class="skeleton-bar is-sm"></span><span class="skeleton-bar is-sm"></span></div><div class="card-bottom"><span class="skeleton-bar is-md"></span><span class="skeleton-bar is-sm"></span></div></div>
+          <div class="portal-card skeleton-card"><div class="card-top"><span class="skeleton-bar is-sm"></span><span class="skeleton-bar is-sm"></span></div><div class="card-bottom"><span class="skeleton-bar is-md"></span><span class="skeleton-bar is-sm"></span></div></div>
+          <div class="portal-card skeleton-card"><div class="card-top"><span class="skeleton-bar is-sm"></span><span class="skeleton-bar is-sm"></span></div><div class="card-bottom"><span class="skeleton-bar is-md"></span><span class="skeleton-bar is-sm"></span></div></div>
+        </div>
+      </div>
+    </main>
 
     <!-- Minimalist Swiss Serial Footer Rail -->
     <footer class="footer-rail">
@@ -117,7 +134,15 @@
           <button type="button" id="peek-close" class="rail-btn" data-cursor="CLOSE">✕</button>
         </div>
       </div>
-      <iframe id="peek-frame" class="peek-frame" title="Pages Live Preview" loading="lazy"></iframe>
+      <div class="peek-body">
+        <div id="peek-loading" class="peek-loading" role="status" aria-live="polite" hidden>
+          <div class="swiss-loader-badge">
+            <span class="swiss-loader-ring" aria-hidden="true"></span>
+            <span data-i18n="peekLoading">正在加载站点预览…</span>
+          </div>
+        </div>
+        <iframe id="peek-frame" class="peek-frame" title="Pages Live Preview" loading="lazy"></iframe>
+      </div>
     </div>
   </div>
 
@@ -132,7 +157,7 @@
   <!-- Secret Unlock Toast -->
   <div id="egg-toast" class="egg-toast" role="status" aria-live="polite"></div>
 
-  <script src="./ydys-badge.js?v=5" defer></script>
-  <script type="module" src="./portal/main.js?v=5"></script>
+  <script src="./ydys-badge.js?v=6" defer></script>
+  <script type="module" src="./portal/main.js?v=6"></script>
 </body>
 </html>

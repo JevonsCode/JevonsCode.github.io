@@ -367,7 +367,11 @@ export function mergePagesCatalog(manifestItems = [], liveGithubRepos = [], opti
 const SESSION_CACHE_KEY = 'ydys.gh.pages.v2';
 const CACHE_TTL_MS = 10 * 60 * 1000;
 
-export async function loadLivePagesCatalog({ fetchImpl = fetch, hostname = window.location.hostname } = {}) {
+export async function loadLivePagesCatalog({
+  fetchImpl = fetch,
+  hostname = window.location.hostname,
+  onRemoteUpdate = null,
+} = {}) {
   let manifestItems = [];
   try {
     const manifestResp = await fetchImpl('./portal/data/pages-manifest.json');
@@ -379,29 +383,61 @@ export async function loadLivePagesCatalog({ fetchImpl = fetch, hostname = windo
     // Fallback to live API or curated defaults if manifest fetch fails.
   }
 
-  let liveRepos = [];
+  let cachedRepos = [];
   try {
     const cachedRaw = sessionStorage.getItem(SESSION_CACHE_KEY);
     if (cachedRaw) {
       const cached = JSON.parse(cachedRaw);
       if (Date.now() - cached.ts < CACHE_TTL_MS && Array.isArray(cached.repos)) {
-        liveRepos = cached.repos;
-      }
-    }
-    if (!liveRepos.length) {
-      const ghResp = await fetchImpl(`https://api.github.com/users/${PORTAL_OWNER}/repos?per_page=100&sort=pushed`, {
-        headers: { Accept: 'application/vnd.github+json' },
-      });
-      if (ghResp.ok) {
-        const json = await ghResp.json();
-        if (Array.isArray(json)) {
-          liveRepos = json.filter((r) => r && r.has_pages);
-          sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify({ ts: Date.now(), repos: liveRepos }));
-        }
+        cachedRepos = cached.repos;
       }
     }
   } catch {
-    // Offline or rate-limited: manifestItems already carry the full snapshot.
+    // Ignore sessionStorage errors in private browsing.
+  }
+
+  const fetchFreshGithubRepos = async () => {
+    try {
+      const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const timer = controller ? setTimeout(() => controller.abort(), 3200) : 0;
+      const ghResp = await fetchImpl(`https://api.github.com/users/${PORTAL_OWNER}/repos?per_page=100&sort=pushed`, {
+        headers: { Accept: 'application/vnd.github+json' },
+        ...(controller ? { signal: controller.signal } : {}),
+      });
+      if (timer) clearTimeout(timer);
+      if (ghResp.ok) {
+        const json = await ghResp.json();
+        if (Array.isArray(json)) {
+          const repos = json.filter((r) => r && r.has_pages);
+          try {
+            sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify({ ts: Date.now(), repos }));
+          } catch {}
+          return repos;
+        }
+      }
+    } catch {
+      // Offline, rate-limited, or timed out: manifestItems already carry the full snapshot.
+    }
+    return null;
+  };
+
+  // If manifest is already available and caller supports progressive updates, return immediately
+  // without blocking initial stage render on api.github.com latency.
+  if (manifestItems.length > 0 && typeof onRemoteUpdate === 'function') {
+    const initial = mergePagesCatalog(manifestItems, cachedRepos, { hostname });
+    if (!cachedRepos.length) {
+      fetchFreshGithubRepos().then((fresh) => {
+        if (Array.isArray(fresh) && fresh.length > 0) {
+          onRemoteUpdate(mergePagesCatalog(manifestItems, fresh, { hostname }));
+        }
+      });
+    }
+    return initial;
+  }
+
+  let liveRepos = cachedRepos;
+  if (!liveRepos.length) {
+    liveRepos = (await fetchFreshGithubRepos()) || [];
   }
 
   return mergePagesCatalog(manifestItems, liveRepos, { hostname });
