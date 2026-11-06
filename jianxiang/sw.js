@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const CACHE_VERSION = '2026-10-08.2';
+const CACHE_VERSION = '2026-11-06.1';
 const APP_SCOPE = new URL(self.registration.scope);
 const CACHE_PREFIX = `jianxiang-shell:${encodeURIComponent(APP_SCOPE.pathname)}:`;
 const CACHE_NAME = `${CACHE_PREFIX}${CACHE_VERSION}`;

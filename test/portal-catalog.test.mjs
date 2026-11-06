@@ -115,3 +115,26 @@ test('locale and prefix variants provide expected wordplay options', async () =>
   assert.equal(t('site'), '官网 ↗');
 });
 
+test('07 3d-solar-system is standard span and 08 astron-solar-system is wide 3D solar system', () => {
+  const manifest = [
+    { slug: '3d-solar-system' },
+    { slug: 'astron-solar-system' },
+  ];
+  const merged = mergePagesCatalog(manifest, [], { hostname: '有点.意思.com' });
+  const s07 = merged.find((i) => i.slug === '3d-solar-system');
+  const s08 = merged.find((i) => i.slug === 'astron-solar-system');
+  assert.equal(s07.span, 'standard');
+  assert.equal(s08.span, 'wide');
+  assert.equal(s08.tag, '3D');
+  assert.ok(s08.blurb?.zh.includes('3D'));
+});
+
+test('ydys-badge.js UMD module exports cyberpunk badge API', async () => {
+  const mod = await import('../ydys-badge.js');
+  const badge = mod.default?.PORTAL_URL ? mod.default : globalThis.YdysCyberBadge;
+  assert.equal(badge.PORTAL_URL, 'https://xn--8ovp9s.xn--m8txu.com/');
+  assert.equal(badge.LABEL, '有点.意思.com');
+  assert.equal(typeof badge.mount, 'function');
+  assert.equal(typeof badge.mountAll, 'function');
+});
+

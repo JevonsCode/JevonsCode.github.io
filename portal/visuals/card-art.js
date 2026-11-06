@@ -519,47 +519,116 @@ const ART_RENDERERS = {
   },
 
   'astrolabe-chart'(ctx, state, t) {
-    const { w, h, accent, ink, inkFaint, hover, lx } = state;
+    const { w, h, accent, ink, inkFaint, isDark, hover, lx, ly, impulse } = state;
     const cx = w * 0.5;
-    const cy = h * 0.5;
-    const r = Math.min(w, h) * 0.34;
+    const cy = h * 0.52;
+    const maxRx = Math.min(w * 0.43, h * 0.85);
+    const tilt = 0.34 + (ly - 0.5) * hover * 0.36;
+    const roll = -0.14 + (lx - 0.5) * hover * 0.42;
 
     ctx.save();
     ctx.translate(cx, cy);
-    for (const [mult, dir] of [
-      [1, 1],
-      [0.72, -1.4],
-      [0.44, 2.1],
-    ]) {
-      ctx.save();
-      ctx.rotate(t * 0.32 * dir + (lx - 0.5) * hover * dir);
-      ctx.strokeStyle = mult === 0.72 ? hexToRgba(accent, 0.75) : inkFaint;
-      ctx.lineWidth = 1.1;
-      ctx.beginPath();
-      ctx.arc(0, 0, r * mult, 0, TAU * 0.82);
-      ctx.stroke();
+    ctx.rotate(roll);
 
-      for (let i = 0; i < 16; i += 1) {
-        const a = (i / 16) * TAU;
-        ctx.beginPath();
-        ctx.moveTo(Math.cos(a) * r * mult * 0.92, Math.sin(a) * r * mult * 0.92);
-        ctx.lineTo(Math.cos(a) * r * mult, Math.sin(a) * r * mult);
-        ctx.stroke();
-      }
-      ctx.restore();
-    }
-    ctx.strokeStyle = ink;
+    // Subtle 3D ecliptic reference plane & cross-axes
+    ctx.strokeStyle = hexToRgba(accent, isDark ? 0.22 : 0.16);
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(-r * 1.1, 0);
-    ctx.lineTo(r * 1.1, 0);
-    ctx.moveTo(0, -r * 1.1);
-    ctx.lineTo(0, r * 1.1);
+    ctx.moveTo(-maxRx * 1.08, 0);
+    ctx.lineTo(maxRx * 1.08, 0);
+    ctx.moveTo(0, -maxRx * tilt * 1.15);
+    ctx.lineTo(0, maxRx * tilt * 1.15);
     ctx.stroke();
 
-    ctx.fillStyle = accent;
+    const planets = [
+      { r: 0.22, speed: 2.3, size: 2.6, color: '#94A3B8', phase: 0.4 },
+      { r: 0.35, speed: -1.65, size: 3.6, color: '#FBBF24', phase: 1.7 },
+      { r: 0.5, speed: 1.18, size: 4.5, color: '#38BDF8', moon: true, phase: 2.8 },
+      { r: 0.65, speed: 0.86, size: 3.5, color: '#F97316', phase: 4.1 },
+      { r: 0.82, speed: -0.58, size: 6.8, color: '#EAB308', ring: true, phase: 5.2 },
+      { r: 0.98, speed: 0.38, size: 4.4, color: accent, phase: 0.9 },
+    ];
+
+    // Draw 3D orbital ellipses
+    for (const p of planets) {
+      const rx = maxRx * p.r;
+      const ry = Math.max(7, rx * tilt);
+      ctx.strokeStyle = p.ring ? hexToRgba(accent, 0.42) : inkFaint;
+      ctx.lineWidth = p.ring ? 1.2 : 0.9;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, rx, ry, 0, 0, TAU);
+      ctx.stroke();
+    }
+
+    // Compute 3D positions & depth-sort relative to the central Sun
+    const speedBoost = 1 + hover * 0.85 + impulse * 1.2;
+    const nodes = planets.map((p) => {
+      const rx = maxRx * p.r;
+      const ry = Math.max(7, rx * tilt);
+      const a = t * p.speed * speedBoost + p.phase;
+      const x = Math.cos(a) * rx;
+      const y = Math.sin(a) * ry;
+      const z = Math.sin(a); // -1 (far) to +1 (near)
+      return { ...p, a, x, y, z };
+    });
+
+    const drawPlanet = (p) => {
+      const depthScale = 0.78 + (p.z + 1) * 0.22;
+      const radius = p.size * depthScale * (1 + hover * 0.12);
+
+      if (p.ring) {
+        ctx.strokeStyle = hexToRgba(p.color, 0.75);
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.ellipse(p.x, p.y, radius * 2.15, Math.max(2.2, radius * 0.68), 0.25, 0, TAU);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = p.color;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 6 + hover * 4;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, radius, 0, TAU);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      if (p.moon) {
+        const ma = t * 5.2;
+        const mx = p.x + Math.cos(ma) * (radius + 6.5);
+        const my = p.y + Math.sin(ma) * (radius + 6.5) * 0.55;
+        ctx.fillStyle = ink;
+        ctx.beginPath();
+        ctx.arc(mx, my, 1.6, 0, TAU);
+        ctx.fill();
+      }
+    };
+
+    // Far hemisphere planets (behind Sun)
+    nodes.filter((n) => n.z < 0).forEach(drawPlanet);
+
+    // Central 3D Sun + corona glow
+    const sunR = 10 + hover * 2.8 + Math.sin(t * 3.2) * 0.8;
+    const grad = ctx.createRadialGradient(0, 0, 1, 0, 0, sunR * 2.8);
+    grad.addColorStop(0, '#FFFBEB');
+    grad.addColorStop(0.35, '#F59E0B');
+    grad.addColorStop(0.7, hexToRgba(accent, 0.45));
+    grad.addColorStop(1, hexToRgba(accent, 0));
+    ctx.fillStyle = grad;
     ctx.beginPath();
-    ctx.arc(0, 0, 4, 0, TAU);
+    ctx.arc(0, 0, sunR * 2.8, 0, TAU);
     ctx.fill();
+
+    ctx.fillStyle = '#FBBF24';
+    ctx.shadowColor = '#F59E0B';
+    ctx.shadowBlur = 16;
+    ctx.beginPath();
+    ctx.arc(0, 0, sunR * 0.78, 0, TAU);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Near hemisphere planets (in front of Sun)
+    nodes.filter((n) => n.z >= 0).forEach(drawPlanet);
+
     ctx.restore();
   },
 

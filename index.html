@@ -18,8 +18,8 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="./portal/styles/tokens.css?v=3" />
-  <link rel="stylesheet" href="./portal/styles/layout.css?v=3" />
+  <link rel="stylesheet" href="./portal/styles/tokens.css?v=4" />
+  <link rel="stylesheet" href="./portal/styles/layout.css?v=4" />
 </head>
 <body>
   <!-- Full-viewport 60fps Swiss Crosshair Magnetic Field & Pinball Physics Canvas -->
@@ -97,7 +97,8 @@
     <!-- Minimalist Swiss Serial Footer Rail -->
     <footer class="footer-rail">
       <button type="button" id="punycode-stamp" class="footer-stamp-btn" data-cursor="DECODE">XN--8OVP9S.XN--M8TXU.COM</button>
-      <div style="display:flex;align-items:center;gap:14px;">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center;">
+        <a href="https://xn--8ovp9s.xn--m8txu.com/" data-ydys-badge>有点.意思.com</a>
         <a class="footer-stamp-btn" href="https://github.com/JevonsCode" target="_blank" rel="noopener" data-cursor="GITHUB ↗">GITHUB/JEVONSCODE ↗</a>
         <button type="button" id="vault-seal" class="footer-stamp-btn" data-cursor="⚿">// 00</button>
       </div>
@@ -131,6 +132,7 @@
   <!-- Secret Unlock Toast -->
   <div id="egg-toast" class="egg-toast" role="status" aria-live="polite"></div>
 
-  <script type="module" src="./portal/main.js?v=3"></script>
+  <script src="./ydys-badge.js?v=4" defer></script>
+  <script type="module" src="./portal/main.js?v=4"></script>
 </body>
 </html>

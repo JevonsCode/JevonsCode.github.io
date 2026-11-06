@@ -1,0 +1,30 @@
+/* Cyberpunk Neon Flickering Badge for 有点.意思.com — Standalone Stylesheet */
+a.ydys-cyber-badge, .ydys-cyber-badge {
+  position: relative;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 1px;
+  padding: 2px 9px 2px 8px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #090a12 0%, #141024 55%, #090d16 100%) !important;
+  border: 1px solid rgba(0, 240, 255, 0.58) !important;
+  box-shadow:
+    0 0 8px rgba(0, 240, 255, 0.32),
+    0 0 18px rgba(255, 0, 85, 0.18),
+    inset 0 0 8px rgba(0, 240, 255, 0.14);
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, "Noto Sans SC", "PingFang SC", monospace !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  line-height: 1.35 !important;
+  letter-spacing: 0.03em;
+  text-decoration: none !important;
+  white-space: nowrap;
+  vertical-align: middle;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px));
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+  animation: ydysBorderPulse 3.6s ease-in-out infinite;
+}

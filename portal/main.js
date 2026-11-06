@@ -235,7 +235,10 @@ function renderOrbitStage(container, items) {
   );
 
   const count = Math.max(1, cards.length);
-  const radius = Math.max(360, Math.min(760, count * 48));
+  const isMobile = window.innerWidth <= 760;
+  const radius = isMobile
+    ? Math.max(210, Math.min(400, count * 26))
+    : Math.max(360, Math.min(760, count * 48));
 
   const tick = () => {
     if (!state.orbitDragging) {
