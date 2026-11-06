@@ -189,5 +189,7 @@ test('SEO and AIEO files (robots.txt, sitemap.xml, llms.txt, llms-full.txt, inde
   assert.ok(indexHtml.includes('name="google-site-verification" content="sf45w9Le0FvwqCVQNc9X71cIVdKBVpd2hQWJOJLPPjc"'));
   assert.ok(indexHtml.includes('z9inempyr4'));
   assert.ok(badgeJs.includes('z9inempyr4'));
+  assert.ok(indexHtml.includes('G-MFGEX5L3X8'));
+  assert.ok(badgeJs.includes('G-MFGEX5L3X8'));
 });
 

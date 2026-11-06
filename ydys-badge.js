@@ -321,6 +321,7 @@
 
   var sparkTimer = null;
   var CLARITY_ID = 'z9inempyr4';
+  var GA_ID = 'G-MFGEX5L3X8';
 
   function ensureTelemetry() {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
@@ -344,6 +345,24 @@
         })(window, document, 'clarity', 'script', CLARITY_ID);
       } catch (_err) {
         // Ignore telemetry load errors in restricted or test environments
+      }
+    }
+    if (GA_ID && !window.gtag && typeof document.createElement === 'function') {
+      try {
+        var gs = document.createElement('script');
+        gs.async = true;
+        gs.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+        if (document.head) {
+          document.head.appendChild(gs);
+        }
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () {
+          window.dataLayer.push(arguments);
+        };
+        window.gtag('js', new Date());
+        window.gtag('config', GA_ID);
+      } catch (_err2) {
+        // Ignore GA load errors in restricted or test environments
       }
     }
   }
