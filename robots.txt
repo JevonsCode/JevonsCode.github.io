@@ -1,0 +1,90 @@
+# robots.txt for 有点.意思.com (https://xn--8ovp9s.xn--m8txu.com/)
+# Welcomes all Web Search Engines AND AI / LLM Discovery Crawlers (AIEO / GEO enabled)
+# AI Summary: https://xn--8ovp9s.xn--m8txu.com/llms.txt
+# Full AI Context: https://xn--8ovp9s.xn--m8txu.com/llms-full.txt
+
+User-agent: *
+Allow: /
+
+# Major Search Engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: Sogou web spider
+Allow: /
+
+User-agent: 360Spider
+Allow: /
+
+User-agent: YisouSpider
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+# AI & Generative Search Engines (AIEO / GEO)
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: Cohere-ai
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+Sitemap: https://xn--8ovp9s.xn--m8txu.com/sitemap.xml
+Sitemap: https://xn--8ovp9s.xn--m8txu.com/fuli/sitemap.xml

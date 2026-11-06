@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- Main Portal: 有点.意思.com -->
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://xn--8ovp9s.xn--m8txu.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://xn--8ovp9s.xn--m8txu.com/?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xn--8ovp9s.xn--m8txu.com/" />
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Flagship 1: FULI 复利 (AI Agent Persistent Memory & Collaboration Layer) -->
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/fuli/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://xn--8ovp9s.xn--m8txu.com/fuli/zh/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://xn--8ovp9s.xn--m8txu.com/fuli/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xn--8ovp9s.xn--m8txu.com/fuli/" />
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.98</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/fuli/en/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.92</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/fuli/guide/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/fuli/models/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.88</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/fuli/tech/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.88</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/fuli/report/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <!-- Flagship 2: 叮咚 DingDong / DingDongBuddy (Desktop Companion & Cross-Device Transfer) -->
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/DingDongBuddy/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.98</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/DingDongBuddy/app/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <!-- Flagship 3: PhoneBridge 手机桥接 / 风Bridge -->
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/phonebridge/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://xn--8ovp9s.xn--m8txu.com/phonebridge/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://xn--8ovp9s.xn--m8txu.com/phonebridge/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xn--8ovp9s.xn--m8txu.com/phonebridge/" />
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.98</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/phonebridge/en/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <!-- Supporting Flagship Projects -->
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/fuli-avatar/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.88</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/dingdong-voices/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.88</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/jianxiang/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.86</priority>
+  </url>
+
+  <!-- Interactive 3D & Creative Studio Projects -->
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/astron-solar-system/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/3d-solar-system/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.78</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/auto-redbook/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/compound-interest/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/ear-cleaner/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/english-reader/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/fireworks/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/let-it-rain/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/lotto/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/vibe-coding/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/voice-typing/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <!-- AIEO / LLM Structured Markdown Manifests -->
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/llms.txt</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://xn--8ovp9s.xn--m8txu.com/llms-full.txt</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+</urlset>

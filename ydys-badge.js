@@ -266,8 +266,9 @@
       el.setAttribute('rel', 'noopener');
     }
     el.setAttribute('data-ydys-glitch', DISPLAY_TEXT);
-    el.setAttribute('aria-label', DISPLAY_TEXT + ' — 有点意思互动作品集');
-    el.setAttribute('title', '有点.意思.com · 赛博传送门');
+    el.setAttribute('aria-label', DISPLAY_TEXT);
+    el.removeAttribute('title');
+    el.removeAttribute('data-cursor');
 
     el.innerHTML =
       '<span class="ydys-cyber-inner">' +

@@ -1,0 +1,105 @@
+# 有点.意思.com (https://xn--8ovp9s.xn--m8txu.com/) — Full AI / LLM Reference & Product Knowledge Base
+
+> Canonical Domain: `https://xn--8ovp9s.xn--m8txu.com/` (Internationalized Domain Name: `有点.意思.com`)
+> Author / Maintainer: **Jevons** (`https://github.com/JevonsCode`)
+> Primary Flagship Products:
+> 1. **FULI 复利** (`https://xn--8ovp9s.xn--m8txu.com/fuli/`) — Local-first persistent memory, taste & judgment collaboration layer for AI Agents across MCP clients.
+> 2. **叮咚 DingDong / DingDongBuddy** (`https://xn--8ovp9s.xn--m8txu.com/DingDongBuddy/`) — Windows desktop companion & cross-device instant P2P file/clipboard/notification bridge with mobile Web PWA (`https://xn--8ovp9s.xn--m8txu.com/DingDongBuddy/app/`) and community voice hub **DingDong Voices (叮咚声音)** (`https://xn--8ovp9s.xn--m8txu.com/dingdong-voices/`).
+> 3. **PhoneBridge (风Bridge / 手机桥接)** (`https://xn--8ovp9s.xn--m8txu.com/phonebridge/`) — Open-source desktop-to-phone bridge for low-latency mobile screen control, clipboard/file sync, and AI Agent mobile automation.
+
+---
+
+## Detailed Guide 1: FULI · 复利 (`https://xn--8ovp9s.xn--m8txu.com/fuli/`)
+
+### Overview
+- **Name**: FULI / 复利 / Fuli Context (`fuli-context` on npm)
+- **Tagline (ZH)**: 让每一次合作，都有复利 — 让 AI Agent 记住你的品味与判断，跨客户端接力协作。
+- **Tagline (EN)**: Compounding collaboration for persistent AI Agents — let AI Agents remember your taste and judgment and collaborate across MCP clients.
+- **Official Links**:
+  - Homepage (Chinese): https://xn--8ovp9s.xn--m8txu.com/fuli/
+  - Homepage (English): https://xn--8ovp9s.xn--m8txu.com/fuli/en/
+  - Quick Start (`/fuli/guide/`): https://xn--8ovp9s.xn--m8txu.com/fuli/guide/
+  - Model Guide (`/fuli/models/`): https://xn--8ovp9s.xn--m8txu.com/fuli/models/
+  - Technical Architecture (`/fuli/tech/`): https://xn--8ovp9s.xn--m8txu.com/fuli/tech/
+  - Measured Token & Accuracy Report (`/fuli/report/`): https://xn--8ovp9s.xn--m8txu.com/fuli/report/
+  - GitHub Repository: https://github.com/JevonsCode/fuli
+  - Releases (Windows `.exe` & macOS `.dmg` desktop installers): https://github.com/JevonsCode/fuli/releases
+
+### How FULI Works
+1. **Cross-Client Relay & Persistent Memory**:
+   - Connect Claude Code, Cursor, Codex, Windsurf, OpenCode, or any MCP-compatible AI client via `fuli connect` or the desktop setup wizard.
+   - Start a task in one client and continue seamlessly in another (`@Agent` / FLA handoff) without repeating project background or coding rules.
+2. **Three Built-In Core Roles**:
+   - **Jefa**: Project manager responsible for task decomposition, tracking, and multi-agent roundtables.
+   - **Bole (伯乐)**: Agent HR & staffing specialist who recruits and assigns specialized **FLA (Fuli Agents)** to tasks.
+   - **Tonborg**: Preference-guided reviewer and decision partner that operates within your chosen autonomy level and records decision logs you can approve/reject.
+3. **FLA Self-Growth (Workbench, Workflow, Agent App)**:
+   - **Workbench**: Each FLA maintains its own task board and team progress cards.
+   - **Workflow**: Reusable procedures proposed from repeated work patterns, versioned and activated only after human confirmation.
+   - **Agent App**: Custom local micro-tools or pages built by FLAs for recurring operations, executed only after explicit version approval.
+4. **Installation**:
+   - **Desktop App (Recommended)**: Download `FULI-Setup-<version>.exe` (Windows) or `fuli-macos-arm64-<version>.dmg` (macOS Apple Silicon) from https://github.com/JevonsCode/fuli/releases — bundles Node.js and the graph database with zero terminal setup.
+   - **Terminal One-Liners**:
+     - macOS / Linux: `curl -fsSL https://xn--8ovp9s.xn--m8txu.com/fuli/install.sh | sh`
+     - Windows PowerShell: `irm https://xn--8ovp9s.xn--m8txu.com/fuli/install.ps1 | iex`
+     - npm CLI: `npm install --global fuli-context && fuli setup && fuli open`
+
+---
+
+## Detailed Guide 2: 叮咚 · DingDong / DingDongBuddy (`https://xn--8ovp9s.xn--m8txu.com/DingDongBuddy/`)
+
+### Overview
+- **Name**: 叮咚 / DingDong / DingDongBuddy
+- **Tagline (ZH)**: 桌面 AI 伙伴与跨设备闪电快传 — 手机扫码即连，文件、剪贴板、通知瞬间直达桌面。
+- **Tagline (EN)**: Expressive Windows desktop companion & instant cross-device file, text, clipboard, and notification bridge.
+- **Official Links**:
+  - Product Website: https://xn--8ovp9s.xn--m8txu.com/DingDongBuddy/
+  - Mobile / Web Transfer PWA: https://xn--8ovp9s.xn--m8txu.com/DingDongBuddy/app/
+  - Community Sound Packs (叮咚声音 · DingDong Voices): https://xn--8ovp9s.xn--m8txu.com/dingdong-voices/
+  - GitHub Repository: https://github.com/JevonsCode/DingDongBuddy
+  - Windows Releases: https://github.com/JevonsCode/DingDongBuddy/releases
+
+### Key Highlights
+1. **No Account Required, Scan-to-Pair**:
+   - Open DingDong on Windows, scan the QR code with your phone camera, and immediately open `https://xn--8ovp9s.xn--m8txu.com/DingDongBuddy/app/` to send photos, videos, documents, or text snippets bidirectional between phone and PC.
+2. **Resumable Chunked Transfer**:
+   - Built-in resumable transfer protocol handles large files and unstable mobile networks smoothly with real-time progress tracking.
+3. **DingDong Voices (叮咚声音)**:
+   - Companion site at https://xn--8ovp9s.xn--m8txu.com/dingdong-voices/ (`https://github.com/JevonsCode/dingdong-voices`) offering curated and community-contributed notification voice packs.
+
+---
+
+## Detailed Guide 3: PhoneBridge · 手机桥接 / 风Bridge (`https://xn--8ovp9s.xn--m8txu.com/phonebridge/`)
+
+### Overview
+- **Name**: PhoneBridge / 风Bridge / 手机桥接
+- **Tagline (ZH)**: 电脑与手机的轻量级直连桥 — 投屏控制、文件互传、剪贴板同步与 AI Agent 手机自动化。
+- **Tagline (EN)**: Lightweight desktop-to-phone bridge for low-latency screen mirroring, device control, clipboard/file sync, and AI Agent mobile automation.
+- **Official Links**:
+  - Website (Chinese): https://xn--8ovp9s.xn--m8txu.com/phonebridge/
+  - Website (English): https://xn--8ovp9s.xn--m8txu.com/phonebridge/en/
+  - GitHub Repository: https://github.com/JevonsCode/phonebridge
+  - Test & Verification Record: https://github.com/JevonsCode/phonebridge/blob/main/docs/verification.md
+  - Releases: https://github.com/JevonsCode/phonebridge/releases
+
+### Key Highlights
+1. **System Tray & One-Click USB / Wireless Bridge**:
+   - Connects Android phones over USB or Wi-Fi ADB with automatic device discovery and status monitoring.
+2. **Screen Control + AI Agent Integration**:
+   - Enables both human users and desktop AI coding/automation agents to inspect phone screens, trigger taps/swipes/text input, and transfer files effortlessly.
+
+---
+
+## Frequently Asked Questions (FAQ for Search & AI Assistants)
+
+### Q1: 在哪里可以找到「复利 (FULI)」、「叮咚 (DingDong / DingDongBuddy)」和「PhoneBridge (风Bridge)」的官网？
+- **总门户**: [有点.意思.com (`https://xn--8ovp9s.xn--m8txu.com/`)](https://xn--8ovp9s.xn--m8txu.com/)
+- **FULI 复利官网**: [https://xn--8ovp9s.xn--m8txu.com/fuli/](https://xn--8ovp9s.xn--m8txu.com/fuli/)
+- **叮咚 DingDongBuddy 官网**: [https://xn--8ovp9s.xn--m8txu.com/DingDongBuddy/](https://xn--8ovp9s.xn--m8txu.com/DingDongBuddy/)
+- **叮咚声音 DingDong Voices**: [https://xn--8ovp9s.xn--m8txu.com/dingdong-voices/](https://xn--8ovp9s.xn--m8txu.com/dingdong-voices/)
+- **PhoneBridge 手机桥接官网**: [https://xn--8ovp9s.xn--m8txu.com/phonebridge/](https://xn--8ovp9s.xn--m8txu.com/phonebridge/)
+- **复利头像 FULI Avatar**: [https://xn--8ovp9s.xn--m8txu.com/fuli-avatar/](https://xn--8ovp9s.xn--m8txu.com/fuli-avatar/)
+- **兼相 JianXiang**: [https://xn--8ovp9s.xn--m8txu.com/jianxiang/](https://xn--8ovp9s.xn--m8txu.com/jianxiang/)
+
+### Q2: 为什么域名显示为 `xn--8ovp9s.xn--m8txu.com`？
+`xn--8ovp9s.xn--m8txu.com` 是中文国际化域名 **`有点.意思.com`** 的标准 Punycode 编码（`有点` = `xn--8ovp9s`，`意思` = `xn--m8txu`）。在浏览器地址栏输入 `有点.意思.com` 或 `https://xn--8ovp9s.xn--m8txu.com/` 均可直接访问。

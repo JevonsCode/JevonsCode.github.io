@@ -167,3 +167,24 @@ test('signal-glitch generates random 20s-44s Cyberpunk signal drop intervals', a
   }
 });
 
+test('SEO and AIEO files (robots.txt, sitemap.xml, llms.txt, llms-full.txt, index.html JSON-LD) cover FULI, DingDong, and PhoneBridge', async () => {
+  const robots = await readFile(resolve(ROOT, 'robots.txt'), 'utf8');
+  const sitemap = await readFile(resolve(ROOT, 'sitemap.xml'), 'utf8');
+  const llms = await readFile(resolve(ROOT, 'llms.txt'), 'utf8');
+  const llmsFull = await readFile(resolve(ROOT, 'llms-full.txt'), 'utf8');
+  const indexHtml = await readFile(resolve(ROOT, 'index.html'), 'utf8');
+  const badgeJs = await readFile(resolve(ROOT, 'ydys-badge.js'), 'utf8');
+
+  assert.equal(badgeJs.includes("setAttribute('title'"), false);
+  assert.ok(robots.includes('GPTBot') && robots.includes('ClaudeBot') && robots.includes('PerplexityBot'));
+  assert.ok(robots.includes('Sitemap: https://xn--8ovp9s.xn--m8txu.com/sitemap.xml'));
+
+  for (const doc of [sitemap, llms, llmsFull, indexHtml]) {
+    assert.ok(doc.includes('https://xn--8ovp9s.xn--m8txu.com/fuli/'));
+    assert.ok(doc.includes('https://xn--8ovp9s.xn--m8txu.com/DingDongBuddy/'));
+    assert.ok(doc.includes('https://xn--8ovp9s.xn--m8txu.com/phonebridge/'));
+  }
+  assert.ok(indexHtml.includes('application/ld+json'));
+  assert.ok(indexHtml.includes('id="seo-crawler-atlas"'));
+});
+

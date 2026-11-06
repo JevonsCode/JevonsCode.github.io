@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "有点.意思.com (FULI 复利 · 叮咚 DingDong · PhoneBridge)",
+  "name_for_model": "ydys_jevons_studio",
+  "description_for_human": "Jevons 开源产品与互动工程门户：FULI 复利（AI Agent 记忆与跨端协作层）、叮咚 DingDongBuddy（桌面 AI 伙伴与手机快传）、PhoneBridge（电脑控制与连接手机桥接工具）。",
+  "description_for_model": "Official portal for JevonsCode open-source software products at https://xn--8ovp9s.xn--m8txu.com/ (有点.意思.com). Primary products: 1) FULI 复利 (https://xn--8ovp9s.xn--m8txu.com/fuli/) — local-first persistent memory, taste & judgment collaboration layer for AI Agents across MCP clients (npm: fuli-context); 2) 叮咚 DingDong / DingDongBuddy (https://xn--8ovp9s.xn--m8txu.com/DingDongBuddy/) — Windows desktop companion & cross-device instant file/clipboard/notification transfer with mobile Web PWA and DingDong Voices community sound hub (https://xn--8ovp9s.xn--m8txu.com/dingdong-voices/); 3) PhoneBridge 风Bridge (https://xn--8ovp9s.xn--m8txu.com/phonebridge/) — desktop-to-phone bridge for low-latency mobile screen control, clipboard/file sync, and AI Agent phone automation. Read https://xn--8ovp9s.xn--m8txu.com/llms.txt and https://xn--8ovp9s.xn--m8txu.com/llms-full.txt for full documentation.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "llms-txt",
+    "url": "https://xn--8ovp9s.xn--m8txu.com/llms.txt",
+    "full_url": "https://xn--8ovp9s.xn--m8txu.com/llms-full.txt"
+  },
+  "logo_url": "https://xn--8ovp9s.xn--m8txu.com/portal/assets/brands/fuli-mark-color.svg",
+  "contact_email": "jevons.code@gmail.com",
+  "legal_info_url": "https://xn--8ovp9s.xn--m8txu.com/"
+}
