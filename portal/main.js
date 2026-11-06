@@ -6,6 +6,7 @@ import { CardArtDirector } from './visuals/card-art.js';
 import { SwissFieldCanvas } from './visuals/field-canvas.js';
 import { SwissReticleCursor, bindCardTiltAndScramble } from './interactions/cursor-and-tilt.js';
 import { EasterEggController } from './interactions/easter-eggs.js';
+import { mountCyberLoader } from './stage/cyber-loader.js';
 import {
   t,
   pickText,
@@ -327,6 +328,14 @@ function renderStage() {
 
 /* Dimension Peek (◫) Live Preview Glass Modal */
 let peekLoadTimer = 0;
+let peekCyberInstance = null;
+
+function stopPeekCyber() {
+  if (peekCyberInstance) {
+    peekCyberInstance.stop();
+    peekCyberInstance = null;
+  }
+}
 
 function openPeek(item) {
   const backdrop = document.getElementById('peek-backdrop');
@@ -346,13 +355,19 @@ function openPeek(item) {
   urlEl.textContent = `${item.indexCode} · ${DISPLAY_DOMAIN}${item.routeLabel}/`;
   if (openBtn) openBtn.href = item.href;
   if (ghBtn) ghBtn.href = item.repoUrl;
-  if (loadingEl) loadingEl.hidden = false;
+  backdrop.hidden = false;
+
+  if (loadingEl) {
+    loadingEl.hidden = false;
+    stopPeekCyber();
+    peekCyberInstance = mountCyberLoader(loadingEl);
+  }
   if (peekLoadTimer) clearTimeout(peekLoadTimer);
   peekLoadTimer = setTimeout(() => {
+    stopPeekCyber();
     if (loadingEl) loadingEl.hidden = true;
   }, 5000);
   frame.src = item.href;
-  backdrop.hidden = false;
 }
 
 function closePeek() {
@@ -365,6 +380,7 @@ function closePeek() {
     clearTimeout(peekLoadTimer);
     peekLoadTimer = 0;
   }
+  stopPeekCyber();
   if (loadingEl) loadingEl.hidden = true;
   document.body.classList.remove('has-peek-open');
   if (frame) frame.src = 'about:blank';
@@ -592,6 +608,7 @@ function bindControls() {
       clearTimeout(peekLoadTimer);
       peekLoadTimer = 0;
     }
+    stopPeekCyber();
     const loadingEl = document.getElementById('peek-loading');
     if (loadingEl) loadingEl.hidden = true;
   });
@@ -690,31 +707,24 @@ async function bootstrap() {
 
   bindControls();
 
-  const bootLogs = [
-    '>> [0x01] NEURAL_HANDSHAKE :: XN--8OVP9S.XN--M8TXU.COM',
-    '>> [0x02] INJECTING_FLAGSHIP_CORES :: FULI // DINGDONG // PHONEBRIDGE',
-    '>> [0x03] IGNITING_SOLARIS_3D_ORRERY // 60FPS_SHADER_LOCK',
-    '>> [0x04] OVERDRIVE_READY // 正在展开赛博作品矩阵...',
-  ];
-  const fillEl = document.getElementById('cyber-boot-fill');
-  const pctEl = document.getElementById('cyber-boot-pct');
-  const logEl = document.getElementById('cyber-boot-log');
-  const bootStart = performance.now();
-  const minBootMs = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 920;
+  const loadEl = document.getElementById('stage-loading');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stageCyber = !reducedMotion && loadEl ? mountCyberLoader(loadEl) : null;
 
-  let bootRaf = 0;
-  const animateBootHud = (now) => {
-    const p = Math.min(0.96, (now - bootStart) / Math.max(1, minBootMs));
-    const pct = Math.round(18 + p * 80);
-    if (fillEl) fillEl.style.width = `${pct}%`;
-    if (pctEl) pctEl.textContent = `${String(pct).padStart(2, '0')}%`;
-    if (logEl) {
-      const idx = Math.min(bootLogs.length - 1, Math.floor(p * bootLogs.length));
-      logEl.textContent = bootLogs[idx];
+  let bootDeadline = performance.now() + (reducedMotion ? 0 : 1450);
+  const switchBtn = document.getElementById('cyber-scene-switch');
+  switchBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    synth.playClick();
+    stageCyber?.nextScene();
+    bootDeadline = Math.max(bootDeadline, performance.now() + 1450);
+  });
+
+  const waitBootCinema = async () => {
+    while (performance.now() < bootDeadline) {
+      await new Promise((r) => setTimeout(r, 80));
     }
-    if (p < 0.96) bootRaf = requestAnimationFrame(animateBootHud);
   };
-  if (minBootMs > 0) bootRaf = requestAnimationFrame(animateBootHud);
 
   const catalogPromise = loadLivePagesCatalog({
     onRemoteUpdate: (updatedItems) => {
@@ -728,20 +738,13 @@ async function bootstrap() {
     },
   });
 
-  const [items] = await Promise.all([
-    catalogPromise,
-    minBootMs > 0 ? new Promise((r) => setTimeout(r, minBootMs)) : Promise.resolve(),
-  ]);
-  if (bootRaf) cancelAnimationFrame(bootRaf);
-  if (fillEl) fillEl.style.width = '100%';
-  if (pctEl) pctEl.textContent = '100%';
-  if (logEl) logEl.textContent = bootLogs[bootLogs.length - 1];
+  const [items] = await Promise.all([catalogPromise, waitBootCinema()]);
 
-  const loadEl = document.getElementById('stage-loading');
-  if (loadEl && minBootMs > 0) {
+  if (loadEl && !reducedMotion) {
     loadEl.classList.add('is-exiting');
-    await new Promise((r) => setTimeout(r, 260));
+    await new Promise((r) => setTimeout(r, 340));
   }
+  stageCyber?.stop();
 
   state.allItems = items;
   renderFilterPills();

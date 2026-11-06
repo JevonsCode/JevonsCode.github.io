@@ -18,8 +18,8 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="./portal/styles/tokens.css?v=7" />
-  <link rel="stylesheet" href="./portal/styles/layout.css?v=7" />
+  <link rel="stylesheet" href="./portal/styles/tokens.css?v=8" />
+  <link rel="stylesheet" href="./portal/styles/layout.css?v=8" />
 </head>
 <body>
   <!-- Full-viewport 60fps Swiss Crosshair Magnetic Field & Pinball Physics Canvas -->
@@ -91,36 +91,23 @@
       </div>
     </nav>
 
-    <!-- Dynamic Stage Container (with Bold Cyberpunk Overdrive Loading Stage) -->
+    <!-- Dynamic Stage Container (with Full-Viewport Multi-Scene Cyberpunk Canvas Cinema) -->
     <main id="stage-container" class="stage-container">
-      <div id="stage-loading" class="cyber-load-stage" role="status" aria-live="polite">
-        <div class="cyber-grid-plane" aria-hidden="true"></div>
+      <div id="stage-loading" class="cyber-load-stage is-fullscreen" role="status" aria-live="polite" aria-label="CYBERNETIC OVERDRIVE">
+        <canvas class="cyber-stage-canvas" aria-hidden="true"></canvas>
         <div class="cyber-scan-beam" aria-hidden="true"></div>
-        <div class="cyber-corner is-tl" aria-hidden="true">SYS.BOOT // 0x7F</div>
-        <div class="cyber-corner is-tr" aria-hidden="true">OVERDRIVE :: MAX</div>
-        <div class="cyber-corner is-bl" aria-hidden="true">NODE // XN--8OVP9S</div>
-        <div class="cyber-corner is-br" aria-hidden="true">60FPS // NEURAL_LINK</div>
-
-        <div class="cyber-core-wrap">
-          <div class="cyber-reactor" aria-hidden="true">
-            <span class="cyber-ring is-outer"></span>
-            <span class="cyber-ring is-mid"></span>
-            <span class="cyber-ring is-inner"></span>
-            <span class="cyber-core-word" data-glitch="有点.意思">有点.意思</span>
-          </div>
-
-          <div class="cyber-glitch-title" data-text="CYBERDECK // 赛博神经矩阵接入中" data-i18n="stageLoading">赛博神经矩阵接入中 // OVERDRIVE</div>
-
-          <div class="cyber-progress-shell" aria-hidden="true">
-            <div class="cyber-progress-track">
-              <div id="cyber-boot-fill" class="cyber-progress-fill"></div>
-            </div>
-            <div class="cyber-progress-meta">
-              <span id="cyber-boot-log" class="cyber-boot-log">&gt;&gt; INJECTING_PORTAL_NODES :: FULI // DINGDONG // SOLARIS_3D</span>
-              <span id="cyber-boot-pct" class="cyber-boot-pct">68%</span>
-            </div>
-          </div>
+        <div class="cyber-corner is-tl" aria-hidden="true">
+          <span class="cyber-hud-code">0x01 // ONI_KATANA_SLASH</span>
         </div>
+        <div class="cyber-corner is-tr" aria-hidden="true">
+          <span class="cyber-hud-hex">0x7F9A // 0xE401</span>
+        </div>
+        <div class="cyber-corner is-bl" aria-hidden="true">
+          <span class="cyber-hud-sub">MECHA_SAMURAI_WIREFRAME // BLADE_STORM</span>
+        </div>
+        <button type="button" id="cyber-scene-switch" class="cyber-corner is-br cyber-scene-btn">
+          [ SHIFT_REALITY // ↻ ]
+        </button>
       </div>
     </main>
 
@@ -148,22 +135,14 @@
         </div>
       </div>
       <div class="peek-body">
-        <div id="peek-loading" class="peek-loading cyber-load-stage is-compact" role="status" aria-live="polite" hidden>
-          <div class="cyber-grid-plane" aria-hidden="true"></div>
+        <div id="peek-loading" class="peek-loading cyber-load-stage is-compact" role="status" aria-live="polite" aria-label="PORTAL WARP" hidden>
+          <canvas class="cyber-stage-canvas" aria-hidden="true"></canvas>
           <div class="cyber-scan-beam" aria-hidden="true"></div>
-          <div class="cyber-core-wrap">
-            <div class="cyber-reactor" aria-hidden="true">
-              <span class="cyber-ring is-outer"></span>
-              <span class="cyber-ring is-mid"></span>
-              <span class="cyber-ring is-inner"></span>
-              <span class="cyber-core-word" data-glitch="有点.意思">有点.意思</span>
-            </div>
-            <div class="cyber-glitch-title" data-text="PORTAL WARP // 传送门跃迁中" data-i18n="peekLoading">传送门跃迁中 // WARPING SITE…</div>
-            <div class="cyber-progress-shell" aria-hidden="true">
-              <div class="cyber-progress-track">
-                <div class="cyber-progress-fill is-indeterminate"></div>
-              </div>
-            </div>
+          <div class="cyber-corner is-tl" aria-hidden="true">
+            <span class="cyber-hud-code">0x02 // NIGHTCITY_HYPERWARP</span>
+          </div>
+          <div class="cyber-corner is-br" aria-hidden="true">
+            <span class="cyber-hud-hex">WARP // ACTIVE</span>
           </div>
         </div>
         <iframe id="peek-frame" class="peek-frame" title="Pages Live Preview" loading="lazy"></iframe>
@@ -182,7 +161,7 @@
   <!-- Secret Unlock Toast -->
   <div id="egg-toast" class="egg-toast" role="status" aria-live="polite"></div>
 
-  <script src="./ydys-badge.js?v=7" defer></script>
-  <script type="module" src="./portal/main.js?v=7"></script>
+  <script src="./ydys-badge.js?v=8" defer></script>
+  <script type="module" src="./portal/main.js?v=8"></script>
 </body>
 </html>

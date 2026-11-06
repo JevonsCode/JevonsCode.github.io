@@ -129,12 +129,26 @@ test('07 3d-solar-system is standard span and 08 astron-solar-system is wide 3D 
   assert.ok(s08.blurb?.zh.includes('3D'));
 });
 
-test('ydys-badge.js UMD module exports cyberpunk badge API', async () => {
+test('ydys-badge.js UMD module exports cyberpunk badge API with strict fixed geometry', async () => {
   const mod = await import('../ydys-badge.js');
   const badge = mod.default?.PORTAL_URL ? mod.default : globalThis.YdysCyberBadge;
   assert.equal(badge.PORTAL_URL, 'https://xn--8ovp9s.xn--m8txu.com/');
   assert.equal(badge.LABEL, '有点.意思.com');
   assert.equal(typeof badge.mount, 'function');
   assert.equal(typeof badge.mountAll, 'function');
+  assert.ok(badge.CSS_TEXT.includes('contain: strict !important;'));
+  assert.ok(badge.CSS_TEXT.includes('width: 100px !important;'));
+  assert.ok(badge.CSS_TEXT.includes('transform: none !important;'));
+});
+
+test('cyber-loader exposes 5 distinct cyberpunk scenes with zero Chinese or progress bar text', async () => {
+  const { CYBER_SCENES, pickNextCyberSceneIndex } = await import('../portal/stage/cyber-loader.js');
+  assert.equal(CYBER_SCENES.length, 5);
+  for (const scene of CYBER_SCENES) {
+    assert.equal(/[\u4e00-\u9fa5]/.test(scene.code + scene.sub), false);
+    assert.equal((scene.code + scene.sub).includes('有点'), false);
+  }
+  const idx = pickNextCyberSceneIndex();
+  assert.ok(Number.isInteger(idx) && idx >= 0 && idx < CYBER_SCENES.length);
 });
 
