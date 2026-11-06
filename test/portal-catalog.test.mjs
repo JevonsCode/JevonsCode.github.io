@@ -186,5 +186,6 @@ test('SEO and AIEO files (robots.txt, sitemap.xml, llms.txt, llms-full.txt, inde
   }
   assert.ok(indexHtml.includes('application/ld+json'));
   assert.ok(indexHtml.includes('id="seo-crawler-atlas"'));
+  assert.ok(indexHtml.includes('name="google-site-verification" content="sf45w9Le0FvwqCVQNc9X71cIVdKBVpd2hQWJOJLPPjc"'));
 });
 
