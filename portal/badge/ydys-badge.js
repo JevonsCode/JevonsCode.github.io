@@ -292,7 +292,7 @@
     if (!scope || !scope.querySelectorAll) return [];
 
     var nodes = scope.querySelectorAll(
-      '[data-ydys-badge], a.ydys-cyber-badge, a[href*="xn--8ovp9s.xn--m8txu.com"]'
+      '[data-ydys-badge], a.ydys-cyber-badge, a[href="https://xn--8ovp9s.xn--m8txu.com/"], a[href="https://xn--8ovp9s.xn--m8txu.com"]'
     );
     var mounted = [];
     for (var i = 0; i < nodes.length; i += 1) {
