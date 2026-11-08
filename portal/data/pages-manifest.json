@@ -1,7 +1,7 @@
 {
   "owner": "JevonsCode",
   "domain": "有点.意思.com",
-  "syncedAt": "2026-11-08T13:23:37.539Z",
+  "syncedAt": "2026-11-08T22:04:09.869Z",
   "count": 21,
   "items": [
     {
@@ -93,7 +93,7 @@
         "mcp"
       ],
       "stars": 10,
-      "pushedAt": "2026-11-08T13:05:52Z",
+      "pushedAt": "2026-11-08T16:53:59Z",
       "repoUrl": "https://github.com/JevonsCode/fuli",
       "localSubpath": false
     },
@@ -270,7 +270,7 @@
       "language": "JavaScript",
       "topics": [],
       "stars": 0,
-      "pushedAt": "2026-11-05T20:56:40Z",
+      "pushedAt": "2026-11-08T18:40:38Z",
       "repoUrl": "https://github.com/JevonsCode/union-lotto",
       "localSubpath": false
     }
