@@ -1,7 +1,7 @@
 {
   "owner": "JevonsCode",
   "domain": "有点.意思.com",
-  "syncedAt": "2026-11-09T06:25:58.410Z",
+  "syncedAt": "2026-11-09T22:20:59.062Z",
   "count": 21,
   "items": [
     {
@@ -93,7 +93,7 @@
         "mcp"
       ],
       "stars": 10,
-      "pushedAt": "2026-11-09T04:16:39Z",
+      "pushedAt": "2026-11-09T16:46:03Z",
       "repoUrl": "https://github.com/JevonsCode/fuli",
       "localSubpath": false
     },
@@ -147,7 +147,7 @@
     },
     {
       "slug": "jianxiang",
-      "pageTitle": "",
+      "pageTitle": "间象 — 图像与留白",
       "reachable": true,
       "language": "JavaScript",
       "topics": [],
