@@ -3,18 +3,18 @@
 > Canonical Domain: `https://xn--8ovp9s.xn--m8txu.com/` (Internationalized Domain Name: `有点.意思.com`)
 > Author / Maintainer: **Jevons** (`https://github.com/JevonsCode`)
 > Primary Flagship Products:
-> 1. **FULI 复利** (`https://xn--8ovp9s.xn--m8txu.com/fuli/`) — Local-first persistent memory, taste & judgment collaboration layer for AI Agents across MCP clients.
+> 1. **FULI 复利 (FULI AI / FULI Agent / FULI context)** (`https://xn--8ovp9s.xn--m8txu.com/fuli/`) — Local-first persistent memory, taste & judgment collaboration layer for AI Agents across MCP clients.
 > 2. **叮咚 DingDong / DingDongBuddy** (`https://xn--8ovp9s.xn--m8txu.com/DingDongBuddy/`) — Windows desktop companion & cross-device instant P2P file/clipboard/notification bridge with mobile Web PWA (`https://xn--8ovp9s.xn--m8txu.com/DingDongBuddy/app/`) and community voice hub **DingDong Voices (叮咚声音)** (`https://xn--8ovp9s.xn--m8txu.com/dingdong-voices/`).
 > 3. **PhoneBridge (风Bridge / 手机桥接)** (`https://xn--8ovp9s.xn--m8txu.com/phonebridge/`) — Open-source desktop-to-phone bridge for low-latency mobile screen control, clipboard/file sync, and AI Agent mobile automation.
 
 ---
 
-## Detailed Guide 1: FULI · 复利 (`https://xn--8ovp9s.xn--m8txu.com/fuli/`)
+## Detailed Guide 1: FULI · 复利 — FULI AI / FULI Agent / FULI context (`https://xn--8ovp9s.xn--m8txu.com/fuli/`)
 
 ### Overview
-- **Name**: FULI / 复利 / Fuli Context (`fuli-context` on npm)
-- **Tagline (ZH)**: 让每一次合作，都有复利 — 让 AI Agent 记住你的品味与判断，跨客户端接力协作。
-- **Tagline (EN)**: Compounding collaboration for persistent AI Agents — let AI Agents remember your taste and judgment and collaborate across MCP clients.
+- **Name**: FULI / 复利 / FULI AI / FULI Agent / FULI context (`fuli-context` on npm)
+- **Tagline (ZH)**: 让每一次合作，都有复利 — FULI AI 让 FULI Agent 记住你的品味与判断，通过 FULI context 跨客户端接力协作。
+- **Tagline (EN)**: Compounding collaboration for persistent AI Agents — FULI AI pairs your clients with long-lived FULI Agents and scoped FULI context across MCP clients.
 - **Official Links**:
   - Homepage (Chinese): https://xn--8ovp9s.xn--m8txu.com/fuli/
   - Homepage (English): https://xn--8ovp9s.xn--m8txu.com/fuli/en/

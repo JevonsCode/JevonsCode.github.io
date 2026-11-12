@@ -192,6 +192,11 @@ test('SEO and AIEO files (robots.txt, sitemap.xml, llms.txt, llms-full.txt, inde
     assert.ok(doc.includes('https://xn--8ovp9s.xn--m8txu.com/DingDongBuddy/'));
     assert.ok(doc.includes('https://xn--8ovp9s.xn--m8txu.com/phonebridge/'));
   }
+  for (const doc of [llms, llmsFull, indexHtml]) {
+    assert.ok(doc.includes('FULI Agent'));
+    assert.ok(doc.includes('FULI context'));
+    assert.ok(doc.includes('FULI AI'));
+  }
   assert.ok(indexHtml.includes('application/ld+json'));
   assert.ok(indexHtml.includes('id="seo-crawler-atlas"'));
   assert.ok(indexHtml.includes('name="google-site-verification" content="sf45w9Le0FvwqCVQNc9X71cIVdKBVpd2hQWJOJLPPjc"'));

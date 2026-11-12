@@ -212,7 +212,10 @@ export const CURATED_STAGE_META = Object.freeze({
 
 // One-line hover introductions. Repos without an entry fall back to their GitHub description.
 export const PROJECT_BLURBS = Object.freeze({
-  fuli: { zh: '让 AI Agent 记住你的品味与判断，跨客户端接力协作', en: 'Keeps your taste and judgment across AI agents and clients.' },
+  fuli: {
+    zh: 'FULI AI：让 FULI Agent 记住你的品味与判断，借 FULI context 跨客户端接力协作',
+    en: 'FULI AI: persistent FULI Agent memory and FULI context across AI clients.',
+  },
   DingDongBuddy: { zh: '本地 AI Agent 的桌面小伙伴，剪贴板与提醒一手掌握', en: 'A desktop companion for your clipboard and local AI agents.' },
   phonebridge: { zh: '让 AI 看见屏幕，替你点按、滑动和打字的安卓桥', en: 'Lets your AI see, tap, swipe and type on your Android phone.' },
   'fuli-avatar': { zh: '零依赖、确定性生成的 SVG 角色头像', en: 'Dependency-free, deterministic SVG character avatars.' },
