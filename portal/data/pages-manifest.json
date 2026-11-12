@@ -1,7 +1,7 @@
 {
   "owner": "JevonsCode",
   "domain": "有点.意思.com",
-  "syncedAt": "2026-11-12T00:43:22.367Z",
+  "syncedAt": "2026-11-12T15:14:04.804Z",
   "count": 21,
   "items": [
     {
@@ -78,7 +78,7 @@
     },
     {
       "slug": "fuli",
-      "pageTitle": "FULI 复利 · AI Agent 记忆与跨客户端协作",
+      "pageTitle": "FULI 复利 (FULI AI) · AI Agent / FULI Agent 记忆与 FULI context 跨客户端协作",
       "reachable": true,
       "description": "Fuli preserves your taste, personality, and judgment across Codex, Claude Code, and other clients supporting MCP and Skills. Your agent picks up where it left off, so you can focus on ideas and decisions—and take a break. As AI learns to do more of the work, Fuli helps you make the transition.",
       "language": "JavaScript",
@@ -88,12 +88,13 @@
         "claude-code",
         "codex",
         "cursor",
+        "dsh-plugin",
         "knowledge-graph",
         "local-first",
         "mcp"
       ],
       "stars": 10,
-      "pushedAt": "2026-11-11T19:23:37Z",
+      "pushedAt": "2026-11-12T15:08:32Z",
       "repoUrl": "https://github.com/JevonsCode/fuli",
       "localSubpath": false
     },
