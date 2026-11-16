@@ -1,7 +1,7 @@
 {
   "owner": "JevonsCode",
   "domain": "有点.意思.com",
-  "syncedAt": "2026-11-16T06:27:18.433Z",
+  "syncedAt": "2026-11-16T22:00:10.260Z",
   "count": 21,
   "items": [
     {
@@ -71,7 +71,7 @@
       "description": "Desktop companion for local AI agents",
       "language": "Dart",
       "topics": [],
-      "stars": 5,
+      "stars": 6,
       "pushedAt": "2026-11-10T19:16:41Z",
       "repoUrl": "https://github.com/JevonsCode/DingDongBuddy",
       "localSubpath": false
@@ -93,8 +93,8 @@
         "local-first",
         "mcp"
       ],
-      "stars": 10,
-      "pushedAt": "2026-11-16T04:47:42Z",
+      "stars": 11,
+      "pushedAt": "2026-11-16T18:05:29Z",
       "repoUrl": "https://github.com/JevonsCode/fuli",
       "localSubpath": false
     },
